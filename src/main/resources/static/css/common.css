@@ -1,0 +1,22 @@
+li {
+ list-style: none;
+}
+
+a {
+text-decoration: none;
+color:#000000;
+}
+
+a:hover {
+
+color:#4682B4;
+}
+
+h2 {
+  font-size:20px;
+}
+
+h5 {
+  font-size:15px;
+}
+

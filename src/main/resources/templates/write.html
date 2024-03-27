@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/default_layout">
+<th:block layout:fragment="content">
+
+    <div class="write_form">
+        <form action="/article/write" method="POST">
+            <input type="text" id="title" placeholder="제목">
+            <input type="text" id="content" placeholder="내용">
+            <input type="button" id="submit" value="작성하기">
+        </form>
+
+    </div>
+
+  <script>
+
+      $(document).ready(function(){
+     	$('#submit').click(function(){
+
+     	console.log('test')
+
+     	var obj = {}; //var Obj = new Object();
+        var Arr = []; //var Arr = new Array();
+
+     	obj.title = $("#title").val();
+     	obj.content = $("#content").val();
+     	obj.nickname = '유지누';
+
+		$.ajax({
+            　　type:'post'
+            　　, contentType:'application/json'
+            　　, data: JSON.stringify(obj)
+            　　, url: '/article/write'
+            　　, success: function(data) {
+                  location.href='/article/paging';
+            　　}, error:function(e) {
+            　　　　
+            　　}
+            });
+	  });
+});
+  </script>
+
+
+
+</th:block>
+</html>

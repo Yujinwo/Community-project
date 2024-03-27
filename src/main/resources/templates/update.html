@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:inline="http://www.w3.org/1999/xhtml" layout:decorate="layout/default_layout">
+<th:block layout:fragment="content">
+
+    <div class="write_form">
+        <form action="/article/update" method="POST" >
+            <input type="text" id="title" th:value="${article.title}"  placeholder="제목">
+            <input type="text" id="content" th:value="${article.content}" placeholder="내용">
+            <input type="button" id="submit" value="수정하기">
+        </form>
+
+    </div>
+
+    <script th:inline="javascript">
+
+        $(document).ready(function(){
+           $('#submit').click(function(){
+
+           var obj = {}; //var Obj = new Object();
+
+           obj.title = $("#title").val();
+           obj.content = $("#content").val();
+           obj.nickname = [[${article.nickname}]];
+           obj.id = [[${article.id}]];
+
+
+
+          $.ajax({
+              　　type:'post'
+              　　, contentType:'application/json'
+              　　, data: JSON.stringify(obj)
+              　　, url: '/article/update'
+              　　, success: function(data) {
+              location.href='/article/' + obj.id;
+              　　　　
+              　　}, error:function(e) {
+              　　　　
+              　　}
+              });
+        });
+  });
+    </script>
+
+
+
+</th:block>
+</html>

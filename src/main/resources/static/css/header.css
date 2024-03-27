@@ -1,0 +1,17 @@
+.header {
+   margin:20px
+
+}
+.header_menu {
+    display:flex;
+   justify-content:center;
+   align-items:center;
+
+}
+
+.header_menu li{
+
+    display:inline-block;
+    padding:10px;
+}
+

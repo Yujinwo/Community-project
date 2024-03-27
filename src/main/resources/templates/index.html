@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/default_layout">
+<th:block layout:fragment="content">
+
+    <div class="article_write_button">
+
+       <button class="button blue" onclick="location.href='/article/write'" >작성하기</button>
+
+    </div>
+
+    <div th:each="article : ${article}" class="article">
+
+
+            <a th:href="@{/article/{id}(id=${article.id})}">
+                <h2 th:text="${article.title}" >
+                </h2>
+            </a>
+
+        <h5 th:text="${article.content}"></h5>
+
+    </div>
+
+    <div class="paging_list">
+
+    <a th:href="@{/article/paging(page=1)}">첫 페이지 </a>
+    <a th:href="${article.first} ? '#' : @{/article/paging(page=${article.number})}"> 이전 </a>
+
+    <span th:classappend="${page == article.Number + 1} ? 'active'" th:each="page: ${#numbers.sequence(startPage, endPage)}">
+
+		<!-- 현재페이지는 링크 없이 숫자만 -->
+            <span th:if="${page == article.number + 1}" th:text="${page}"></span>
+        <!-- 현재페이지 링크 X, 다른 페이지번호에는 링크를 보여준다 -->
+            <span th:unless="${page == article.number + 1}">
+        <a th:href="@{/article/paging(page=${page})}" th:text="${page}"></a>
+            </span>
+        </span>
+
+    <!-- 다음 링크 활성화 비활성화 -->
+    <a th:href="${article.last} ? '#' : @{/article/paging(page=${article.number + 2})}"> 다음 </a>
+
+    <!-- 마지막 페이지로 이동 -->
+    <a th:href="@{/article/paging(page=${article.totalPages})}"> 마지막 페이지</a>
+
+    </div>
+
+</th:block>
+</html>
