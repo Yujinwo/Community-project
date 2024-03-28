@@ -5,9 +5,9 @@
 
     <div class="write_form">
         <form action="/article/update" method="POST" >
-            <input type="text" id="title" th:value="${article.title}"  placeholder="제목">
-            <input type="text" id="content" th:value="${article.content}" placeholder="내용">
-            <input type="button" id="submit" value="수정하기">
+            <input type="text" id="title" placeholder="제목" th:value="${article.title}"  class="article_form_width">
+            <textarea type="text" id="content" cols="30" rows="5" th:text="${article.content}" placeholder="내용" class="article_form_width "></textarea>
+            <input type="button" id="submit" value="수정하기" class="article_form_button button blue">
         </form>
 
     </div>
