@@ -1,12 +1,24 @@
 .header {
-   margin:20px
-
+   margin:20px;
+   display:flex;
 }
 .header_menu {
-    display:flex;
-   justify-content:center;
-   align-items:center;
+display:flex;
+justify-content:right;
+width:60%;
 
+}
+
+.header_auth {
+display:flex;
+justify-content:right;
+align-items:center;
+width:40%;
+}
+
+.header_auth a{
+font-size:13px;
+margin : 0 5px;
 }
 
 .header_menu li{
