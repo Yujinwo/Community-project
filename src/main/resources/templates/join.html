@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns="http://www.w3.org/1999/html" layout:decorate="layout/default_layout">
+<th:block layout:fragment="content">
+    <div class="form_middle">
+    <h2>회원가입 </h2></br>
+        <div class="join_idcheck">
+            <input type="text" id="email" name="email" class="form-control" placeholder="아이디" autofocus=""/>
+            <button class="idcheck_btn" onclick="idcheck()">중복체크</button>
+        </div>
+        <span style="color:#0054FF" id="emailError"></span>
+        <input type="password" id="userpw" name="userpw" class="form-control" placeholder="비밀번호" />
+        <span style="color:#0054FF" id="userpwError"></span>
+        <input type="text" id="usernick" name="usernick" class="form-control" placeholder="닉네임" />
+        <span style="color:#0054FF" id="usernickError"></span>
+        <div class="button_flex">
+            <button style="display :inline-block;" class="button_blue" onclick="joinBtn()">회원가입</button>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        function idcheck() {
+                  var checkdata = {
+                      email : $('#email').val()
+                  }
+                  $.ajax({
+                         type:'post',
+                         contentType:'application/json',
+                         data:JSON.stringify(checkdata),
+                         url:'/idcheck',
+                         success:function(data){
+                         alert(data);
+                         },
+                         error: function(e) {
+                         console.log(e);
+                         }
+                    });
+        };
+
+         function joinBtn() {
+                 var joindata = {
+                  email : $('#email').val(),
+                  userpw : $('#userpw').val(),
+                  usernick : $('#usernick').val()
+                }
+
+               $.ajax({
+                 type:'post',
+                 contentType:'application/json',
+                 data:JSON.stringify(joindata),
+                 url:'/join',
+                 success: function(data) {
+                      // 회원가입 결과 메시지 설정
+                    if (data.hasOwnProperty('result')) {
+                        alert(data.result);
+                        location.href = '/login';
+                    }
+
+                 },
+                 error: function(e) {
+               // 이메일 에러 메시지 설정
+               var jsonResponse = JSON.parse(e.responseText);
+                if (jsonResponse.hasOwnProperty('email')) {
+                    document.getElementById("emailError").innerText = jsonResponse.email;
+                } else {
+                    document.getElementById("emailError").innerText = "";
+                }
+
+                // 패스워드 에러 메시지 설정
+                if (jsonResponse.hasOwnProperty('userpw')) {
+                    document.getElementById("userpwError").innerText = jsonResponse.userpw;
+                } else {
+                    document.getElementById("userpwError").innerText = "";
+                }
+
+                 // 닉네임 에러 메시지 설정
+                if (jsonResponse.hasOwnProperty('usernick')) {
+                    document.getElementById("usernickError").innerText = jsonResponse.usernick;
+                } else {
+                    document.getElementById("usernickError").innerText = "";
+                }
+
+                // 회원가입 결과 메시지 설정
+                if (jsonResponse.hasOwnProperty('result')) {
+                    alert(jsonResponse.result);
+                }
+              }
+          });
+   }
+    </script>
+</th:block>
+</html>

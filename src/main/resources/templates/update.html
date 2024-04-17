@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:inline="http://www.w3.org/1999/xhtml" layout:decorate="layout/default_layout">
+<th:block layout:fragment="content">
+
+    <div class="form_middle">
+            <input type="text" id="title" placeholder="제목" th:value="${article.title}"  class="form-control">
+            <span style="color:#0054FF" id="titleError"></span>
+            <textarea type="text" id="content" th:text="${article.content}" placeholder="내용" class="form-control update_content_area"></textarea>
+            <span style="color:#0054FF" id="contentError"></span>
+            <div  class="form-control" th:if="${article.imageUrls != null}">
+                <div th:each="imageUrl : ${article.imageUrls}">
+                    <img th:src="@{${imageUrl}}" width="200px" height="200px">
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="file" name="files" class="form-control" id="files" multiple>
+                    <label for="files">이미지 업로드</label>
+                </div>
+            </div>
+            <div class="button_flex">
+                <button type="button" onclick="updateSubmit()" class="button_blue">수정하기</button>
+            </div>
+    </div>
+
+    <script th:inline="javascript">
+
+        function updateSubmit() {
+            var obj = {}; //var Obj = new Object();
+
+            obj.title = $("#title").val();
+            obj.content = $("#content").val();
+            obj.id = [[${article.id}]];
+            var formData = new FormData();
+            var fileInput = $('#files')[0]; // 파일 입력 필드 가져오기
+            var files = fileInput.files; // 선택된 파일들 가져오기
+
+            for (var i = 0; i < files.length; i++) {
+                formData.append('value', files[i]); // FormData에 파일 추가
+            }
+            formData.append('key', new Blob([JSON.stringify(obj)], { type: "application/json" }));
+
+            $.ajax({
+            　　type:'post'
+            　  , processData: false // FormData를 사용하면 processData를 false로 설정해야 함
+                , contentType: false // 파일 업로드 시에는 contentType을 false로 설정해야 함
+            　 　, data: formData
+            　 　, url: '/article/update'
+            　 　, success: function(data) {
+                   location.href='/article/detail/' + obj.id;
+            　　}, error:function(e) {
+                // 제목 에러 메시지 설정
+                var jsonResponse = JSON.parse(e.responseText);
+                if (jsonResponse.hasOwnProperty('title')) {
+                    document.getElementById("titleError").innerText = jsonResponse.title;
+                } else {
+                    document.getElementById("titleError").innerText = "";
+                }
+
+                // 내용 에러 메시지 설정
+                if (jsonResponse.hasOwnProperty('content')) {
+                    document.getElementById("contentError").innerText = jsonResponse.content;
+                } else {
+                    document.getElementById("contentError").innerText = "";
+                }
+            　　　　
+            　　}
+           });
+        }
+    </script>
+</th:block>
+</html>

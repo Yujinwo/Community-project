@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.w3.org/1999/xhtml" layout:decorate="layout/default_layout">
+<th:block layout:fragment="content">
+    <div class="modal">
+        <div class="modal_popup">
+            <h5> 삭제를 원하시면 예를 눌러주세요. </h5></br>
+            <button type="button" onclick="articleDeleteYes(this.getAttribute('data-article-id'))" th:attr="data-article-id=${article.id}" class="close_btn">예</button>
+            <button type="button" onclick="articleDeleteNo()" class="close_btn">아니요</button>
+        </div>
+    </div>
+    <div class="article_button" sec:authorize="isAuthenticated()">
+        <button th:if="${article.member.id == #authentication.principal.id}" class="button_blue" th:onclick="|location.href='@{/article/update/{id}(id=${article.id})}'|">수정하기</button>
+        <button th:if="${article.member.id == #authentication.principal.id}" onclick="articleDelete()" class="button_red" >삭제하기</button>
+    </div>
+    <div class="article">
+            <h2 class="bold" th:text="${article.title}" >
+            </h2><br>
+        <div class="detail_content_area" th:text="${article.content}"></div></br>
+        <span class="article_addtext bold" th:text="${article.member.usernick}"></span>
+        <span> · </span>
+        <span class="article_addtext" th:text="${@timeUtil.calculateTimeAgo(article.createdDate)}"></span>
+        <span> · </span>
+        <span class="article_addtext" th:text="${article.viewcount}"></span></br>
+    </div>
+
+    <div class="article_images" th:if="${article.imageUrls.size() != 0}">
+        <label class="form-label">이미지</label>
+        <div th:each="imageUrl : ${article.imageUrls}">
+            <img th:src="@{${imageUrl}}" width="200px" height="200px">
+        </div>
+    </div>
+    <div class="comment_count ">
+        💬 댓글
+        <b class="bold" th:text="${comment.getTotalElements()}"></b>
+        개
+    </div>
+
+    <div th:if="${endPage != 0}" th:each="comment : ${comment}" class="article_comments">
+
+        <div th:if="${comment.deleted == false}">
+            <span class="bold" th:text="${comment.member.usernick}"></span>
+            <span> · </span>
+            <span th:text="${@timeUtil.calculateTimeAgo(comment.createdDate)}"></span>
+            <span> · </span>
+            <span sec:authorize="isAuthenticated()" class="comment_delete">
+                <button onclick="deleteComment(this.getAttribute('data-comment-id'))" th:attr="data-comment-id=${comment.id}" th:if="${comment.member.id == #authentication.principal.id}">삭제</button>
+            </span><br><br>
+
+            <div th:text="${comment.content}"></div>
+
+            <!-- 답글 달기 버튼 -->
+            <div th:if="${comment.child.size() <= 10}">
+                <button class="reply_button" th:id="'reply_button_' + ${comment.id}" onclick="replyButton(this.getAttribute('data-comment-id'))" th:attr="data-comment-id=${comment.id}">답글 달기</button>
+            </div>
+        </div>
+        <div th:unless="${comment.deleted == false}">
+            <div> 삭제된 댓글 입니다!</div>
+        </div>
+        <!-- 자식 댓글들 출력 -->
+        <div th:if="${comment.child != null}">
+            <div th:each="child : ${comment.child}">
+                <div class="reply_comments">
+                    <span class="bold" th:text="${comment.member.usernick}"></span>
+                    <span> · </span>
+                    <span th:text="${@timeUtil.calculateTimeAgo(child.createdDate)}"></span>
+                    <span> · </span>
+                    <span sec:authorize="isAuthenticated()" class="comment_delete">
+                        <button onclick="deleteReply(this.getAttribute('data-child-id'))" th:attr="data-child-id=${child.id}" th:if="${comment.member.id == #authentication.principal.id}">삭제</button>
+                    </span><br><br>
+                <div style="display:flex">
+                    <span style="color:#6c757d; margin:0 10px;" th:text="${child.comment.member.usernick}"> </span>
+                    <div th:text="${child.content}"></div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="reply-form" th:id="'reply_form_' + ${comment.id}" style="display: none;">
+            <div class="comment_write">
+                <h2>답글쓰기</h2>
+                <div sec:authorize="isAuthenticated()">
+                    <textarea type="text" th:id="'reply_content' + ${comment.id}" ></textarea>
+                    <button onclick="replySubmit(this.getAttribute('data-comment-id'))" th:attr="data-comment-id=${comment.id}" class="reply-submit">등록</button>
+                </div>
+                <div sec:authorize="isAnonymous()" class="disabled">
+                    <textarea type="text" >로그인을 해주세요</textarea>
+                    <button >등록</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div th:if="${endPage != 0}" class="paging_list">
+        <a class="page_previous" th:classappend=" ${!comment.hasPrevious()} ? 'disabled' " th:href="${!comment.isFirst()} ? @{/article/detail/{id}(id=${article.id},page=${comment.getPageable().getPageNumber()})}"> 이전 </a>
+
+        <span th:each="page: ${#numbers.sequence(startPage, endPage)}">
+		<!-- 현재페이지는 링크 없이 숫자만 -->
+            <span th:if="${page == comment.getPageable().getPageNumber() + 1}" th:text="${page}"></span>
+            <!-- 현재페이지 링크 X, 다른 페이지번호에는 링크를 보여준다 -->
+            <span th:unless="${page == comment.getPageable().getPageNumber() + 1}">
+        <a th:href="@{/article/detail/{id}(id=${article.id},page=${page})}" th:text="${page}"></a>
+            </span>
+        </span>
+        <!-- 다음 링크 활성화 비활성화 -->
+        <a class="page_next" th:classappend=" ${!comment.hasNext()} ? 'disabled' "  th:href="${comment.isLast()} ? '#' : @{/article/detail/{id}(id=${article.id},page=${comment.number + 2})}"> 다음 </a>
+    </div>
+    <div class="comment_write">
+            <h2>댓글쓰기</h2>
+            <div sec:authorize="isAuthenticated()">
+                <textarea type="text" id="content" ></textarea>
+                <button onclick="commentSubmit(this.getAttribute('data-article-id'))" th:attr="data-article-id=${article.id}" >등록</button>
+            </div>
+           <div sec:authorize="isAnonymous()" class="disabled">
+            <textarea type="text" >로그인을 해주세요</textarea>
+            <button >등록</button>
+           </div>
+
+    </div>
+
+    <script th:inline="javascript">
+
+                 const modal = document.querySelector('.modal');
+                 function articleDelete() {
+                        modal.style.display = 'block';
+                 }
+
+                 function articleDeleteYes(articleId) {
+                     var obj = {};
+                     obj.id = articleId
+                     $.ajax({
+                        　　type:'post'
+                        　　, contentType:'application/json'
+                        　　, data: JSON.stringify(obj)
+                        　　, url: '/article/delete'
+                        　　, success: function(data) {
+                                 modal.style.display = 'none';
+                                 location.href='/';
+                        　　}, error:function(e) {
+                                console.log(e);
+                        　　}
+                        });
+                 }
+
+                 function articleDeleteNo() {
+                         modal.style.display = 'none';
+                 }
+
+                 function commentSubmit(articleId) {
+                         var obj = {};
+                         obj.content = $("#content").val()
+                         obj.boardid = articleId
+                         $.ajax({
+                                　　type:'post'
+                                　　, contentType:'application/json'
+                                　　, data: JSON.stringify(obj)
+                                　　, url: '/comment/write'
+                                　　, success: function(data) {
+                                       window.location.href = '/article/detail/' + articleId;
+                                　　}, error:function(e) {
+                                    var jsonResponse = JSON.parse(e.responseText);
+                                    if (jsonResponse.hasOwnProperty('content')) {
+                                    alert(jsonResponse.content);
+                                    }
+                                　　}
+                         });
+                }
+
+                function deleteComment(commentId) {
+
+                   var obj = {};
+                   obj.id = commentId;
+
+                   $.ajax({
+                        　　type:'post'
+                        　　, contentType:'application/json'
+                        　　, data: JSON.stringify(obj)
+                        　　, url: '/comment/delete'
+                        　　, success: function(data) {
+                                 window.location.href = '/article/detail/' + [[${article.id}]];
+                        　　}, error:function(e) {
+                                console.log(e);
+                        　　}
+                        });
+                 };
+
+                function replyButton(commentId) {
+                         const replyform = document.getElementById('reply_form_' + commentId);
+                         if (replyform.style.display == "block") {
+                               replyform.style.display = 'none';
+                         }
+                         else{
+                           replyform.style.display = 'block';
+                         }
+                }
+
+                function replySubmit(commentId) {
+
+                     var obj = {};
+                     obj.content = $('#reply_content' + commentId).val()
+                     obj.commentid = commentId
+
+                     $.ajax({
+                            　　type:'post'
+                            　　, contentType:'application/json'
+                            　　, data: JSON.stringify(obj)
+                            　　, url: '/reply/write'
+                            　　, success: function(data) {
+                                    window.location.href = '/article/detail/' + [[${article.id}]];
+                            　　}, error:function(e) {
+                                 var jsonResponse = JSON.parse(e.responseText);
+                                if (jsonResponse.hasOwnProperty('content')) {
+                                alert(jsonResponse.content);
+                                }
+                            　　}
+                            });
+                }
+
+                function deleteReply(replyId) {
+                       var obj = {};
+                       obj.id = replyId;
+
+                       $.ajax({
+                            　　type:'post'
+                            　　, contentType:'application/json'
+                            　　, data: JSON.stringify(obj)
+                            　　, url: '/reply/delete'
+                            　　, success: function(data) {
+                                     window.location.href = '/article/detail/' + [[${article.id}]];
+                            　　}, error:function(e) {
+                                    console.log(e);
+                            　　}
+                            });
+                };
+    </script>
+</th:block>
+</html>

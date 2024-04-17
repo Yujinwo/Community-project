@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/default_layout">
+<th:block layout:fragment="content">
+    <div class="form_middle">
+    <h2>로그인 </h2></br>
+        <a href="/oauth2/authorization/google" class="btn btn-success active" role="button">Google Login</a>
+        <a href="/oauth2/authorization/naver" class="btn btn-secondary active" role="button">Naver Login</a>
+        <a href="/oauth2/authorization/kakao" class="btn btn-secondary active" role="button">Kakao Login</a>
+    <form class="form-signin" method="post" th:action="@{/login/proc}">
+        <input type="text" id="username" name="email" class="form-control" placeholder="아이디" autofocus="" />
+        <input type="password" id="password" name="userpw" class="form-control" placeholder="비밀번호" />
+        <p id="valid" class="alert alert-danger" th:if=${exception} th:text="${exception}"></p>
+         <div class = 'button_flex'>
+           <input id="joinBtn" type="submit" class="button_black" value="로그인" />
+         </div>
+    </form>
+    </div>
+</th:block>
+</html>
