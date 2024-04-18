@@ -10,8 +10,8 @@
         </div>
     </div>
     <div class="article_button" sec:authorize="isAuthenticated()">
-        <button th:if="${article.member.id == #authentication.principal.id}" class="button_blue" th:onclick="|location.href='@{/article/update/{id}(id=${article.id})}'|">수정하기</button>
-        <button th:if="${article.member.id == #authentication.principal.id}" onclick="articleDelete()" class="button_red" >삭제하기</button>
+        <button th:if="${article.member.id == @authenticationUtil.getCurrentMember()?.id}" class="button_blue" th:onclick="|location.href='@{/article/update/{id}(id=${article.id})}'|">수정하기</button>
+        <button th:if="${article.member.id == @authenticationUtil.getCurrentMember()?.id}" onclick="articleDelete()" class="button_red" >삭제하기</button>
     </div>
     <div class="article">
             <h2 class="bold" th:text="${article.title}" >
@@ -44,7 +44,7 @@
             <span th:text="${@timeUtil.calculateTimeAgo(comment.createdDate)}"></span>
             <span> · </span>
             <span sec:authorize="isAuthenticated()" class="comment_delete">
-                <button onclick="deleteComment(this.getAttribute('data-comment-id'))" th:attr="data-comment-id=${comment.id}" th:if="${comment.member.id == #authentication.principal.id}">삭제</button>
+                <button onclick="deleteComment(this.getAttribute('data-comment-id'))" th:attr="data-comment-id=${comment.id}" th:if="${comment.member.id == @authenticationUtil.getCurrentMember()?.id}">삭제</button>
             </span><br><br>
 
             <div th:text="${comment.content}"></div>
@@ -66,7 +66,7 @@
                     <span th:text="${@timeUtil.calculateTimeAgo(child.createdDate)}"></span>
                     <span> · </span>
                     <span sec:authorize="isAuthenticated()" class="comment_delete">
-                        <button onclick="deleteReply(this.getAttribute('data-child-id'))" th:attr="data-child-id=${child.id}" th:if="${comment.member.id == #authentication.principal.id}">삭제</button>
+                        <button onclick="deleteReply(this.getAttribute('data-child-id'))" th:attr="data-child-id=${child.id}" th:if="${comment.member.id == @authenticationUtil.getCurrentMember()?.id}">삭제</button>
                     </span><br><br>
                 <div style="display:flex">
                     <span style="color:#6c757d; margin:0 10px;" th:text="${child.comment.member.usernick}"> </span>

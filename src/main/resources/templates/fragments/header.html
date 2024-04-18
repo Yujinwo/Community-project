@@ -26,10 +26,24 @@
         </div>
         <div class="header_auth">
             <a sec:authorize="isAnonymous" href="/login">로그인</a>
+
             <div sec:authorize="isAuthenticated()">
-            <span class="bold" th:text="${#authentication.principal.name}"/> 님 안녕하세요
-            </span>
+                <div th:if="${#authentication != null and #authentication.principal instanceof T(org.springframework.security.oauth2.core.user.OAuth2User)}">
+                    <span class="bold" th:if="${#authentication.principal.attributes['name'] != null}"
+                          th:text="${#authentication.principal.attributes['name']}"></span>
+                    <span class="bold" th:if="${#authentication.principal.attributes['properties']?.nickname != null}"
+                          th:text="${#authentication.principal.attributes['properties']?.nickname}">
+                    </span>
+                    <span>님 안녕하세요</span>
+                </div>
+                <div th:if="${#authentication != null and #authentication.principal instanceof T(org.springframework.security.core.userdetails.UserDetails)}">
+                    <!-- Spring Security로 직접 로그인한 경우 -->
+                    <span class="bold" th:if="${#authentication.principal.usernick != null}"
+                          th:text="${#authentication.principal.usernick}"></span>
+                    <span>님 안녕하세요</span>
+                </div>
             </div>
+
             <a sec:authorize="isAnonymous" href="/join">회원가입</a>
             <a sec:authorize="isAuthenticated()" href="/logout">로그아웃</a>
         </div>

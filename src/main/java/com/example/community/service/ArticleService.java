@@ -7,6 +7,7 @@ import com.example.community.repository.ArticleRepository;
 import com.example.community.repository.BoardImageRepository;
 import com.example.community.repository.CommentRepository;
 import com.example.community.repository.ReplyRepositoty;
+import com.example.community.util.AuthenticationUtil;
 import com.example.community.util.CookieUtill;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -49,8 +50,8 @@ public class ArticleService {
     @Transactional
     public void write(ArticleRequestDto articleRequestDto, List<MultipartFile> files) {
 
-        CustomUserDetails auth = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Member member = auth.getUserEntity();
+
+        Member member = AuthenticationUtil.getCurrentMember();
         articleRequestDto.setMember(member);
         Article savedArticle = articleRepository.save(articleRequestDto.toEntity());
         if (savedArticle == null) {
@@ -91,8 +92,7 @@ public class ArticleService {
 
     @Transactional
     public void update(ArticleRequestDto articleRequestDto, List<MultipartFile> files) {
-        CustomUserDetails auth = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Member member = auth.getUserEntity();
+        Member member = AuthenticationUtil.getCurrentMember();
 
         Article article = this.findById(articleRequestDto.getId());
         BoardImage boardImage = boardImageRepository.findByboardId(articleRequestDto.getId()).orElse(null);
@@ -178,8 +178,7 @@ public class ArticleService {
 
     @Transactional
     public void delete(ArticleRequestDto articleRequestDto) {
-        CustomUserDetails auth = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Member member = auth.getUserEntity();
+        Member member = AuthenticationUtil.getCurrentMember();
         Article article = this.findById(articleRequestDto.getId());
         if(member.getId() != article.getMember().getId() || article == null)
         {
@@ -191,8 +190,7 @@ public class ArticleService {
 
     @Transactional
     public void commentwrite(CommentRequestDto commentRequestDto) {
-        CustomUserDetails  auth = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Member member = auth.getUserEntity();
+        Member member = AuthenticationUtil.getCurrentMember();
         Article article = this.findById(commentRequestDto.getBoardid());
         commentRequestDto.setArticle(article);
         commentRequestDto.setMember(member);
@@ -240,8 +238,7 @@ public class ArticleService {
     }
     @Transactional
     public void commentdelete(CommentRequestDto commentRequestDto) {
-        CustomUserDetails auth = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Member member = auth.getUserEntity();
+        Member member = AuthenticationUtil.getCurrentMember();
         Comment comment = commentRepository.findById(commentRequestDto.getId()).orElse(null);
         if(member.getId() != comment.getMember().getId() || comment == null)
         {
@@ -258,8 +255,7 @@ public class ArticleService {
     }
     @Transactional
     public void replywrite(ReplyRequestDto replyRequestDto) {
-        CustomUserDetails auth = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Member member = auth.getUserEntity();
+        Member member = AuthenticationUtil.getCurrentMember();
         Comment comment = commentRepository.findById(replyRequestDto.getCommentid()).orElse(null);
         if(member.getId() != comment.getMember().getId() || comment == null)
         {
@@ -272,8 +268,7 @@ public class ArticleService {
 
     @Transactional
     public void  replydelete(ReplyRequestDto replyRequestDto) {
-        CustomUserDetails auth = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Member member = auth.getUserEntity();
+        Member member = AuthenticationUtil.getCurrentMember();
         Reply reply = replyRepositoty.findById(replyRequestDto.getId()).orElse(null);
         if(member.getId() != reply.getMember().getId() || reply == null)
         {
