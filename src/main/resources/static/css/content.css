@@ -22,41 +22,56 @@ margin-bottom:5px;
 width:800px;
 }
 
+.size_full {
+width:100%
+}
+
+
+
 .button_blue {
 border-radius:10px;
 color:#FFFFFF;
 height:40px;
-margin:15px 2px 5px 0;
+margin:15px 5px 5px 5px;
 border:3px solid #0054FF;
-width:90px;
 background-color: #0054FF;
 }
 .button_red  {
 border-radius:10px;
-margin:15px 5px 5px 0;
+margin:15px 5px 5px 5px;
 color:#FFFFFF;
 height:40px;
 border:3px solid #FF0000;
-width:90px;
 background-color: #FF0000;
 }
 .button_black  {
 border-radius:10px;
 color:#FFFFFF;
-margin:15px 5px 5px 0;
+margin:15px 5px 5px 5px;
 height:40px;
-width:90px;
 border:3px solid #000000;
 background-color: #000000;
 }
 
+
+.idcheck_btn {
+position:relative;
+border-radius:10px;
+color:#FFFFFF;
+margin:15px 5px 5px 5px;
+height:40px;
+border:3px solid #000000;
+background-color: #000000;
+top:5px;
+width:100px
+}
+
 .button_flex {
 display:flex;
-justify-content:right;
 }
 
 .form_middle {
-margin: 0 auto;
+margin: 100px auto;
 width:500px;
 }
 
@@ -181,8 +196,13 @@ display: flex;
     margin:10px 0;
 }
 
-.idcheck_btn {
-margin: 20px 0 20px 20px;
-    width: 150px;
+
+.social_login {
+    display: flex;
+    justify-content: center;
+}
+
+.social_login a {
+margin: 0 15px;
 }
 
