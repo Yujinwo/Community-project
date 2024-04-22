@@ -8,10 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
@@ -31,7 +28,7 @@ public class ArticleRestController {
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
 
     }
-    @PostMapping("/article/delete")
+    @DeleteMapping("/article/delete")
     public ResponseEntity<Map<String,String>> delete(@Valid @RequestBody ArticleRequestDto articleRequestDto)
     {
         articleService.delete(articleRequestDto);
@@ -40,7 +37,7 @@ public class ArticleRestController {
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
 
-    @PostMapping("/article/update")
+    @PatchMapping("/article/update")
     public ResponseEntity<Map<String,String>> update(@Valid @RequestPart(value = "key") ArticleRequestDto articleRequestDto, @RequestPart(required = false,value = "value") List<MultipartFile> files)
     {
         articleService.update(articleRequestDto,files);
@@ -57,7 +54,7 @@ public class ArticleRestController {
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
 
-    @PostMapping("/comment/delete")
+    @DeleteMapping("/comment/delete")
     public ResponseEntity<Map<String,String>> commentdelete(@Valid @RequestBody CommentRequestDto commentRequestDto) {
         articleService.commentdelete(commentRequestDto);
         Map<String,String> responseJson = new HashMap<>();
@@ -73,7 +70,7 @@ public class ArticleRestController {
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
 
-    @PostMapping("/reply/delete")
+    @DeleteMapping("/reply/delete")
     public ResponseEntity<Map<String,String>> replydelete(@Valid @RequestBody ReplyRequestDto ReplyRequestDto) {
         articleService.replydelete(ReplyRequestDto);
         Map<String,String> responseJson = new HashMap<>();

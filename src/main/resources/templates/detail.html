@@ -130,7 +130,7 @@
                      var obj = {};
                      obj.id = articleId
                      $.ajax({
-                        　　type:'post'
+                        　　type:'delete'
                         　　, contentType:'application/json'
                         　　, data: JSON.stringify(obj)
                         　　, url: '/article/delete'
@@ -173,7 +173,7 @@
                    obj.id = commentId;
 
                    $.ajax({
-                        　　type:'post'
+                        　　type:'delete'
                         　　, contentType:'application/json'
                         　　, data: JSON.stringify(obj)
                         　　, url: '/comment/delete'
@@ -222,7 +222,7 @@
                        obj.id = replyId;
 
                        $.ajax({
-                            　　type:'post'
+                            　　type:'delete'
                             　　, contentType:'application/json'
                             　　, data: JSON.stringify(obj)
                             　　, url: '/reply/delete'
