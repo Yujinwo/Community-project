@@ -9,9 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Getter
 @Setter
@@ -20,7 +17,7 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
+    @Column(name = "userid")
     private Long id;
 
     @Column
@@ -37,7 +34,7 @@ public class Member {
     private Role role;
 
     @Builder
-    public Member(Long id,String email,String userpw,String usernick,Role role){
+    public Member(Long id, String email, String userpw, String usernick, Role role){
         this.id = id;
         this.email =email;
         this.usernick = usernick;

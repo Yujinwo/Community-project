@@ -1,6 +1,5 @@
 package com.example.community.entity;
 
-import com.example.community.dto.CommentRequestDto;
 import com.example.community.dto.CommentResponseDto;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -37,7 +36,7 @@ public class Comment extends BaseTime{
     private boolean deleted;
 
     @Builder
-    public Comment(Long id, String content, Member member,Article article,List<Reply> child,boolean deleted){
+    public Comment(Long id, String content, Member member, Article article, List<Reply> child, boolean deleted){
         this.id= id;
         this.content = content;
         this.member = member;

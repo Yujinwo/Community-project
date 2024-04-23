@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Data
-public class BoardImageUploadDTO {
+public class BoardImageUploadDto {
 
     private List<MultipartFile> files;
 }

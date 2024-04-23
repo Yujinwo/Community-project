@@ -1,16 +1,10 @@
 package com.example.community.entity;
 
-import com.example.community.repository.ReplyRepositoty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Negative;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -33,7 +27,7 @@ public class Reply extends BaseTime{
     private Comment comment;
 
     @Builder
-    public Reply(Long id,String content,Member member,Comment comment){
+    public Reply(Long id, String content, Member member, Comment comment){
         this.id = id;
         this.content = content;
         this.member = member;

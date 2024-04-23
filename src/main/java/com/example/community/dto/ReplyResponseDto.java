@@ -3,7 +3,6 @@ package com.example.community.dto;
 
 import com.example.community.entity.Comment;
 import com.example.community.entity.Member;
-import com.example.community.entity.Reply;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +20,6 @@ public class ReplyResponseDto {
 
     @Size(min = 1,max = 280,message = "댓글은 1~280자 이내로 작성해주세요")
     private String content;
-
     private Comment comment;
     private Member member;
     private LocalDateTime createdDate;

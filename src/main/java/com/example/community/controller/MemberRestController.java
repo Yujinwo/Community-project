@@ -16,9 +16,10 @@ public class MemberRestController {
 
     @Autowired
     MemberService memberService;
-
+    // 회원가입 기능
     @PostMapping("/join")
     public ResponseEntity<Map<String,String>> userJoin(@Valid @RequestBody MemberDto requestDto) {
+        // json 메세지 생성
         Map<String, String> resultdata = new HashMap<>();
         if(memberService.idcheck(requestDto.getEmail()) != null)
         {

@@ -10,7 +10,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum Role {
     USER, ADMIN;
-
     public static List<Role> getAllRoles() {
         return Arrays.asList(values());
     }

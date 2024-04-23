@@ -23,7 +23,7 @@ public class MemberDto {
     private String usernick;
 
     @Builder
-    public MemberDto(Long id,Role role,String email, String userpw, String usernick){
+    public MemberDto(Long id, Role role, String email, String userpw, String usernick){
         this.id =id;
         this.role =role;
         this.email = email;

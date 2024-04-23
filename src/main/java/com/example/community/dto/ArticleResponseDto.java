@@ -1,6 +1,5 @@
 package com.example.community.dto;
 
-import com.example.community.entity.Article;
 import com.example.community.entity.BoardImage;
 import com.example.community.entity.Comment;
 import com.example.community.entity.Member;
@@ -41,13 +40,13 @@ public class ArticleResponseDto {
     private List<Comment> comments;
 
     @Builder   // 생성자를 만든 후 그 위에 @Builder 애노테이션 적용
-    public ArticleResponseDto(Long id, String title, String content, LocalDateTime createdDate, LocalDateTime modifiedDate, Member member, int viewcount, List<BoardImage> boardImages,List<Comment> comments ) {
+    public ArticleResponseDto(Long id, String title, String content, LocalDateTime createdDate, LocalDateTime modifiedDate, Member member, int viewcount, List<BoardImage> boardImages, List<Comment> comments ) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        this.member =member;
+        this.member = member;
         this.viewcount = viewcount;
         if (boardImages != null) {
             this.imageUrls = boardImages.stream()
