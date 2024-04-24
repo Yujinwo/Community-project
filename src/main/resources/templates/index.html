@@ -1,42 +1,47 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/default_layout">
 <th:block layout:fragment="content">
-
+    <!-- 글 작성 버튼 -->
     <div class="article_button">
-       <button class="button_blue " onclick="location.href='/article/write'" >작성하기</button>
+        <button class="button_blue " onclick="location.href='/article/write'" >작성하기</button>
     </div>
-
+    <!-- 작성된 글 리스트가 없을 시 문구 표시 -->
     <div th:if="${endPage == 0}" class="article">
         <h2>첫 글의 주인공이 되어 보세요!</h2></br>
         <h5>글을 작성해보세요!</h5>
     </div>
-
+    <!-- 글 정보 -->
     <div th:if="${endPage != 0}" th:each="article : ${article}" class="article">
-            <a th:href="@{/article/detail/{id}(id=${article.id})}">
-                <h2 class="overflow-text bold" th:text="${article.title}" >
-                </h2></br>
-            </a>
+            <!-- 글 제목 링크 -->
+        <a th:href="@{/article/detail/{id}(id=${article.id})}">
+            <h2 class="overflow-text bold" th:text="${article.title}"></h2></br>
+        </a>
+        <!-- 글 내용 -->
         <h5 class="overflow-text" th:text="${article.content}"></h5>
+        <!-- 글 작성자 -->
         <span class="article_addtext" th:text="${article.member.usernick}"></span>
         <span> · </span>
+        <!-- 글 작성시간 -->
         <span class="article_addtext" th:text="${@timeUtil.calculateTimeAgo(article.createdDate)}"></span>
         <span> · </span>
+        <!-- 글 조회수 -->
         <span class="article_addtext" th:text="${article.viewcount}"></span></br>
     </div>
-
+    <!-- 글 페이지 리스트 -->
     <div th:if="${endPage != 0}" class="paging_list">
+        <!-- 이전 링크 있을시 활성화 없을시 비 활성화 -->
         <a class="page_previous" th:classappend=" ${!article.hasPrevious()} ? 'disabled' " th:href="${!article.isFirst()} ? @{/article/paging(page=${article.getPageable().getPageNumber()})}"> 이전 </a>
 
-    <span th:each="page: ${#numbers.sequence(startPage, endPage)}">
-		<!-- 현재페이지는 링크 없이 숫자만 -->
+        <span th:each="page: ${#numbers.sequence(startPage, endPage)}">
+            <!-- 현재페이지는 링크 없이 숫자만 -->
             <span th:if="${page == article.getPageable().getPageNumber() + 1}" th:text="${page}"></span>
-        <!-- 현재페이지 링크 X, 다른 페이지번호에는 링크를 보여준다 -->
+            <!-- 현재페이지 링크 X, 다른 페이지번호에는 링크를 보여준다 -->
             <span th:unless="${page == article.getPageable().getPageNumber() + 1}">
-        <a th:href="@{/(page=${page})}" th:text="${page}"></a>
+                <a th:href="@{/(page=${page})}" th:text="${page}"></a>
             </span>
         </span>
-    <!-- 다음 링크 활성화 비활성화 -->
-    <a class="page_next" th:classappend=" ${!article.hasNext()} ? 'disabled' "  th:href="${article.isLast()} ? '#' : @{/article/paging(page=${article.number + 2})}"> 다음 </a>
+        <!-- 다음 링크 있을시 활성화 없을시 비 활성화 -->
+        <a class="page_next" th:classappend=" ${!article.hasNext()} ? 'disabled' "  th:href="${article.isLast()} ? '#' : @{/article/paging(page=${article.number + 2})}"> 다음 </a>
     </div>
 </th:block>
 </html>

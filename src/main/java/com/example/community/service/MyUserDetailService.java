@@ -19,7 +19,9 @@ public class MyUserDetailService implements UserDetailsService {
     private final MemberRepository memberRepository;
     @Transactional
     public UserDetails loadUserByUsername(String email){
+          // 이메일을 이용해서 회원을 조회한다.
           Member member = memberRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 id 입니다."));
+          // 조회한 회원을 Userdetails에 저장한다.
           CustomUserDetails customUserDetails = new CustomUserDetails(member);
           return customUserDetails;
     }

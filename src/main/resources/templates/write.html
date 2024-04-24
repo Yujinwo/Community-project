@@ -1,23 +1,29 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/default_layout">
 <th:block layout:fragment="content">
-
+    <!-- 작성 form -->
     <div class="form_middle">
+            <!-- 제목 입력창 -->
             <input type="text" id="title" placeholder="제목" class="form-control">
             <span style="color:#0054FF" id="titleError"></span>
+            <!-- 내용 입력창 -->
             <textarea type="text" id="content" cols="30" rows="5" placeholder="내용" class="form-control"></textarea>
             <span style="color:#0054FF" id="contentError"></span>
+            <!-- 이미지 첨부 -->
             </br><div class="form-floating mb-3">
+                <!-- 이미지 첨부 창 -->
                 <input type="file" name="files" class="form-control" id="files" multiple>
                 <label for="files">이미지 업로드</label>
             </div>
+        <!-- 수정하기 버튼 -->
         <div class="button_flex">
+            <!-- 수정하기 버튼 -->
             <button onclick="submit()" class="button_blue size_full">작성하기</button>
         </div>
     </div>
   <script>
       function submit() {
-         var obj = {};
+        var obj = {};
 
      	obj.title = $("#title").val();
      	obj.content = $("#content").val();
@@ -25,9 +31,9 @@
      	var formData = new FormData();
         var fileInput = $('#files')[0]; // 파일 입력 필드 가져오기
         var files = fileInput.files; // 선택된 파일들 가져오기
-
+        // FormData에 파일 추가
         for (var i = 0; i < files.length; i++) {
-            formData.append('value', files[i]); // FormData에 파일 추가
+            formData.append('value', files[i]);
         }
         formData.append('key', new Blob([JSON.stringify(obj)], { type: "application/json" }));
 
@@ -38,22 +44,24 @@
             　 　, data: formData
             　 　, url: '/article/write'
             　 　, success: function(data) {
-                  location.href='/';
-            　　}, error:function(e) {
-                // 제목 에러 메시지 설정
-                var jsonResponse = JSON.parse(e.responseText);
-                if (jsonResponse.hasOwnProperty('title')) {
-                    document.getElementById("titleError").innerText = jsonResponse.title;
-                } else {
-                    document.getElementById("titleError").innerText = "";
-                }
+                    location.href='/';
+            　 　}
+                , error:function(e) {
 
-                // 내용 에러 메시지 설정
-                if (jsonResponse.hasOwnProperty('content')) {
-                    document.getElementById("contentError").innerText = jsonResponse.content;
-                } else {
-                    document.getElementById("contentError").innerText = "";
-                }
+                    // 제목 에러 메시지 설정
+                    var jsonResponse = JSON.parse(e.responseText);
+                    if (jsonResponse.hasOwnProperty('title')) {
+                        document.getElementById("titleError").innerText = jsonResponse.title;
+                    } else {
+                        document.getElementById("titleError").innerText = "";
+                    }
+
+                    // 내용 에러 메시지 설정
+                    if (jsonResponse.hasOwnProperty('content')) {
+                        document.getElementById("contentError").innerText = jsonResponse.content;
+                    } else {
+                        document.getElementById("contentError").innerText = "";
+                    }
             　　　　
             　　}
         });

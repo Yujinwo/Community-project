@@ -6,39 +6,34 @@ import com.example.community.entity.Comment;
 import com.example.community.entity.Member;
 import com.example.community.entity.Reply;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
+@AllArgsConstructor
+@Builder
 public class CommentRequestDto {
 
     private Long id;
-
+    // 댓글 내용 사이즈 1~280자
     @Size(min = 1,max = 280,message = "댓글은 1~280자 이내로 작성해주세요")
     private String content;
+    // 멤버 Entity
     private Member member;
+    // 글 Entity
     private Article article;
+    // 글 id
     private Long boardid;
+    // 대댓글
     private List<Reply> child;
-    private Boolean deleted = false;
+    // 대댓글이 있는 상태에서 부모 댓글 삭제 여부
 
-    @Builder
-    public CommentRequestDto(Long id, String content, Member member, Article article, List<Reply> child, boolean deleted){
-        this.id = id;
-        this.content = content;
-        this.member = member;
-        this.article = article;
-        this.child = child;
-        this.deleted = deleted;
-    }
+    private Boolean deleted;
+
+    // dto -> Entity 생성
     public Comment toEntity() {
-        return Comment.builder().content(content).member(member).article(article).child(child).deleted(deleted).build();
+        return Comment.builder().content(content).member(member).article(article).child(child).deleted(false).build();
     }
 
 }

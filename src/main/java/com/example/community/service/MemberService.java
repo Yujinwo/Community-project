@@ -21,20 +21,25 @@ public class MemberService {
     @Autowired
     AuthenticationManagerBuilder authenticationManagerBuilder;
 
+    // 회원 생성
     @Transactional
     public Member addUser(MemberDto requestDto) {
-
+        // MemberDto를 받아와서 패스워드를 암호화하고 회원을 생성한다
         Member member = memberRepository.save(requestDto.toEntity(passwordEncoder));
+        // Member Entity가 null 일시 예외 상황 발생
         if (member == null) {
             throw  new RuntimeException("회원가입에 실패했습니다.");
         }
         return member;
     }
+    // ID 중복 체크
     @Transactional
     public Member idcheck(String email) {
-
+        // 이메일을 이용해서 회원을 조회한다
         Optional<Member> member = memberRepository.findByEmail(email);
+        // 회원이 존재할 경우
         if(member.isPresent()){
+            // Member Entity를 return 한다
             return member.get();
         }
         else{
@@ -42,10 +47,13 @@ public class MemberService {
         }
 
     }
-
+    // 회원 조회
     public Member findByEmail(String email) {
+        // 이메일을 이용해서 회원을 조회한다
         Optional<Member> member = memberRepository.findByEmail(email);
+        // 회원이 존재할 경우
         if(member.isPresent()){
+            // Member Entity를 return 한다
             return member.get();
         }
         else{

@@ -13,41 +13,42 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     </head>
     <body>
-    <div class="header">
-        <div class="header_menu">
-            <ul >
-                <li>
-                    <a href="/"> 자유게시판</a>
-                </li>
-                <li>
-                    <a href="/"> 익명게시판</a>
-                </li>
-            </ul>
-        </div>
-        <div class="header_auth">
-            <a sec:authorize="isAnonymous" href="/login">로그인</a>
-
-            <div sec:authorize="isAuthenticated()">
-                <div th:if="${#authentication != null and #authentication.principal instanceof T(org.springframework.security.oauth2.core.user.OAuth2User)}">
-                    <span class="bold" th:if="${#authentication.principal.attributes['name'] != null}"
-                          th:text="${#authentication.principal.attributes['name']}"></span>
-                    <span class="bold" th:if="${#authentication.principal.attributes['properties']?.nickname != null}"
-                          th:text="${#authentication.principal.attributes['properties']?.nickname}">
-                    </span>
-                    <span>님 안녕하세요</span>
-                </div>
-                <div th:if="${#authentication != null and #authentication.principal instanceof T(org.springframework.security.core.userdetails.UserDetails)}">
-                    <!-- Spring Security로 직접 로그인한 경우 -->
-                    <span class="bold" th:if="${#authentication.principal.usernick != null}"
-                          th:text="${#authentication.principal.usernick}"></span>
-                    <span>님 안녕하세요</span>
-                </div>
+    <!-- 자유/익명 게시판 -->
+        <div class="header">
+            <div class="header_menu">
+                <ul >
+                    <li>
+                        <a href="/"> 자유게시판</a>
+                    </li>
+                    <li>
+                        <a href="/"> 익명게시판</a>
+                    </li>
+                </ul>
             </div>
-
-            <a sec:authorize="isAnonymous" href="/join">회원가입</a>
-            <a sec:authorize="isAuthenticated()" href="/logout">로그아웃</a>
+        <!-- 로그인/로그아웃 -->
+            <div class="header_auth">
+                <a sec:authorize="isAnonymous" href="/login">로그인</a>
+                <div sec:authorize="isAuthenticated()">
+                    <!-- Oauth2.0으로 로그인한 경우 -->
+                    <div th:if="${#authentication != null and #authentication.principal instanceof T(org.springframework.security.oauth2.core.user.OAuth2User)}">
+                        <span class="bold" th:if="${#authentication.principal.attributes['name'] != null}"
+                              th:text="${#authentication.principal.attributes['name']}"></span>
+                        <span class="bold" th:if="${#authentication.principal.attributes['properties']?.nickname != null}"
+                              th:text="${#authentication.principal.attributes['properties']?.nickname}">
+                        </span>
+                        <span>님 안녕하세요</span>
+                    </div>
+                    <!-- Spring Security 으로 직접 로그인한 경우 -->
+                    <div th:if="${#authentication != null and #authentication.principal instanceof T(org.springframework.security.core.userdetails.UserDetails)}">
+                        <span class="bold" th:if="${#authentication.principal.usernick != null}"
+                              th:text="${#authentication.principal.usernick}"></span>
+                        <span>님 안녕하세요</span>
+                    </div>
+                </div>
+                <a sec:authorize="isAnonymous" href="/join">회원가입</a>
+                <a sec:authorize="isAuthenticated()" href="/logout">로그아웃</a>
+            </div>
         </div>
-    </div>
     </body>
 </th:block>
 </html>

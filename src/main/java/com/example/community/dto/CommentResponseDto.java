@@ -4,42 +4,39 @@ package com.example.community.dto;
 import com.example.community.entity.Article;
 import com.example.community.entity.Member;
 import com.example.community.entity.Reply;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
+@AllArgsConstructor
+@Builder
 public class CommentResponseDto {
-
+    @NotNull
     private Long id;
-
+    // 댓글 내용 사이즈 1~280자
+    @NotNull
     @Size(min = 1,max = 280,message = "댓글은 1~280자 이내로 작성해주세요")
     private String content;
+    // 멤버 Entity
+    @NotNull
     private Member member;
+    // 글 Entity
+    @NotNull
     private Article article;
+    // 작성 시간
+    @NotNull
     private LocalDateTime createdDate;
+    // 수정 시간
+    @NotNull
     private LocalDateTime modifiedDate;
+    // 대댓글
     private List<Reply> child;
+    // 대댓글이 있는 상태에서 부모 댓글 삭제 여부
+    @NotNull
     private Boolean deleted;
-
-    @Builder
-    public CommentResponseDto(Long id, String content, Member member, Article article, LocalDateTime createdDate, LocalDateTime modifiedDate, List<Reply> child, boolean deleted){
-        this.id = id;
-        this.content = content;
-        this.member = member;
-        this.article = article;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-        this.child = child;
-        this.deleted = deleted;
-    }
-
 
 }

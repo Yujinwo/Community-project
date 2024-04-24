@@ -13,11 +13,11 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class BaseTime {
-
+    // 작성 시간 생성
     @CreatedDate
     @Column(nullable = false,updatable = false)
     protected LocalDateTime createdDate;
-
+    // 수정 시간 갱신
     @LastModifiedDate
     @Column(nullable = false)
     protected LocalDateTime modifiedDate;

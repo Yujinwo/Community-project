@@ -12,34 +12,38 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
-@ToString
 public class ArticleResponseDto {
-
 
     @NotNull
     private Long id;
-
+    // 제목 사이즈 1~60자
+    @NotNull
     @Size(min=1,max=60,message = "제목은 1~60자 이내로 작성해주세요")
     private String title;
-
+    // 제목 사이즈 1~1000자
+    @NotNull
     @Size(min=1,max=1000,message = "내용은 1~1000자 이내로 작성해주세요")
     private String content;
-
+    // 멤버 Entity
     @NotNull
     private Member member;
+    // 작성 시간
     @NotNull
     private LocalDateTime createdDate;
+    // 수정 시간
     @NotNull
     private LocalDateTime modifiedDate;
+    // 조회수
     @NotNull
     private int viewcount;
+    // 이미지
     private List<String> imageUrls;
+    // 댓글
     private List<Comment> comments;
 
-    @Builder   // 생성자를 만든 후 그 위에 @Builder 애노테이션 적용
+    @Builder
     public ArticleResponseDto(Long id, String title, String content, LocalDateTime createdDate, LocalDateTime modifiedDate, Member member, int viewcount, List<BoardImage> boardImages, List<Comment> comments ) {
         this.id = id;
         this.title = title;
@@ -48,6 +52,7 @@ public class ArticleResponseDto {
         this.modifiedDate = modifiedDate;
         this.member = member;
         this.viewcount = viewcount;
+        // 이미지 파일이 Null 아닐 시 url 리스트 생성
         if (boardImages != null) {
             this.imageUrls = boardImages.stream()
                     .map(BoardImage::getUrl)
