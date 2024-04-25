@@ -55,7 +55,13 @@
              　 　, data: formData
             　  　, url: '/article/update'
             　  　, success: function(data) {
-                    location.href='/article/detail/' + obj.id;
+                    if(data.message == "제목과 내용을 수정해주세요")
+                    {
+                        alert(data.message);
+                    }
+                    else {
+                        location.href='/article/detail/' + obj.id;
+                    }
             　 　}
                  , error:function(e) {
 

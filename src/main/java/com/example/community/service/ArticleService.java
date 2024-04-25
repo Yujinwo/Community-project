@@ -98,11 +98,15 @@ public class ArticleService {
     }
     // 글 수정
     @Transactional
-    public void update(ArticleRequestDto articleRequestDto, List<MultipartFile> files) {
+    public Article update(ArticleRequestDto articleRequestDto, List<MultipartFile> files) {
         // 인증된 Member Entity 가져오기
         Member member = AuthenticationUtil.getCurrentMember();
         // 글 Article Entity 불러오기
         Article article = this.findById(articleRequestDto.getId());
+        // 기존 저장된 내용과 수정 요청한 내용이 같을 시 return 한다
+        if (article.getTitle().equals(articleRequestDto.getTitle()) && article.getContent().equals(articleRequestDto.getContent())){
+            return null;
+        }
         // 글에 저장된 이미지 불러오기
         BoardImage boardImage = boardImageRepository.findByboardId(articleRequestDto.getId()).orElse(null);
         // 인증된 유저와 글 작성한 유저 비교 || 요청한 글이 데이터베이스에 없을시
@@ -196,6 +200,7 @@ public class ArticleService {
                 }
             }
         }
+        return article;
     }
     // 글 삭제
     @Transactional

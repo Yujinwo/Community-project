@@ -3,6 +3,7 @@ package com.example.community.controller;
 import com.example.community.dto.ArticleRequestDto;
 import com.example.community.dto.CommentRequestDto;
 import com.example.community.dto.ReplyRequestDto;
+import com.example.community.entity.Article;
 import com.example.community.service.ArticleService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,11 +50,18 @@ public class ArticleRestController {
     @PatchMapping("/article/update")
     public ResponseEntity<Map<String,String>> update(@Valid @RequestPart(value = "key") ArticleRequestDto articleRequestDto, @RequestPart(required = false,value = "value") List<MultipartFile> files)
     {
-        // 글 수정 서비스 메서드에 요청 Dto, 요청 파일 전달
-        articleService.update(articleRequestDto,files);
-        // json 메세지 생성
-        Map<String,String> responseJson = new HashMap<>();
-        responseJson.put("message" , "글 수정 완료했습니다");
+       // 글 수정 서비스 메서드에 요청 Dto, 요청 파일 전달
+       Article article = articleService.update(articleRequestDto,files);
+       // json 메세지 생성
+       Map<String,String> responseJson = new HashMap<>();
+
+       // article Entity가 null 일시
+       if (article == null) {
+           responseJson.put("message" , "제목과 내용을 수정해주세요");
+       }
+       else{
+           responseJson.put("message" , "글 수정 완료했습니다");
+       }
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
     // 댓글 작성 기능
