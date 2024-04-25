@@ -44,7 +44,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService{
         );
     }
     private Member saveOrUpdate(OAuthAttributes attributes) {
-        // 인증된 정보로 회원을 생성한다.
-        return memberRepository.save(attributes.toEntity());
+        // 기존 아이디가 존재하는지 확인한다
+        Member member = memberRepository.findByEmail(attributes.getEmail()).orElse(null);
+        // 존재하지 않는 아이디면
+        if(member == null)
+        {
+            // 인증된 정보로 회원을 생성한다.
+            return memberRepository.save(attributes.toEntity());
+        }
+        return member;
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -79,12 +80,6 @@ public class SecurityConfig {
                                 .failureHandler(userLoginFailHandler)
                                 .defaultSuccessUrl("/")
                 )
-                // 로그아웃 설정
-                .logout((logout) ->
-                        logout
-                                .logoutUrl("/logout")
-                                .logoutSuccessUrl("/login")
-                )
                 // UserDetails 서비스 설정
                 .userDetailsService(myUserDetailsService)
                 // oauth2.0 로그인 설정
@@ -94,7 +89,9 @@ public class SecurityConfig {
                                 userInfoEndpoint.userService(customOAuth2UserService)
                         )
                                 .loginPage("/login")
+
                 );
+
 
         return http.build();
 

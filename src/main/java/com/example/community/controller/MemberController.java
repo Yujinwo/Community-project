@@ -1,8 +1,17 @@
 package com.example.community.controller;
 
+import com.example.community.config.CustomUserDetails;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -15,6 +24,18 @@ public class MemberController {
     model.addAttribute("error",error);
     model.addAttribute("exception",exception);
     return "/login";
+    }
+
+
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
+        // 저장된 인증 객체를 가져온다.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // 인증된 정보가 있을 시
+        if(authentication != null){
+                new SecurityContextLogoutHandler().logout(request,response,authentication);
+        }
+        return "redirect:/login";
     }
 
     // 회원가입 페이지
