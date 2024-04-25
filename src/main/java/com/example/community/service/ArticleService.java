@@ -225,8 +225,11 @@ public class ArticleService {
         Member member = AuthenticationUtil.getCurrentMember();
         // 글 Article Entity 불러오기
         Article article = this.findById(commentRequestDto.getBoardid());
-        // 댓글 dto에 Article Entity 저장한다
-        commentRequestDto.setArticle(article);
+        // 글 댓글 개수를 증가시킨다
+        article.setCommentcount(article.getCommentcount() + 1);
+        Article commentcount = articleRepository.save(article);
+        // 댓글 dto에 댓글 개수 증가된 Article Entity를 저장한다
+        commentRequestDto.setArticle(commentcount);
         // 댓글 dto에 Member Entity 저장한다
         commentRequestDto.setMember(member);
         // 댓글을 저장한다
@@ -292,6 +295,8 @@ public class ArticleService {
         Member member = AuthenticationUtil.getCurrentMember();
         // 댓글 Comment Entity 불러오기
         Comment comment = commentRepository.findById(commentRequestDto.getId()).orElse(null);
+
+
         // 인증된 유저와 댓글 작성한 유저 비교 || 요청한 댓글이 데이터베이스에 없을시
         if(member.getId() != comment.getMember().getId() || comment == null)
         {
@@ -321,6 +326,10 @@ public class ArticleService {
         {
             throw new RuntimeException("회원 정보 불일치 및 댓글 조회에 실패했습니다.");
         }
+        // 글 댓글 개수를 증가시킨다
+        Article article = this.findById(comment.getArticle().getId());
+        article.setCommentcount(article.getCommentcount() + 1);
+        Article commentcount = articleRepository.save(article);
         // 대댓글 dto에 Member Entity 저장한다
         replyRequestDto.setMember(member);
         // 대댓글 dto에 Comment Entity 저장한다
