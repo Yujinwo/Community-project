@@ -40,10 +40,13 @@ public class Article extends BaseTime{
     @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE)
     @OrderBy("id asc")
     private List<Comment> comments;
+    // 댓글 수
+    @Column
+    private int commentcount;
 
     // Entity -> ArticleResponseDto 생성
     public ArticleResponseDto toDto() {
-        return ArticleResponseDto.builder().id(id).title(title).content(content).createdDate(createdDate).modifiedDate(modifiedDate).member(member).viewcount(viewcount).boardImages(boardImages).comments(comments).build();
+        return ArticleResponseDto.builder().id(id).title(title).content(content).createdDate(createdDate).modifiedDate(modifiedDate).member(member).viewcount(viewcount).boardImages(boardImages).comments(comments).commentcount(commentcount).build();
     }
 
 }

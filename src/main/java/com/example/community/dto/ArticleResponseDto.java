@@ -3,6 +3,7 @@ package com.example.community.dto;
 import com.example.community.entity.BoardImage;
 import com.example.community.entity.Comment;
 import com.example.community.entity.Member;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -42,9 +43,12 @@ public class ArticleResponseDto {
     private List<String> imageUrls;
     // 댓글
     private List<Comment> comments;
+    // 댓글 수
+    @NotNull
+    private int commentcount;
 
     @Builder
-    public ArticleResponseDto(Long id, String title, String content, LocalDateTime createdDate, LocalDateTime modifiedDate, Member member, int viewcount, List<BoardImage> boardImages, List<Comment> comments ) {
+    public ArticleResponseDto(Long id, String title, String content, LocalDateTime createdDate, LocalDateTime modifiedDate, Member member, int viewcount, List<BoardImage> boardImages, List<Comment> comments , int commentcount ) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -61,6 +65,7 @@ public class ArticleResponseDto {
             this.imageUrls = Collections.emptyList();
         }
         this.comments = comments;
+        this.commentcount = commentcount;
     }
 
 }
