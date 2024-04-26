@@ -108,7 +108,7 @@ public class ArticleService {
             return null;
         }
         // 글에 저장된 이미지 불러오기
-        BoardImage boardImage = boardImageRepository.findByboardId(articleRequestDto.getId()).orElse(null);
+        List<BoardImage> boardImage = boardImageRepository.findByboardId(articleRequestDto.getId());
         // 인증된 유저와 글 작성한 유저 비교 || 요청한 글이 데이터베이스에 없을시
         if(member.getId() != article.getMember().getId() || article == null)
         {
@@ -161,10 +161,13 @@ public class ArticleService {
         }
         // 이미지 첨부 파일이 달라졌을 시
         if (boardImage != null && files != null){
-            // 이전에 저장되어 있던 이미지 파일이 존재할 시 삭제한다.
-            File fileToDelete = new File("src/main/resources/static" + boardImage.getUrl()).getAbsoluteFile();
-            if (fileToDelete.exists()) {
-                fileToDelete.delete();
+            // 이전에 저장되어 있던 이미지 파일이 존재할 시 파일과 데이터를 삭제한다.
+            for (BoardImage image : boardImage) {
+                File fileToDelete = new File("src/main/resources/static" + image.getUrl()).getAbsoluteFile();
+                if (fileToDelete.exists()) {
+                    fileToDelete.delete();
+                    boardImageRepository.delete(image);
+                }
             }
 
             // 수정된 이미지 첨부 파일로 저장한다
