@@ -50,6 +50,10 @@ Restful API
 - Entity 조회수 Count
 - Cookie를 이용해서 조회수 중복 카운트 방지 
 
+게시물 댓글 개수 시스템
+- 댓글/대댓글 작성 시 Entity 댓글 개수 Count
+- 게시물에 댓글 개수 표시
+
 유효성 검증
 - @Valid
 
