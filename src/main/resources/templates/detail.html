@@ -38,7 +38,7 @@
     <div class="article_images" th:if="${article.imageUrls.size() != 0}">
         <label class="form-label">이미지</label>
         <div th:each="imageUrl : ${article.imageUrls}">
-            <img th:src="@{${imageUrl}}" width="200px" height="200px">
+            <img th:src="@{${imageUrl}}" width="750px">
         </div>
     </div>
     <!-- 댓글 갯수 -->

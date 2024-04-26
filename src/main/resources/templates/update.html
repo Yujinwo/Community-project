@@ -14,7 +14,7 @@
             <div  class="form-control" th:if="${article.imageUrls != null}">
                 <!-- 이미지 -->
                 <div th:each="imageUrl : ${article.imageUrls}">
-                    <img th:src="@{${imageUrl}}" width="200px" height="200px">
+                    <img th:src="@{${imageUrl}}" width="750px">
                 </div>
                 <!-- 이미지 첨부 -->
                 <div class="form-floating mb-3">
@@ -41,47 +41,53 @@
             var formData = new FormData();
             var fileInput = $('#files')[0]; // 파일 입력 필드 가져오기
             var files = fileInput.files; // 선택된 파일들 가져오기
-
-            // FormData에 파일 추가
-            for (var i = 0; i < files.length; i++) {
-                formData.append('value', files[i]);
+            // 첨부파일이 2개 이상일 시
+            if (files.length > 2) {
+                alert("이미지는 최대 2개까지 첨부할 수 있습니다.");
+                fileInput.value = "";
             }
-            formData.append('key', new Blob([JSON.stringify(obj)], { type: "application/json" }));
+            else {
+                // FormData에 파일 추가
+                for (var i = 0; i < files.length; i++) {
+                    formData.append('value', files[i]);
+                }
+                formData.append('key', new Blob([JSON.stringify(obj)], { type: "application/json" }));
 
-            $.ajax({
-            　　type:'patch'
-            　   , processData: false // FormData를 사용하면 processData를 false로 설정해야 함
-                 , contentType: false // 파일 업로드 시에는 contentType을 false로 설정해야 함
-             　 　, data: formData
-            　  　, url: '/article/update'
-            　  　, success: function(data) {
-                    if(data.message == "제목과 내용을 수정해주세요")
-                    {
-                        alert(data.message);
-                    }
-                    else {
-                        location.href='/article/detail/' + obj.id;
-                    }
-            　 　}
-                 , error:function(e) {
+                $.ajax({
+                　　type:'patch'
+                　   , processData: false // FormData를 사용하면 processData를 false로 설정해야 함
+                     , contentType: false // 파일 업로드 시에는 contentType을 false로 설정해야 함
+                 　 　, data: formData
+                　  　, url: '/article/update'
+                　  　, success: function(data) {
+                        if(data.message == "제목과 내용을 수정해주세요")
+                        {
+                            alert(data.message);
+                        }
+                        else {
+                            location.href='/article/detail/' + obj.id;
+                        }
+                　 　}
+                     , error:function(e) {
 
-                    // 제목 에러 메시지 설정
-                    var jsonResponse = JSON.parse(e.responseText);
-                    if (jsonResponse.hasOwnProperty('title')) {
-                        document.getElementById("titleError").innerText = jsonResponse.title;
-                    } else {
-                        document.getElementById("titleError").innerText = "";
-                    }
+                        // 제목 에러 메시지 설정
+                        var jsonResponse = JSON.parse(e.responseText);
+                        if (jsonResponse.hasOwnProperty('title')) {
+                            document.getElementById("titleError").innerText = jsonResponse.title;
+                        } else {
+                            document.getElementById("titleError").innerText = "";
+                        }
 
-                    // 내용 에러 메시지 설정
-                    if (jsonResponse.hasOwnProperty('content')) {
-                        document.getElementById("contentError").innerText = jsonResponse.content;
-                    } else {
-                        document.getElementById("contentError").innerText = "";
-                    }
-            　　　
-            　　}
-           });
+                        // 내용 에러 메시지 설정
+                        if (jsonResponse.hasOwnProperty('content')) {
+                            document.getElementById("contentError").innerText = jsonResponse.content;
+                        } else {
+                            document.getElementById("contentError").innerText = "";
+                        }
+                　　　
+                　　}
+               });
+           }
         }
     </script>
 </th:block>
