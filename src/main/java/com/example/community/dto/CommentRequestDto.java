@@ -5,6 +5,7 @@ import com.example.community.entity.Article;
 import com.example.community.entity.Comment;
 import com.example.community.entity.Member;
 import com.example.community.entity.Reply;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -25,15 +26,22 @@ public class CommentRequestDto {
     private Article article;
     // 글 id
     private Long boardid;
+    // 부모 댓글 id
+    private Long parentid;
+    // 부모댓글
+    private Comment parent;
+    // 댓글 번호
+    private int commentnumber;
+    // 댓글 깊이
+    private int redepth;
     // 대댓글
-    private List<Reply> child;
+    private List<Comment> child;
     // 대댓글이 있는 상태에서 부모 댓글 삭제 여부
-
     private Boolean deleted;
 
     // dto -> Entity 생성
     public Comment toEntity() {
-        return Comment.builder().content(content).member(member).article(article).child(child).deleted(false).build();
+        return Comment.builder().content(content).member(member).article(article).child(child).parent(parent).commentnumber(commentnumber).redepth(redepth).deleted(false).build();
     }
 
 }

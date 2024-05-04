@@ -2,6 +2,7 @@ package com.example.community.dto;
 
 
 import com.example.community.entity.Article;
+import com.example.community.entity.Comment;
 import com.example.community.entity.Member;
 import com.example.community.entity.Reply;
 import jakarta.validation.constraints.NotNull;
@@ -33,10 +34,18 @@ public class CommentResponseDto {
     // 수정 시간
     @NotNull
     private LocalDateTime modifiedDate;
+    // 부모 댓글
+    private Comment parent;
     // 대댓글
-    private List<Reply> child;
+    private List<Comment> child;
     // 대댓글이 있는 상태에서 부모 댓글 삭제 여부
     @NotNull
     private Boolean deleted;
+    @NotNull
+    // 댓글 번호
+    private int commentnumber;
+    @NotNull
+    // 댓글 깊이
+    private int redepth;
 
 }

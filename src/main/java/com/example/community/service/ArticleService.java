@@ -5,7 +5,6 @@ import com.example.community.entity.*;
 import com.example.community.repository.ArticleRepository;
 import com.example.community.repository.BoardImageRepository;
 import com.example.community.repository.CommentRepository;
-import com.example.community.repository.ReplyRepositoty;
 import com.example.community.util.AuthenticationUtil;
 import com.example.community.util.CookieUtill;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -35,15 +35,13 @@ public class ArticleService {
     @Autowired
     BoardImageRepository boardImageRepository;
 
-    @Autowired
-    ReplyRepositoty replyRepositoty;
     // 글 리스트를 페이지 형태로 불러오기
     @Transactional
     public Page<ArticleResponseDto> index(Pageable pageable) {
         // page 위치에 있는 값은 0부터 시작한다.
         int page = pageable.getPageNumber() - 1;
         // 한페이지에 보여줄 글 개수
-        int pageLimit = 3;
+        int pageLimit = 10;
         // 페이지 형태로 글 불러오기
         Page<ArticleResponseDto> articleDtos = articleRepository.findAll(PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.ASC, "id"))).map(Article::toDto);
         return articleDtos;
@@ -235,6 +233,8 @@ public class ArticleService {
         commentRequestDto.setArticle(commentcount);
         // 댓글 dto에 Member Entity 저장한다
         commentRequestDto.setMember(member);
+        // 댓글 넘버를 저장한다.
+        commentRequestDto.setCommentnumber(article.getCommentcount());
         // 댓글을 저장한다
         Comment comment = commentRepository.save(commentRequestDto.toEntity());
         // 저장한 댓글 Entity가 null 일시 예외 상황 발생
@@ -248,9 +248,10 @@ public class ArticleService {
         // page 위치에 있는 값은 0부터 시작한다.
         int page = pageable.getPageNumber() - 1;
         // 한페이지에 보여줄 글 개수
-        int pageLimit = 3;
+        int pageLimit = 10;
+
         // 페이지 형태로 댓글 불러오기
-        Page<CommentResponseDto> comment = commentRepository.findByboardld(id,PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.ASC, "id"))).map(comments -> comments.toDto());
+        Page<CommentResponseDto> comment = commentRepository.findByCommentlist(id,PageRequest.of(page, pageLimit)).map(comments -> comments.toDto());
         return comment;
     }
 
@@ -310,7 +311,10 @@ public class ArticleService {
         articleRepository.save(article);
 
         // 대댓글이 없을 시 댓글을 삭제한다.
-        if(comment.getChild().size() == 0) {
+        if(comment.getParent() == null && comment.getChild().size() == 0) {
+            commentRepository.delete(comment);
+        }
+        else if(comment.getParent() != null && comment.getChild().size() == 0) {
             commentRepository.delete(comment);
         }
         // 대댓글이 있을 시 Comment Deleted를 true로 바꾼다
@@ -323,44 +327,51 @@ public class ArticleService {
     }
     // 대댓글 작성
     @Transactional
-    public void replywrite(ReplyRequestDto replyRequestDto) {
+    public void replywrite(CommentRequestDto replyRequestDto) {
         // 인증된 Member Entity 가져오기
         Member member = AuthenticationUtil.getCurrentMember();
-        // 댓글 Comment Entity 불러오기
-        Comment comment = commentRepository.findById(replyRequestDto.getCommentid()).orElse(null);
-        // 인증된 유저와 댓글 작성한 유저 비교 || 요청한 댓글이 데이터베이스에 없을시
-        if(member.getId() != comment.getMember().getId() || comment == null)
-        {
-            throw new RuntimeException("회원 정보 불일치 및 댓글 조회에 실패했습니다.");
-        }
+        // 글 Article Entity 불러오기
+        Article article = this.findById(replyRequestDto.getBoardid());
         // 글 댓글 개수를 증가시킨다
-        Article article = this.findById(comment.getArticle().getId());
         article.setCommentcount(article.getCommentcount() + 1);
-        articleRepository.save(article);
-        // 대댓글 dto에 Member Entity 저장한다
+        Article commentcount = articleRepository.save(article);
+        // 댓글 dto에 댓글 개수 증가된 Article Entity를 저장한다
+        replyRequestDto.setArticle(commentcount);
+        // 댓글 dto에 Member Entity 저장한다
         replyRequestDto.setMember(member);
-        // 대댓글 dto에 Comment Entity 저장한다
-        replyRequestDto.setComment(comment);
-        // 대댓글을 저장한다
-        replyRepositoty.save(replyRequestDto.toEntity());
+        // 부모 댓글 Comment Entity를 가져온다.
+        Comment parentcomment = commentRepository.findById(replyRequestDto.getParentid()).orElse(null);
+        // 부모 댓글 Comment Entity로 설정한다.
+        replyRequestDto.setParent(parentcomment);
+        // 댓글 넘버를 저장한다.
+        replyRequestDto.setCommentnumber(parentcomment.getCommentnumber());
+        // 댓글 깊이를 저장한다.
+        replyRequestDto.setRedepth(parentcomment.getRedepth() + 1);
+        // 댓글을 저장한다
+        Comment comment = commentRepository.save(replyRequestDto.toEntity());
+        // 저장한 댓글 Entity가 null 일시 예외 상황 발생
+        if (comment == null) {
+            throw new RuntimeException("댓글 작성에 실패했습니다.");
+        }
+
     }
 
     @Transactional
-    public void  replydelete(ReplyRequestDto replyRequestDto) {
+    public void  replydelete(CommentRequestDto replyRequestDto) {
         // 인증된 Member Entity 가져오기
         Member member = AuthenticationUtil.getCurrentMember();
         // 대댓글 Reply Entity 불러오기
-        Reply reply = replyRepositoty.findById(replyRequestDto.getId()).orElse(null);
+        Comment reply = commentRepository.findById(replyRequestDto.getId()).orElse(null);
         // 인증된 유저와 댓글 작성한 유저 비교 || 요청한 대댓글이 데이터베이스에 없을시
         if(member.getId() != reply.getMember().getId() || reply == null)
         {
             throw new RuntimeException("회원 정보 불일치 및 댓글 조회에 실패했습니다.");
         }
         // 글 댓글 개수를 감소시킨다
-        Article article = this.findById(reply.getComment().getArticle().getId());
+        Article article = this.findById(reply.getArticle().getId());
         article.setCommentcount(article.getCommentcount() - 1);
         articleRepository.save(article);
         // 대댓글을 삭제한다
-        replyRepositoty.delete(reply);
+        commentRepository.delete(reply);
     }
 }

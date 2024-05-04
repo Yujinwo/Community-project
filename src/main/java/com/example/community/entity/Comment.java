@@ -28,17 +28,27 @@ public class Comment extends BaseTime{
     @ManyToOne
     @JoinColumn(name = "boardid")
     private Article article;
-    // Reply Entity 1:다 관계 설정 * 한 댓글안에 여러 대댓글이 가능
+    // Comment Entity 다:1 관계 설정 * 한 댓글 안에 여러 댓글이 가능
+    @ManyToOne
+    @JoinColumn(name = "parentid")
+    private Comment parent;
+    // 댓글 번호
+    @Column
+    private int commentnumber;
+    // 댓글 깊이
+    @Column
+    private int redepth;
+    // Comment Entity 1:다 관계 설정 * 한 댓글안에 여러 대댓글이 가능
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.REMOVE)
+    private List<Comment> child;
 
-    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.REMOVE)
-    private List<Reply> child;
     // 대댓글 있는 상태에서 부모 댓글 삭제 여부
     @Builder.Default
     @Column
     private boolean deleted = false;
     // Entity -> CommentResponseDto 생성
     public CommentResponseDto toDto() {
-        return CommentResponseDto.builder().id(id).content(content).member(member).article(article).createdDate(getCreatedDate()).modifiedDate(getModifiedDate()).child(child).deleted(deleted).build();
+        return CommentResponseDto.builder().id(id).content(content).member(member).article(article).createdDate(getCreatedDate()).modifiedDate(getModifiedDate()).child(child).parent(parent).commentnumber(commentnumber).redepth(redepth).deleted(deleted).build();
 
     }
 

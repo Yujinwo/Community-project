@@ -48,54 +48,37 @@
         개
     </div>
     <!-- 로그인/로그아웃 -->
-    <div th:if="${endPage != 0}" th:each="comment : ${comment}" class="article_comments">
+    <div th:if="${endPage != 0}" th:id="'comment_'+${comment.id}" th:each="comment : ${comment}" class="article_comments" th:style="${comment.redepth != 0 ? ' padding-left: ' + comment.redepth * 40 + 'px' : ''} ">
         <!-- 부모댓글이 삭제 상태가 아닌 경우 댓글 표시 -->
-        <div th:if="${comment.deleted == false}">
-            <!-- 댓글 작성자 -->
+        <div th:if="${comment.deleted == false }">
+            <span th:if="${comment.parent != null}" class="bold"> ↪ </span>
+            <!-- 대댓글 작성자 -->
             <span class="bold" th:text="${comment.member.usernick}"></span>
             <span> · </span>
-            <!-- 댓글 작성 시간 -->
+            <!-- 대댓글 작성 시간 -->
             <span th:text="${@timeUtil.calculateTimeAgo(comment.createdDate)}"></span>
             <span> · </span>
             <!-- 댓글 삭제 버튼-->
-            <span sec:authorize="isAuthenticated()" class="comment_delete">
+            <span  sec:authorize="isAuthenticated()" class="comment_delete">
                 <button onclick="deleteComment(this.getAttribute('data-comment-id'))" th:attr="data-comment-id=${comment.id}" th:if="${comment.member.id == @authenticationUtil.getCurrentMember()?.id}">삭제</button>
             </span><br><br>
-            <!-- 댓글 내용 -->
-            <div th:text="${comment.content}"></div>
 
+            <div th:style="${comment.redepth != 0 ? 'padding-left: ' + comment.redepth * 10 + 'px;' + 'display:flex;' : ''} ">
+            <!-- 댓글 작성자 -->
+            <span th:if="${comment.parent != null}" style="color:#6c757d; margin:0 10px;" th:text="${comment.parent.member.usernick}"> </span>
+            <!-- 대댓글 내용 -->
+            <div th:text="${comment.content}"></div>
+            </div>
             <!-- 답글 달기 버튼 -->
-            <div th:if="${comment.child.size() <= 10}">
+            <div th:style="${comment.redepth != 0 ? ' padding-left: ' + comment.redepth * 20 + 'px' : ''} ">
                 <button class="reply_button" th:id="'reply_button_' + ${comment.id}" onclick="replyButton(this.getAttribute('data-comment-id'))" th:attr="data-comment-id=${comment.id}">답글 달기</button>
             </div>
         </div>
-        <!-- 대댓글이 살아 있는 상태에서댓글이 삭제 상태인 경우 삭제된 댓글 표시 -->
-        <div th:unless="${comment.deleted == false}">
+        <!-- 대댓글이 살아 있는 상태에서 댓글이 삭제 상태인 경우 삭제된 댓글 표시 -->
+        <div th:if="${comment.deleted == true and comment.parent == null}">
             <div> 삭제된 댓글 입니다!</div>
         </div>
-        <!-- 자식 댓글들 출력 -->
-        <div th:if="${comment.child != null}">
-            <div th:each="child : ${comment.child}">
-                <div class="reply_comments">
-                    <!-- 대댓글 작성자 -->
-                    <span class="bold" th:text="${comment.member.usernick}"></span>
-                    <span> · </span>
-                    <!-- 대댓글 작성 시간 -->
-                    <span th:text="${@timeUtil.calculateTimeAgo(child.createdDate)}"></span>
-                    <span> · </span>
-                    <!-- 대댓글 삭제 버튼 -->
-                    <span sec:authorize="isAuthenticated()" class="comment_delete">
-                        <button onclick="deleteReply(this.getAttribute('data-child-id'))" th:attr="data-child-id=${child.id}" th:if="${comment.member.id == @authenticationUtil.getCurrentMember()?.id}">삭제</button>
-                    </span><br><br>
-                <div style="display:flex">
-                    <!-- 댓글 작성자 -->
-                    <span style="color:#6c757d; margin:0 10px;" th:text="${child.comment.member.usernick}"> </span>
-                    <!-- 대댓글 내용 -->
-                    <div th:text="${child.content}"></div>
-                </div>
-                </div>
-            </div>
-        </div>
+
         <!-- 답글 쓰기 form -->
         <div class="reply-form" th:id="'reply_form_' + ${comment.id}" style="display: none;">
             <div class="comment_write">
@@ -105,7 +88,7 @@
                     <!-- 대댓글 입력 창 -->
                     <textarea type="text" th:id="'reply_content' + ${comment.id}" ></textarea>
                     <!-- 대댓글 등록 버튼 -->
-                    <button onclick="replySubmit(this.getAttribute('data-comment-id'))" th:attr="data-comment-id=${comment.id}" class="reply-submit">등록</button>
+                    <button onclick="replySubmit(this.getAttribute('data-article-id'),this.getAttribute('data-comment-id'))" th:attr="data-article-id=${article.id},data-comment-id=${comment.id}" class="reply-submit">등록</button>
                 </div>
                 <!-- 권한이 없을시 로그인 문구 표시 -->
                 <div sec:authorize="isAnonymous()" class="disabled">
@@ -151,6 +134,7 @@
     </div>
     <script th:inline="javascript">
                  const modal = document.querySelector('.modal');
+
 
                  // 삭제하기 버튼을 누를시 팝업창
                  function articleDelete() {
@@ -229,11 +213,13 @@
                          }
                 }
                 // 대댓글 작성
-                function replySubmit(commentId) {
+                function replySubmit(articleId,parentid) {
 
                      var obj = {};
-                     obj.content = $('#reply_content' + commentId).val()
-                     obj.commentid = commentId
+                     obj.content = $('#reply_content' + parentid).val()
+                     obj.boardid = articleId
+                     obj.parentid = parentid;
+
 
                      $.ajax({
                             　　type:'post'

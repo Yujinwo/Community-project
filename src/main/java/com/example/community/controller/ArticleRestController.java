@@ -2,7 +2,6 @@ package com.example.community.controller;
 
 import com.example.community.dto.ArticleRequestDto;
 import com.example.community.dto.CommentRequestDto;
-import com.example.community.dto.ReplyRequestDto;
 import com.example.community.entity.Article;
 import com.example.community.service.ArticleService;
 import jakarta.validation.Valid;
@@ -86,7 +85,7 @@ public class ArticleRestController {
     }
     // 대댓글 작성 기능
     @PostMapping("/reply/write")
-    public ResponseEntity<Map<String,String>> replywrite(@Valid @RequestBody ReplyRequestDto ReplyRequestDto) {
+    public ResponseEntity<Map<String,String>> replywrite(@Valid @RequestBody CommentRequestDto ReplyRequestDto) {
         // 대댓글 작성 서비스 메서드에 요청 Dto 전달
         articleService.replywrite(ReplyRequestDto);
         // json 메세지 생성
@@ -96,7 +95,7 @@ public class ArticleRestController {
     }
     // 대댓글 삭제 기능
     @DeleteMapping("/reply/delete")
-    public ResponseEntity<Map<String,String>> replydelete(@Valid @RequestBody ReplyRequestDto ReplyRequestDto) {
+    public ResponseEntity<Map<String,String>> replydelete(@Valid @RequestBody CommentRequestDto ReplyRequestDto) {
         // 대댓글 삭제 서비스 메서드에 요청 Dto 전달
         articleService.replydelete(ReplyRequestDto);
         // json 메세지 생성

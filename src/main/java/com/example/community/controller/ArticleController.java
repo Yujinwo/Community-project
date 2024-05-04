@@ -52,7 +52,7 @@ public class ArticleController {
         Article article = articleService.viewcount(id,request, response);
         // 글 댓글 불러오기
         Page<CommentResponseDto> comments = articleService.findCommentid(id,pageable);
-        // 댓글 최대 개수 설정
+        // 페이지 최대 개수 설정
         int blockLimit = 3;
         // 시작 페이지
         int startPage = Math.max(1, comments.getPageable().getPageNumber() - blockLimit);
