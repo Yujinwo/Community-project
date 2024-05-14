@@ -63,11 +63,10 @@ public class SecurityConfig {
                 // Url 권한 설정
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers(PathRequest.toH2Console()).permitAll()
                                 .requestMatchers("/article/detail/*","/").permitAll()
                                 .requestMatchers("/article/update/*","/article/write","/article/delete").hasRole("USER")
                                 .requestMatchers("/admin").hasRole("ADMIN")
-                                .requestMatchers("/login","/join").anonymous()
+                                .requestMatchers("/login","/join").permitAll()
                                 .anyRequest().permitAll()
                 )
                 // form 로그인 설정

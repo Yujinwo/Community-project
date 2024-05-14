@@ -42,6 +42,7 @@ clean {
 
 
 dependencies {
+	implementation 'com.mysql:mysql-connector-j'
 	// QueryDsl 설정
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	implementation "com.querydsl:querydsl-codegen:5.0.0" // QueryDSL 코드 생성
