@@ -5,6 +5,8 @@ import com.example.community.entity.Member;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 public class ArticleRequestDto {
@@ -18,6 +20,8 @@ public class ArticleRequestDto {
     private String content;
     // 멤버 Entity
     private Member member;
+    // 이미지 Url
+    private List<String> imageUrls;
     // dto -> Article Entity로 생성
     public Article toEntity() {
         return Article.builder().title(title).content(content).member(member).build();

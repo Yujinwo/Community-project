@@ -35,6 +35,9 @@ public class ArticleService {
     @Autowired
     BoardImageRepository boardImageRepository;
 
+    @Autowired
+    S3Uploader s3Uploader;
+
     // 글 리스트를 페이지 형태로 불러오기
     @Transactional
     public Page<ArticleResponseDto> index(Pageable pageable) {
@@ -64,32 +67,18 @@ public class ArticleService {
         if (files != null && !files.isEmpty()) {
             // 이미지를 하나씩 꺼낸다
             for (MultipartFile file : files) {
-
-                // 파일 업로드 디렉터리 설정
-                String uploadDir = new File("src/main/resources/static/images").getAbsolutePath();
-                File uploadPath = new File(uploadDir);
-
-                // 디렉터리가 없을시 생성한다
-                if (!uploadPath.exists()) {
-                    uploadPath.mkdirs();
-                }
-                // 업로드 디렉터리에 랜덤 UUID와 원본 파일명을 합쳐서 파일을 전송한다.
-                UUID uuid = UUID.randomUUID();
-                String imageFileName = uuid + "_" + file.getOriginalFilename();
-                String filePath = uploadDir + File.separator + imageFileName;
-                File destinationFile = new File(filePath);
                 try {
-                    // 파일 전송
-                    file.transferTo(destinationFile);
+                    String fileName = s3Uploader.upload(file);
+                    // 저장된 파일 디렉터리를 저장한다.
+                    BoardImage image = BoardImage.builder()
+                            .url(fileName)
+                            .article(savedArticle)
+                            .build();
+                    boardImageRepository.save(image);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                // 저장된 파일 디렉터리를 저장한다.
-                BoardImage image = BoardImage.builder()
-                        .url("/images/" + imageFileName)
-                        .article(savedArticle)
-                        .build();
-                boardImageRepository.save(image);
+
             }
         }
 
@@ -97,6 +86,8 @@ public class ArticleService {
     // 글 수정
     @Transactional
     public Article update(ArticleRequestDto articleRequestDto, List<MultipartFile> files) {
+
+        System.out.println(articleRequestDto.getImageUrls());
         // 인증된 Member Entity 가져오기
         Member member = AuthenticationUtil.getCurrentMember();
         // 글 Article Entity 불러오기
@@ -122,50 +113,33 @@ public class ArticleService {
         if (updatedArticle == null) {
             throw new RuntimeException("게시글 수정에 실패했습니다.");
         }
-        // 이미지가 없었는데 첨부가 되었으면
-        if (boardImage == null && files != null){
+        // 글 이미지가 없었는데 첨부가 되었으면
+        if (articleRequestDto.getImageUrls().isEmpty() && boardImage == null && files != null){
             // 이미지가 첨부 되었으면
             if (files != null && !files.isEmpty()) {
                 // 이미지를 하나씩 꺼낸다
                 for (MultipartFile file : files) {
 
-                    // 파일 업로드 디렉터리 설정
-                    String uploadDir = new File("src/main/resources/static/images").getAbsolutePath();
-                    File uploadPath = new File(uploadDir);
-
-                    // 디렉터리가 없을시 생성한다
-                    if (!uploadPath.exists()) {
-                        uploadPath.mkdirs();
-                    }
-                    // 업로드 디렉터리에 랜덤 UUID와 원본 파일명을 합쳐서 파일을 전송한다.
-                    UUID uuid = UUID.randomUUID();
-                    String imageFileName = uuid + "_" + file.getOriginalFilename();
-                    String filePath = uploadDir + File.separator + imageFileName;
-                    File destinationFile = new File(filePath);
                     try {
-                        // 파일 전송
-                        file.transferTo(destinationFile);
+                        String fileName = s3Uploader.upload(file);
+                        // 저장된 파일 디렉터리를 저장한다.
+                        BoardImage image = BoardImage.builder()
+                                .url(fileName)
+                                .article(updatedArticle)
+                                .build();
+                        boardImageRepository.save(image);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    // 저장된 파일 디렉터리를 저장한다.
-                    BoardImage image = BoardImage.builder()
-                            .url("/images/" + imageFileName)
-                            .article(updatedArticle)
-                            .build();
-                    boardImageRepository.save(image);
                 }
             }
         }
-        // 이미지 첨부 파일이 달라졌을 시
-        if (boardImage != null && files != null){
+        // 글 이미지를 다 삭제하고 이미지 첨부 파일이 있으면
+        if (articleRequestDto.getImageUrls().isEmpty() && boardImage != null && files != null){
             // 이전에 저장되어 있던 이미지 파일이 존재할 시 파일과 데이터를 삭제한다.
             for (BoardImage image : boardImage) {
-                File fileToDelete = new File("src/main/resources/static" + image.getUrl()).getAbsoluteFile();
-                if (fileToDelete.exists()) {
-                    fileToDelete.delete();
-                    boardImageRepository.delete(image);
-                }
+                s3Uploader.deleteFile(image.getUrl());
+                boardImageRepository.delete(image);
             }
 
             // 수정된 이미지 첨부 파일로 저장한다
@@ -173,31 +147,49 @@ public class ArticleService {
                 // 이미지를 하나씩 꺼낸다
                 for (MultipartFile file : files) {
 
-                    // 파일 업로드 디렉터리 설정
-                    String uploadDir = new File("src/main/resources/static/images").getAbsolutePath();
-                    File uploadPath = new File(uploadDir);
-
-                    // 디렉터리가 없을시 생성한다
-                    if (!uploadPath.exists()) {
-                        uploadPath.mkdirs();
-                    }
-                    // 업로드 디렉터리에 랜덤 UUID와 원본 파일명을 합쳐서 파일을 전송한다.
-                    UUID uuid = UUID.randomUUID();
-                    String imageFileName = uuid + "_" + file.getOriginalFilename();
-                    String filePath = uploadDir + File.separator + imageFileName;
-                    File destinationFile = new File(filePath);
                     try {
-                        // 파일 전송
-                        file.transferTo(destinationFile);
+                        String fileName = s3Uploader.upload(file);
+                        // 저장된 파일 디렉터리를 저장한다.
+                        BoardImage image = BoardImage.builder()
+                                .url(fileName)
+                                .article(updatedArticle)
+                                .build();
+                        boardImageRepository.save(image);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    // 저장된 파일 디렉터리를 저장한다.
-                    BoardImage image = BoardImage.builder()
-                            .url("/images/" + imageFileName)
-                            .article(updatedArticle)
-                            .build();
-                    boardImageRepository.save(image);
+                }
+            }
+        }
+
+        // 글 이미지를 다 삭제하고 이미지 첨부 파일이 없으면
+        if (articleRequestDto.getImageUrls().isEmpty() && boardImage != null && files == null){
+            // 이전에 저장되어 있던 이미지 파일이 존재할 시 파일과 데이터를 삭제한다.
+            for (BoardImage image : boardImage) {
+                s3Uploader.deleteFile(image.getUrl());
+                boardImageRepository.delete(image);
+            }
+
+        }
+
+        // 글 이미지를 하나만 삭제하고 이미지 첨부 파일이 있으면
+        if (!articleRequestDto.getImageUrls().isEmpty() && boardImage != null && files != null){
+            // 수정된 이미지 첨부 파일로 저장한다
+            if (files != null && !files.isEmpty()) {
+                // 이미지를 하나씩 꺼낸다
+                for (MultipartFile file : files) {
+
+                    try {
+                        String fileName = s3Uploader.upload(file);
+                        // 저장된 파일 디렉터리를 저장한다.
+                        BoardImage image = BoardImage.builder()
+                                .url(fileName)
+                                .article(updatedArticle)
+                                .build();
+                        boardImageRepository.save(image);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
