@@ -7,7 +7,7 @@
 .header_menu {
 display:flex;
 justify-content:right;
-width:52%;
+width:54%;
 }
 /* header 로그인/로그아웃 div */
 .header_auth {

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Getter
 @Builder
@@ -26,7 +26,8 @@ public class MemberDto {
     @Size(min=3,max=20,message = "닉네임은 3~20자 이내로 작성해주세요")
     private String usernick;
     // dto -> Member Entity 생성
-    public Member toEntity(PasswordEncoder passwordEncoder){
+    public Member toEntity(){
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return Member.builder()
                 .email(email)
                 // 패스워드 암호화

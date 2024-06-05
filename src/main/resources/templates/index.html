@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/default_layout">
 <th:block layout:fragment="content">
-    <!-- 글 작성 버튼 -->
-    <div class="article_button">
-        <button class="button_blue " onclick="location.href='/article/write'" >작성하기</button>
+    <div class="article_header">
+        <!-- 검색 창 -->
+        <div class="search_box">
+            <input type="text" placeholder="검색어를 입력하세요" id="searchInput" />
+
+        </div>
+
+        <!-- 글 작성 버튼 -->
+        <div class="article_button">
+            <button class="button_blue" onclick="location.href='/article/write'">작성하기</button>
+        </div>
     </div>
     <!-- 작성된 글 리스트가 없을 시 문구 표시 -->
     <div th:if="${endPage == 0}" class="article">
@@ -11,7 +19,7 @@
         <h5>글을 작성해보세요!</h5>
     </div>
     <!-- 글 정보 -->
-    <div th:if="${endPage != 0}" th:each="article : ${article}" class="article">
+    <div th:if="${hasResults}" th:each="article : ${article}" class="article">
             <!-- 글 제목 링크 -->
         <a th:href="@{/article/detail/{id}(id=${article.id})}">
             <h2 class="overflow-text bold" th:text="${article.title}"></h2></br>
@@ -27,21 +35,36 @@
         <!-- 글 조회수 -->
         <span class="article_addtext" th:text="${article.viewcount}"></span></br>
     </div>
-    <!-- 글 페이지 리스트 -->
-    <div th:if="${endPage != 0}" class="paging_list">
-        <!-- 이전 링크 있을시 활성화 없을시 비 활성화 -->
-        <a class="page_previous" th:classappend=" ${!article.hasPrevious()} ? 'disabled' " th:href="${!article.isFirst()} ? @{/(page=${article.getPageable().getPageNumber()})}"> 이전 </a>
-
-        <span th:each="page: ${#numbers.sequence(startPage, endPage)}">
-            <!-- 현재페이지는 링크 없이 숫자만 -->
-            <span th:if="${page == article.getPageable().getPageNumber() + 1}" th:text="${page}"></span>
-            <!-- 현재페이지 링크 X, 다른 페이지번호에는 링크를 보여준다 -->
-            <span th:unless="${page == article.getPageable().getPageNumber() + 1}">
-                <a th:href="@{/(page=${page})}" th:text="${page}"></a>
-            </span>
-        </span>
-        <!-- 다음 링크 있을시 활성화 없을시 비 활성화 -->
-        <a class="page_next" th:classappend=" ${!article.hasNext()} ? 'disabled' "  th:href="${article.isLast()} ? '#' : @{/(page=${article.number + 2})}"> 다음 </a>
+    <div th:unless="${hasResults}" class="article">
+        <p>검색 결과가 없습니다.</p>
     </div>
+    <!-- 글 페이지 리스트 -->
+    <div th:if="${hasResults}" class="paging_list" >
+        <!-- 이전 링크 있을시 활성화 없을시 비 활성화 -->
+        <a class="page_previous" th:classappend="${!hasPrevious} ? 'disabled'" th:href="${hasPrevious} ? @{/articles/search(query=${query},previous=1,lastId=${previousLastId})} : '#'"> 이전 </a>
+
+
+        <!-- 다음 링크 있을시 활성화 없을시 비 활성화 -->
+        <a th:if=${hasNext} class="page_next" th:classappend="${!hasNext} ? 'disabled'" th:href="${hasNext} ? @{/articles/search(query=${query},previousId=${previousLastId},lastId=${nextLastId})} : '#'"> 다음 </a>
+    </div>
+    <script th:inline="javascript">
+
+        $(document).ready(function() {
+    // 엔터 키를 눌렀을 때 검색 실행
+    $('#searchInput').keypress(function(event) {
+        if (event.keyCode === 13) { // 엔터 키 코드: 13
+            event.preventDefault(); // 기본 엔터 키 동작 방지
+            searchArticles(); // 검색 함수 호출
+        }
+    });
+
+    function searchArticles() {
+        var query = $('#searchInput').val();
+        if (query) {
+            window.location.href = '/articles/search?query=' + encodeURIComponent(query);
+        }
+    }
+});
+    </script>
 </th:block>
 </html>

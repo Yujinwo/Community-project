@@ -15,8 +15,6 @@ public class MemberService {
 
     @Autowired
     MemberRepository memberRepository;
-    @Autowired
-    PasswordEncoder passwordEncoder;
 
     @Autowired
     AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -25,7 +23,7 @@ public class MemberService {
     @Transactional
     public Member addUser(MemberDto requestDto) {
         // MemberDto를 받아와서 패스워드를 암호화하고 회원을 생성한다
-        Member member = memberRepository.save(requestDto.toEntity(passwordEncoder));
+        Member member = memberRepository.save(requestDto.toEntity());
         // Member Entity가 null 일시 예외 상황 발생
         if (member == null) {
             throw  new RuntimeException("회원가입에 실패했습니다.");

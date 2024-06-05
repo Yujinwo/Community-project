@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "article",indexes = {
+        @Index(name = "idx_title_content", columnList = "title, content")
+})
 @Data
 @EqualsAndHashCode(callSuper=true)
 @AllArgsConstructor
@@ -26,18 +29,18 @@ public class Article extends BaseTime{
     @Column(length = 1000)
     private String content;
     // Member Entity 다:1 관계 설정 * 한 유저가 여러 게시글이 가능
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userid")
     private Member member;
     // 조회수
     @Column
     private int viewcount;
     // boardImages Entity 1:다 관계 설정 *한 게시글 안에 여러 이미지가 가능
-    @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @OrderBy("id asc")
     private List<BoardImage> boardImages;
     // comments Entity 1:다 관계 설정 * 한 게시글 안에 여러 댓글이 가능
-    @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @OrderBy("id asc")
     private List<Comment> comments;
     // 댓글 수

@@ -213,3 +213,33 @@ display: flex;
 margin: 0 15px;
 }
 
+.article_header {
+margin:0 auto;
+width:800px;
+display:flex;
+
+
+}
+
+.search_box {
+  padding-left:300px;
+
+}
+
+.search_box input {
+    padding: 5px 50px;
+    font-size: 16px;
+    padding-right : 50px;
+}
+
+.search_box button {
+    padding: 5px 10px;
+    margin-left: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.article_button {
+    margin-left: auto;
+}
+
