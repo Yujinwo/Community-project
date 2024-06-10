@@ -31,7 +31,6 @@ public class ArticleController {
         model.addAttribute("hasNext", page.hasNext());
         model.addAttribute("hasResults", !page.getContent().isEmpty());
         model.addAttribute("hasPrevious", lastId != null); // 이전 페이지가 있는지 여부
-        System.out.println();
         if (!page.getContent().isEmpty()) {
             Long previousLastId = page.getContent().get(0).getId() - 11;
             Long nextLastId = page.getContent().get(page.getContent().size() - 1).getId();
@@ -80,9 +79,6 @@ public class ArticleController {
         model.addAttribute("hasNext", page.hasNext());
         model.addAttribute("hasResults", !page.getContent().isEmpty());
         model.addAttribute("hasPrevious", lastId != null); // 이전 페이지가 있는지 여부
-        System.out.println(previousId);
-        System.out.println(lastId);
-
 
         if (!page.getContent().isEmpty()) {
             if(page.hasNext() && previous == 0)
