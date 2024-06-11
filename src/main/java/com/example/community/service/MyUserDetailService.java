@@ -12,11 +12,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class MyUserDetailService implements UserDetailsService {
 
-    @Autowired
     private final MemberRepository memberRepository;
+
+    @Autowired
+    public MyUserDetailService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
+
     @Transactional
     public UserDetails loadUserByUsername(String email){
           // 이메일을 이용해서 회원을 조회한다.

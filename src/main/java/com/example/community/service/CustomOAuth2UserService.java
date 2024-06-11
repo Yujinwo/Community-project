@@ -17,8 +17,12 @@ import java.util.Map;
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService{
 
+
+    private final MemberRepository memberRepository;
     @Autowired
-    MemberRepository memberRepository;
+    public CustomOAuth2UserService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest){

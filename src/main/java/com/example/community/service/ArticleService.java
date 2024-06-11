@@ -27,16 +27,18 @@ import java.util.stream.Collectors;
 
 @Service
 public class ArticleService {
-    @Autowired
-    ArticleRepository articleRepository;
-    @Autowired
-    CommentRepository commentRepository;
 
+    private final ArticleRepository articleRepository;
+    private final CommentRepository commentRepository;
+    private final BoardImageRepository boardImageRepository;
+    private final S3Uploader s3Uploader;
     @Autowired
-    BoardImageRepository boardImageRepository;
-
-    @Autowired
-    S3Uploader s3Uploader;
+    public ArticleService(ArticleRepository articleRepository, CommentRepository commentRepository, BoardImageRepository boardImageRepository, S3Uploader s3Uploader) {
+        this.articleRepository = articleRepository;
+        this.commentRepository = commentRepository;
+        this.boardImageRepository = boardImageRepository;
+        this.s3Uploader = s3Uploader;
+    }
 
     // 글 리스트를 페이지 형태로 불러오기
     @Transactional
@@ -44,7 +46,7 @@ public class ArticleService {
         // page 위치에 있는 값은 0부터 시작한다.
         int page = pageable.getPageNumber() - 1;
         // 한페이지에 보여줄 글 개수
-        int pageLimit = 10;
+        int pageLimit = 3;
         // 페이지 형태로 글 불러오기
         Page<ArticleResponseDto> articleDtos = articleRepository.findByArticlelist(lastId,PageRequest.of(page, pageLimit)).map(Article::toDto);
         return articleDtos;

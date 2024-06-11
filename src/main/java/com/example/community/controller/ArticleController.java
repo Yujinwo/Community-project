@@ -19,8 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class ArticleController {
 
+
+    private final ArticleService articleService;
     @Autowired
-    private ArticleService articleService;
+    public ArticleController(ArticleService articleService) {
+        this.articleService = articleService;
+    }
 
     @GetMapping("/")
     public String page(@RequestParam(value = "lastId", required = false) Long lastId, @PageableDefault(page = 1) Pageable pageable, Model model) {

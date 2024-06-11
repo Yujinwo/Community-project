@@ -13,11 +13,14 @@ import java.util.Optional;
 @Service
 public class MemberService {
 
-    @Autowired
-    MemberRepository memberRepository;
 
+    private final MemberRepository memberRepository;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     @Autowired
-    AuthenticationManagerBuilder authenticationManagerBuilder;
+    public MemberService(MemberRepository memberRepository, AuthenticationManagerBuilder authenticationManagerBuilder) {
+        this.memberRepository = memberRepository;
+        this.authenticationManagerBuilder = authenticationManagerBuilder;
+    }
 
     // 회원 생성
     @Transactional

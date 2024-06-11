@@ -19,16 +19,16 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final UserDetailsService myUserDetailsService;
+    private final UserLoginFailHandler userLoginFailHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
     @Autowired
-    UserDetailsService myUserDetailsService;
-
-    @Autowired
-    UserLoginFailHandler userLoginFailHandler;
-
-    @Autowired
-    CustomOAuth2UserService customOAuth2UserService;
-
-
+    public SecurityConfig(UserDetailsService myUserDetailsService, UserLoginFailHandler userLoginFailHandler, CustomOAuth2UserService customOAuth2UserService) {
+        this.myUserDetailsService = myUserDetailsService;
+        this.userLoginFailHandler = userLoginFailHandler;
+        this.customOAuth2UserService = customOAuth2UserService;
+    }
     // 패스워드 암호화
     @Bean
     PasswordEncoder passwordEncoder() {

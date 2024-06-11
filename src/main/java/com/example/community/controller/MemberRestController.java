@@ -14,8 +14,13 @@ import java.util.Map;
 @RestController
 public class MemberRestController {
 
+
+    private final MemberService memberService;
     @Autowired
-    MemberService memberService;
+    public MemberRestController(MemberService memberService) {
+        this.memberService = memberService;
+    }
+
     // 회원가입 기능
     @PostMapping("/join")
     public ResponseEntity<Map<String,String>> userJoin(@Valid @RequestBody MemberDto requestDto) {

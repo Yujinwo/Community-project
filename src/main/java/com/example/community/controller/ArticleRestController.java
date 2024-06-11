@@ -17,8 +17,12 @@ import java.util.Map;
 
 @RestController
 public class ArticleRestController {
+
+    private final ArticleService articleService;
     @Autowired
-    ArticleService articleService;
+    public ArticleRestController(ArticleService articleService) {
+        this.articleService = articleService;
+    }
 
 
     // 글 작성 기능
