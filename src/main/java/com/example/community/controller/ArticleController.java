@@ -10,14 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
@@ -31,25 +30,53 @@ public class ArticleController {
     }
 
     @GetMapping("/")
-    public String page(@RequestParam(value = "lastId", required = false) Long lastId, @PageableDefault(page = 1) Pageable pageable, Model model) {
-        // 페이지 데이터 불러오기
-        Page<ArticleResponseDto> page = articleService.index(lastId,pageable);
-        boolean hasPrevious = false;
-        model.addAttribute("article", page.getContent());
-        model.addAttribute("hasNext", page.hasNext());
-        model.addAttribute("hasResults", !page.getContent().isEmpty());
-        model.addAttribute("hasPrevious", lastId != null); // 이전 페이지가 있는지 여부
-        if (!page.getContent().isEmpty()) {
-            Long previousLastId = page.getContent().get(0).getId() - 11;
-            Long nextLastId = page.getContent().get(page.getContent().size() - 1).getId();
-            model.addAttribute("previousLastId", previousLastId);
-            model.addAttribute("nextLastId", nextLastId);
+    public String page(@RequestParam(value = "lastId", required = false,defaultValue = "0") Long lastId, @RequestParam(value = "previousId", required = false,defaultValue = "0") Long previousId,@RequestParam(value = "previous", required = false,defaultValue = "0") int previous,@PageableDefault(page = 1) Pageable pageable, Model model) {
+        Long PreviousLastId = Math.max(lastId - pageable.getPageSize(),1);
+        if(PreviousLastId == 1)
+            PreviousLastId = lastId;
+        Long PreviousbeforeId = Math.max(previousId - pageable.getPageSize(),1);
+        model.addAttribute("lastId", PreviousLastId);
+        model.addAttribute("previousId", PreviousbeforeId);
+        // 다음 누를시
+        if (previous == 0) {
+
+            // 페이지 데이터 불러오기
+            Slice<ArticleResponseDto> slicepage = articleService.index(lastId, pageable);
+            boolean hasPrevious = false;
+            model.addAttribute("article", slicepage.getContent());
+            model.addAttribute("hasNext", slicepage.hasNext());
+            model.addAttribute("hasResults", !slicepage.getContent().isEmpty());
+            model.addAttribute("hasPrevious", slicepage.getContent().get(0).getId() != 1); // 이전 페이지가 있는지 여부
+            Long previousLastId = 1L;
+            if (!slicepage.getContent().isEmpty()) {
+
+                previousLastId = slicepage.getContent().get(0).getId();
+
+                Long nextLastId = slicepage.getContent().get(slicepage.getContent().size() - 1).getId();
+                model.addAttribute("previousLastId", previousLastId);
+                model.addAttribute("nextLastId", nextLastId);
+            }
+        //이전 누를시
+        } else {
+            Slice<ArticleResponseDto> slicepage = articleService.index(previousId-1, pageable);
+            boolean hasPrevious = false;
+            model.addAttribute("article", slicepage.getContent());
+            model.addAttribute("hasNext", slicepage.hasNext());
+            model.addAttribute("hasResults", !slicepage.getContent().isEmpty());
+            model.addAttribute("hasPrevious", slicepage.getContent().get(0).getId() != 1); // 이전 페이지가 있는지 여부
+
+            if (!slicepage.getContent().isEmpty()) {
+                Long previousLastId = previousId - pageable.getPageSize();
+
+                Long nextLastId = lastId - pageable.getPageSize();
+                model.addAttribute("previousLastId", previousLastId);
+                model.addAttribute("nextLastId", nextLastId);
+
+            }
+
         }
-
-
         return "index";
     }
-
     // 글 작성 페이지
     @GetMapping("/article/write")
     public String write() {
@@ -81,32 +108,26 @@ public class ArticleController {
 
     @GetMapping("/articles/search")
     public String searchArticles(@RequestParam("query") String query, @RequestParam(value = "lastId", required = false) Long lastId, @RequestParam(value = "previousId", required = false) Long previousId,@RequestParam(value = "previous", required = false,defaultValue = "0") int previous,Model model, @PageableDefault(page = 1)  Pageable pageable) {
-        Page<ArticleResponseDto> page = articleService.searchArticles(lastId,query, pageable);
-        model.addAttribute("article", page.getContent());
-        model.addAttribute("query", query);
-        model.addAttribute("hasNext", page.hasNext());
-        model.addAttribute("hasResults", !page.getContent().isEmpty());
-        model.addAttribute("hasPrevious", lastId != null); // 이전 페이지가 있는지 여부
+        if (previous == 0) {
+            Slice<ArticleResponseDto> slicepage = articleService.searchArticles(lastId, query, pageable);
+            model.addAttribute("article", slicepage.getContent());
+            model.addAttribute("query", query);
+            model.addAttribute("hasNext", slicepage.hasNext());
+            model.addAttribute("hasResults", !slicepage.getContent().isEmpty());
+            model.addAttribute("hasPrevious", lastId != null); // 이전 페이지가 있는지 여부
 
-        if (!page.getContent().isEmpty()) {
-            if(page.hasNext() && previous == 0)
-            {
-                previousId = page.getContent().get(0).getId();
+            if (!slicepage.getContent().isEmpty()) {
+                if (slicepage.hasNext()) {
+                    previousId = slicepage.getContent().get(0).getId();
+                }
+
+                Long nextLastId = slicepage.getContent().get(slicepage.getContent().size() - 1).getId();
+                model.addAttribute("previousLastId", previousId);
+                model.addAttribute("nextLastId", nextLastId);
             }
-
-
-            Long nextLastId = page.getContent().get(page.getContent().size() - 1).getId();
-            model.addAttribute("previousLastId", previousId);
-            model.addAttribute("nextLastId", nextLastId);
-        }
-        else {
-            model.addAttribute("previousLastId", null);
-            model.addAttribute("nextLastId", null);
-
         }
 
-
-        return "index";
+        return "searchindex";
     }
 
     // 글 수정 페이지
