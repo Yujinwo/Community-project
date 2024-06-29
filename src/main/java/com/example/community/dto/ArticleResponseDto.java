@@ -55,6 +55,8 @@ public class ArticleResponseDto {
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
         this.member = member;
+        //멤버 프록시 강제 초기화
+        member.getUserpw();
         this.viewcount = viewcount;
         // 이미지 파일이 Null 아닐 시 url 리스트 생성
         if (boardImages != null) {

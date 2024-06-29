@@ -5,12 +5,14 @@ import com.example.community.domain.member.Role;
 import com.example.community.dto.MemberDto;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@BatchSize(size = 1000)
 public class Member {
 
     @Id

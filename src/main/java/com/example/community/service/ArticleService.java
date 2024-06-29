@@ -45,16 +45,14 @@ public class ArticleService {
     public Page<ArticleResponseDto> index(Long lastId,Pageable pageable) {
         // page 위치에 있는 값은 0부터 시작한다.
         int page = pageable.getPageNumber() - 1;
-        // 한페이지에 보여줄 글 개수
-        int pageLimit = 3;
         // 페이지 형태로 글 불러오기
-        Page<ArticleResponseDto> articleDtos = articleRepository.findByArticlelist(lastId,PageRequest.of(page, pageLimit)).map(Article::toDto);
+        Page<ArticleResponseDto> articleDtos = articleRepository.findByArticlelist(lastId,pageable).map(Article::toDto);
         return articleDtos;
     }
 
     @Transactional
-    public Page<Article> searchArticles(Long lastId, String query, Pageable pageable) {
-        return articleRepository.findByTitleOrContentContaining(lastId,query, pageable);
+    public Page<ArticleResponseDto> searchArticles(Long lastId, String query, Pageable pageable) {
+        return articleRepository.findByTitleOrContentContaining(lastId,query, pageable).map(article -> article.toDto());
     }
 
     // 글 저장

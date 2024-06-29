@@ -6,6 +6,7 @@ import com.example.community.entity.Article;
 import com.example.community.service.ArticleService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +17,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.stream.Collectors;
+
 @Controller
+@Slf4j
 public class ArticleController {
 
 
@@ -77,7 +81,7 @@ public class ArticleController {
 
     @GetMapping("/articles/search")
     public String searchArticles(@RequestParam("query") String query, @RequestParam(value = "lastId", required = false) Long lastId, @RequestParam(value = "previousId", required = false) Long previousId,@RequestParam(value = "previous", required = false,defaultValue = "0") int previous,Model model, @PageableDefault(page = 1)  Pageable pageable) {
-        Page<Article> page = articleService.searchArticles(lastId,query, pageable);
+        Page<ArticleResponseDto> page = articleService.searchArticles(lastId,query, pageable);
         model.addAttribute("article", page.getContent());
         model.addAttribute("query", query);
         model.addAttribute("hasNext", page.hasNext());

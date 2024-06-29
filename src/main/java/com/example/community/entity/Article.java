@@ -3,6 +3,7 @@ package com.example.community.entity;
 import com.example.community.dto.ArticleResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,11 +37,12 @@ public class Article extends BaseTime{
     @Column
     private int viewcount;
     // boardImages Entity 1:다 관계 설정 *한 게시글 안에 여러 이미지가 가능
-    @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE)
     @OrderBy("id asc")
+    @BatchSize(size = 1000)
     private List<BoardImage> boardImages;
     // comments Entity 1:다 관계 설정 * 한 게시글 안에 여러 댓글이 가능
-    @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE)
     @OrderBy("id asc")
     private List<Comment> comments;
     // 댓글 수
@@ -49,6 +51,7 @@ public class Article extends BaseTime{
 
     // Entity -> ArticleResponseDto 생성
     public ArticleResponseDto toDto() {
+
         return ArticleResponseDto.builder().id(id).title(title).content(content).createdDate(createdDate).modifiedDate(modifiedDate).member(member).viewcount(viewcount).boardImages(boardImages).comments(comments).commentcount(commentcount).build();
     }
 
