@@ -78,10 +78,18 @@ display:flex;
 margin: 100px auto;
 width:500px;
 }
+/* 검색 페이지 리스트 */
+.search_paging_list {
+display:flex;
+justify-content:flex-end;
+margin: 0 auto;
+margin-Top:20px;
+width:500px;
+}
 /* 페이지 리스트 */
 .paging_list {
 display:flex;
-justify-content:flex-end;
+justify-content:space-between;
 margin: 0 auto;
 margin-Top:20px;
 width:500px;
