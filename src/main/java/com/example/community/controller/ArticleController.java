@@ -1,6 +1,6 @@
 package com.example.community.controller;
 
-import com.example.community.dto.ArticleResponseDto;
+import com.example.community.dto.ArticleindexResponseDto;
 import com.example.community.dto.CommentResponseDto;
 import com.example.community.entity.Article;
 import com.example.community.service.ArticleService;
@@ -41,7 +41,7 @@ public class ArticleController {
         if (previous == 0) {
 
             // 페이지 데이터 불러오기
-            Slice<ArticleResponseDto> slicepage = articleService.index(lastId, pageable);
+            Slice<ArticleindexResponseDto> slicepage = articleService.index(lastId, pageable);
             boolean hasPrevious = false;
             model.addAttribute("article", slicepage.getContent());
             model.addAttribute("hasNext", slicepage.hasNext());
@@ -58,7 +58,7 @@ public class ArticleController {
             }
         //이전 누를시
         } else {
-            Slice<ArticleResponseDto> slicepage = articleService.index(previousId-1, pageable);
+            Slice<ArticleindexResponseDto> slicepage = articleService.index(previousId-1, pageable);
             boolean hasPrevious = false;
             model.addAttribute("article", slicepage.getContent());
             model.addAttribute("hasNext", slicepage.hasNext());
@@ -109,7 +109,7 @@ public class ArticleController {
     @GetMapping("/articles/search")
     public String searchArticles(@RequestParam("query") String query, @RequestParam(value = "lastId", required = false) Long lastId, @RequestParam(value = "previousId", required = false) Long previousId,@RequestParam(value = "previous", required = false,defaultValue = "0") int previous,Model model, @PageableDefault(page = 1)  Pageable pageable) {
         if (previous == 0) {
-            Slice<ArticleResponseDto> slicepage = articleService.searchArticles(lastId, query, pageable);
+            Slice<ArticleindexResponseDto> slicepage = articleService.searchArticles(lastId, query, pageable);
             model.addAttribute("article", slicepage.getContent());
             model.addAttribute("query", query);
             model.addAttribute("hasNext", slicepage.hasNext());

@@ -1,23 +1,17 @@
 package com.example.community.dto;
 
-import com.example.community.entity.BoardImage;
-import com.example.community.entity.Comment;
 import com.example.community.entity.Member;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
 @Slf4j
-public class ArticleResponseDto {
+public class ArticleindexResponseDto {
 
     @NotNull
     private Long id;
@@ -41,16 +35,10 @@ public class ArticleResponseDto {
     // 조회수
     @NotNull
     private int viewcount;
-    // 이미지
-    private List<String> imageUrls;
-    // 댓글
-    private List<Comment> comments;
-    // 댓글 수
-    @NotNull
-    private int commentcount;
+
 
     @Builder
-    public ArticleResponseDto(Long id, String title, String content, LocalDateTime createdDate, LocalDateTime modifiedDate, Member member, int viewcount, List<BoardImage> boardImages, List<Comment> comments , int commentcount ) {
+    public ArticleindexResponseDto(Long id, String title, String content, LocalDateTime createdDate, LocalDateTime modifiedDate, Member member, int viewcount) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -60,17 +48,6 @@ public class ArticleResponseDto {
         //멤버 프록시 강제 초기화
         member.getUserpw();
         this.viewcount = viewcount;
-        log.info("test");
-        // 이미지 파일이 Null 아닐 시 url 리스트 생성
-        if (!boardImages.isEmpty()) {
-            this.imageUrls = boardImages.stream()
-                    .map(BoardImage::getUrl)
-                    .collect(Collectors.toList());
-        } else {
-            this.imageUrls = Collections.emptyList();
-        }
-        this.comments = comments;
-        this.commentcount = commentcount;
     }
 
 }

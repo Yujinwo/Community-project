@@ -7,52 +7,55 @@ import com.example.community.repository.BoardImageRepository;
 import com.example.community.repository.CommentRepository;
 import com.example.community.util.AuthenticationUtil;
 import com.example.community.util.CookieUtill;
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 
 @Service
+@Slf4j
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
     private final CommentRepository commentRepository;
     private final BoardImageRepository boardImageRepository;
     private final S3Uploader s3Uploader;
+
+    private final EntityManager em;
     @Autowired
-    public ArticleService(ArticleRepository articleRepository, CommentRepository commentRepository, BoardImageRepository boardImageRepository, S3Uploader s3Uploader) {
+    public ArticleService(ArticleRepository articleRepository, CommentRepository commentRepository, BoardImageRepository boardImageRepository, S3Uploader s3Uploader, EntityManager em) {
         this.articleRepository = articleRepository;
         this.commentRepository = commentRepository;
         this.boardImageRepository = boardImageRepository;
         this.s3Uploader = s3Uploader;
+        this.em = em;
     }
 
     // 글 리스트를 페이지 형태로 불러오기
     @Transactional
-    public Page<ArticleResponseDto> index(Long lastId,Pageable pageable) {
+    public Page<ArticleindexResponseDto> index(Long lastId, Pageable pageable) {
         // page 위치에 있는 값은 0부터 시작한다.
         int page = pageable.getPageNumber() - 1;
         // 페이지 형태로 글 불러오기
-        Page<ArticleResponseDto> articleDtos = articleRepository.findByArticlelist(lastId,pageable).map(Article::toDto);
+        Page<ArticleindexResponseDto> articleDtos = articleRepository.findByArticlelist(lastId,pageable).map(Article::IndextoDto);
         return articleDtos;
     }
 
     @Transactional
-    public Page<ArticleResponseDto> searchArticles(Long lastId, String query, Pageable pageable) {
-        return articleRepository.findByTitleOrContentContaining(lastId,query, pageable).map(article -> article.toDto());
+    public Page<ArticleindexResponseDto> searchArticles(Long lastId, String query, Pageable pageable) {
+        return articleRepository.findByTitleOrContentContaining(lastId,query, pageable).map(article -> article.IndextoDto());
     }
 
     // 글 저장
@@ -92,7 +95,6 @@ public class ArticleService {
     @Transactional
     public Article update(ArticleRequestDto articleRequestDto, List<MultipartFile> files) {
 
-        System.out.println(articleRequestDto.getImageUrls());
         // 인증된 Member Entity 가져오기
         Member member = AuthenticationUtil.getCurrentMember();
         // 글 Article Entity 불러오기
@@ -101,8 +103,7 @@ public class ArticleService {
         if (article.getTitle().equals(articleRequestDto.getTitle()) && article.getContent().equals(articleRequestDto.getContent())){
             return null;
         }
-        // 글에 저장된 이미지 불러오기
-        List<BoardImage> boardImage = boardImageRepository.findByboardId(articleRequestDto.getId());
+
         // 인증된 유저와 글 작성한 유저 비교 || 요청한 글이 데이터베이스에 없을시
         if(member.getId() != article.getMember().getId() || article == null)
         {
@@ -112,14 +113,16 @@ public class ArticleService {
         article.setTitle(articleRequestDto.getTitle());
         // 요청한 내용으로 글 Entity 정보를 수정한다
         article.setContent(articleRequestDto.getContent());
+        em.flush();
+
         // 수정된 article Entity로 글을 수정한다.
-        Article updatedArticle = articleRepository.save(article);
+        // Article updatedArticle = articleRepository.save(article);
         // 수정된 article Entity가 null일시 예외 상황 발생
-        if (updatedArticle == null) {
-            throw new RuntimeException("게시글 수정에 실패했습니다.");
-        }
+//        if (updatedArticle == null) {
+//            throw new RuntimeException("게시글 수정에 실패했습니다.");
+//        }
         // 글 이미지가 없었는데 첨부가 되었으면
-        if (articleRequestDto.getImageUrls().isEmpty() && boardImage == null && files != null){
+        if (articleRequestDto.getImageUrls().isEmpty() && files != null){
             // 이미지가 첨부 되었으면
             if (files != null && !files.isEmpty()) {
                 // 이미지를 하나씩 꺼낸다
@@ -130,7 +133,7 @@ public class ArticleService {
                         // 저장된 파일 디렉터리를 저장한다.
                         BoardImage image = BoardImage.builder()
                                 .url(fileName)
-                                .article(updatedArticle)
+                                .article(article)
                                 .build();
                         boardImageRepository.save(image);
                     } catch (IOException e) {
@@ -140,8 +143,10 @@ public class ArticleService {
             }
         }
         // 글 이미지를 다 삭제하고 이미지 첨부 파일이 있으면
-        if (articleRequestDto.getImageUrls().isEmpty() && boardImage != null && files != null){
+        if (articleRequestDto.getImageUrls().isEmpty() && files != null){
             // 이전에 저장되어 있던 이미지 파일이 존재할 시 파일과 데이터를 삭제한다.
+            // 글에 저장된 이미지 불러오기
+            List<BoardImage> boardImage = boardImageRepository.findByboardId(articleRequestDto.getId());
             for (BoardImage image : boardImage) {
                 s3Uploader.deleteFile(image.getUrl());
                 boardImageRepository.delete(image);
@@ -157,7 +162,7 @@ public class ArticleService {
                         // 저장된 파일 디렉터리를 저장한다.
                         BoardImage image = BoardImage.builder()
                                 .url(fileName)
-                                .article(updatedArticle)
+                                .article(article)
                                 .build();
                         boardImageRepository.save(image);
                     } catch (IOException e) {
@@ -168,8 +173,10 @@ public class ArticleService {
         }
 
         // 글 이미지를 다 삭제하고 이미지 첨부 파일이 없으면
-        if (articleRequestDto.getImageUrls().isEmpty() && boardImage != null && files == null){
+        if (articleRequestDto.getImageUrls().isEmpty() && files == null){
             // 이전에 저장되어 있던 이미지 파일이 존재할 시 파일과 데이터를 삭제한다.
+            // 글에 저장된 이미지 불러오기
+            List<BoardImage> boardImage = boardImageRepository.findByboardId(articleRequestDto.getId());
             for (BoardImage image : boardImage) {
                 s3Uploader.deleteFile(image.getUrl());
                 boardImageRepository.delete(image);
@@ -178,7 +185,7 @@ public class ArticleService {
         }
 
         // 글 이미지를 하나만 삭제하고 이미지 첨부 파일이 있으면
-        if (!articleRequestDto.getImageUrls().isEmpty() && boardImage != null && files != null){
+        if (!articleRequestDto.getImageUrls().isEmpty() && files != null){
             // 수정된 이미지 첨부 파일로 저장한다
             if (files != null && !files.isEmpty()) {
                 // 이미지를 하나씩 꺼낸다
@@ -189,7 +196,7 @@ public class ArticleService {
                         // 저장된 파일 디렉터리를 저장한다.
                         BoardImage image = BoardImage.builder()
                                 .url(fileName)
-                                .article(updatedArticle)
+                                .article(article)
                                 .build();
                         boardImageRepository.save(image);
                     } catch (IOException e) {
@@ -202,11 +209,11 @@ public class ArticleService {
     }
     // 글 삭제
     @Transactional
-    public void delete(ArticleRequestDto articleRequestDto) {
+    public void delete(Long id) {
         // 인증된 Member Entity 가져오기
         Member member = AuthenticationUtil.getCurrentMember();
         // 글 Article Entity 불러오기
-        Article article = this.findById(articleRequestDto.getId());
+        Article article = this.findById(id);
         // 인증된 유저와 글 작성한 유저 비교 || 요청한 글이 데이터베이스에 없을시
         if(member.getId() != article.getMember().getId() || article == null)
         {
@@ -225,19 +232,16 @@ public class ArticleService {
         Article article = this.findById(commentRequestDto.getBoardid());
         // 글 댓글 개수를 증가시킨다
         article.setCommentcount(article.getCommentcount() + 1);
-        Article commentcount = articleRepository.save(article);
+        em.flush();
         // 댓글 dto에 댓글 개수 증가된 Article Entity를 저장한다
-        commentRequestDto.setArticle(commentcount);
-        // 댓글 dto에 Member Entity 저장한다
+        commentRequestDto.setArticle(article);
         commentRequestDto.setMember(member);
-        // 댓글 넘버를 저장한다.
         commentRequestDto.setCommentnumber(article.getCommentcount());
-        // 댓글을 저장한다
-        Comment comment = commentRepository.save(commentRequestDto.toEntity());
-        // 저장한 댓글 Entity가 null 일시 예외 상황 발생
-        if (comment == null) {
+        Optional<Comment> comment = Optional.ofNullable(commentRepository.save(commentRequestDto.toEntity()));
+        if (!comment.isPresent()) {
             throw new RuntimeException("댓글 작성에 실패했습니다.");
         }
+
     }
     // 댓글 리스트를 페이지 형태로 불러오기
     @Transactional
@@ -254,11 +258,11 @@ public class ArticleService {
 
     // 글 조회수 올리기
     @Transactional
-    public Article viewcount(Long id, HttpServletRequest request, HttpServletResponse response) {
+    public Article viewcount(Long id,HttpServletRequest request, HttpServletResponse response) {
         // 쿠키에 articleid 파라미터값 불러오기
         String articleidCookie = CookieUtill.getCookieValue(request,"articleid");
         // 글 Article Entity 불러오기
-        Article article = this.findById(id);
+        Article article = articleRepository.findByArticleAndMemberlist(id);
         // Article Entity가 null 일시 예외 상황 발생
         if(article == null)
         {
@@ -268,11 +272,9 @@ public class ArticleService {
         if(articleidCookie == null || !articleidCookie.equals(String.valueOf(id))){
             // Article Entity viewcount를 1 증가시킨다
             article.setViewcount(article.getViewcount() + 1);
-            // 조회수를 올린 Article Entity로 글을 수정한다.
-            Article countedArticle = articleRepository.save(article);
             // 쿠키에 조회수 올린 글 Id값을 저장한다. 유효기간은 1시간으로 설정한다.
             CookieUtill.addCookie(response,"articleid",String.valueOf(id),3600);
-            return countedArticle;
+            return article;
         }
         return article;
     }
@@ -305,7 +307,6 @@ public class ArticleService {
         // 글 댓글 개수를 감소시킨다
         Article article = this.findById(comment.getArticle().getId());
         article.setCommentcount(article.getCommentcount() - 1);
-        articleRepository.save(article);
 
         // 대댓글이 없을 시 댓글을 삭제한다.
         if(comment.getParent() == null && comment.getChild().size() == 0) {
@@ -316,9 +317,8 @@ public class ArticleService {
         }
         // 대댓글이 있을 시 Comment Deleted를 true로 바꾼다
         else {
-            comment.setDeleted(true);
             // Deleted true된 Entity로 수정한다
-            commentRepository.save(comment);
+            comment.setDeleted(true);
         }
 
     }
@@ -331,9 +331,9 @@ public class ArticleService {
         Article article = this.findById(replyRequestDto.getBoardid());
         // 글 댓글 개수를 증가시킨다
         article.setCommentcount(article.getCommentcount() + 1);
-        Article commentcount = articleRepository.save(article);
+        em.flush();
         // 댓글 dto에 댓글 개수 증가된 Article Entity를 저장한다
-        replyRequestDto.setArticle(commentcount);
+        replyRequestDto.setArticle(article);
         // 댓글 dto에 Member Entity 저장한다
         replyRequestDto.setMember(member);
         // 부모 댓글 Comment Entity를 가져온다.
@@ -367,7 +367,6 @@ public class ArticleService {
         // 글 댓글 개수를 감소시킨다
         Article article = this.findById(reply.getArticle().getId());
         article.setCommentcount(article.getCommentcount() - 1);
-        articleRepository.save(article);
         // 대댓글을 삭제한다
         commentRepository.delete(reply);
     }

@@ -1,16 +1,11 @@
 package com.example.community.repository.querydsl.impl;
 
-import com.example.community.entity.Article;
-import com.example.community.entity.Comment;
-import com.example.community.entity.QArticle;
-import com.example.community.entity.QComment;
+import com.example.community.entity.*;
 import com.example.community.repository.querydsl.UserRepositoryCustom;
-import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
@@ -22,20 +17,33 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     @Override
     public Page<Comment> findByCommentlist(Long boardId, Pageable pageable) {
         QComment comment = QComment.comment;
-        QueryResults<Comment> comments = jpaQueryFactory.selectFrom(comment)
+        JPAQuery<Comment> comments = jpaQueryFactory.selectFrom(comment)
                 .where(comment.article.id.eq(boardId))
                 .orderBy(comment.commentnumber.asc(), comment.redepth.asc() , comment.createdDate.asc())
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetchResults();
+                .limit(pageable.getPageSize());
 
         JPAQuery<Long> countQuery = jpaQueryFactory
                 .select(comment.count())
                 .from(comment)
                 .where(comment.article.id.eq(boardId));
 
-        List<Comment> content = comments.getResults();
+        List<Comment> content = comments.fetch();
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+
+    }
+
+
+    @Override
+    public Article findByArticleAndMemberlist(Long Id) {
+        QArticle article = QArticle.article;
+
+        Article countarticle = jpaQueryFactory.selectFrom(article)
+                .where(article.id.eq(Id))
+                .join(article.member, QMember.member).fetchJoin()
+                .fetchOne();
+
+        return countarticle;
 
     }
 

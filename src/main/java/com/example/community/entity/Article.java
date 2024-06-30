@@ -1,12 +1,11 @@
 package com.example.community.entity;
 
+import com.example.community.dto.ArticleindexResponseDto;
 import com.example.community.dto.ArticleResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -53,6 +52,11 @@ public class Article extends BaseTime{
     public ArticleResponseDto toDto() {
 
         return ArticleResponseDto.builder().id(id).title(title).content(content).createdDate(createdDate).modifiedDate(modifiedDate).member(member).viewcount(viewcount).boardImages(boardImages).comments(comments).commentcount(commentcount).build();
+    }
+
+    public ArticleindexResponseDto IndextoDto() {
+
+        return ArticleindexResponseDto.builder().id(id).title(title).content(content).createdDate(createdDate).modifiedDate(modifiedDate).member(member).viewcount(viewcount).build();
     }
 
 }

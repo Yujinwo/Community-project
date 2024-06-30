@@ -38,11 +38,11 @@ public class ArticleRestController {
     }
 
     // 글 삭제 기능
-    @DeleteMapping("/article/delete")
-    public ResponseEntity<Map<String,String>> delete(@Valid @RequestBody ArticleRequestDto articleRequestDto)
+    @DeleteMapping("/article/delete/{id}")
+    public ResponseEntity<Map<String,String>> delete(@Valid @PathVariable Long id)
     {
         // 글 삭제 서비스 메서드에 요청 Dto 전달
-        articleService.delete(articleRequestDto);
+        articleService.delete(id);
         // json 메세지 생성
         Map<String,String> responseJson = new HashMap<>();
         responseJson.put("message" , "글 삭제 완료했습니다");

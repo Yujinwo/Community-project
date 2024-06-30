@@ -21,15 +21,15 @@ public class Comment extends BaseTime{
     @Column(nullable = false)
     private String content;
     // Member Entity 다:1 관계 설정 * 한 유저가 여러 댓글이 가능
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userid")
     private Member member;
     // Article Entity 다:1 관계 설정 * 한 게시글안에 여러 댓글이 가능
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "boardid")
     private Article article;
     // Comment Entity 다:1 관계 설정 * 한 댓글 안에 여러 댓글이 가능
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentid")
     private Comment parent;
     // 댓글 번호

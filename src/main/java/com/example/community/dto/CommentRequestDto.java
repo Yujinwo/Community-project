@@ -4,7 +4,6 @@ package com.example.community.dto;
 import com.example.community.entity.Article;
 import com.example.community.entity.Comment;
 import com.example.community.entity.Member;
-import com.example.community.entity.Reply;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Size;
 import lombok.*;
