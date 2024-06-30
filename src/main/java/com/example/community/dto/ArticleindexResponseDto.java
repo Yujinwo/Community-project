@@ -1,5 +1,6 @@
 package com.example.community.dto;
 
+import com.example.community.entity.Article;
 import com.example.community.entity.Member;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -38,16 +39,22 @@ public class ArticleindexResponseDto {
 
 
     @Builder
-    public ArticleindexResponseDto(Long id, String title, String content, LocalDateTime createdDate, LocalDateTime modifiedDate, Member member, int viewcount) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-        this.member = member;
+    public ArticleindexResponseDto(Article article) {
+        this.id = article.getId();
+        this.title = article.getTitle();
+        this.content = article.getContent();
+        this.createdDate = article.getCreatedDate();
+        this.modifiedDate = article.getModifiedDate();
+        this.member = article.getMember();
         //멤버 프록시 강제 초기화
         member.getUserpw();
-        this.viewcount = viewcount;
+        this.viewcount = article.getViewcount();
+    }
+    public ArticleindexResponseDto toDto(Article article) {
+
+        return ArticleindexResponseDto.builder()
+                .article(article)
+                .build();
     }
 
 }

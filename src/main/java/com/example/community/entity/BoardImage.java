@@ -19,6 +19,6 @@ public class BoardImage {
     private String url;
     // Article Entity 다:1 관계 설정 * 한 게시글안에 여러 이미지가 가능
     @ManyToOne(fetch =FetchType.LAZY)
-    @JoinColumn(name = "boardid")
+    @JoinColumn(name = "board_id")
     private Article article;
 }

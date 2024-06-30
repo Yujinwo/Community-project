@@ -49,13 +49,13 @@ public class ArticleService {
         // page 위치에 있는 값은 0부터 시작한다.
         int page = pageable.getPageNumber() - 1;
         // 페이지 형태로 글 불러오기
-        Page<ArticleindexResponseDto> articleDtos = articleRepository.findByArticlelist(lastId,pageable).map(Article::IndextoDto);
+        Page<ArticleindexResponseDto> articleDtos = articleRepository.findByArticlelist(lastId,pageable).map(article -> ArticleindexResponseDto.builder().article(article).build());
         return articleDtos;
     }
 
     @Transactional
     public Page<ArticleindexResponseDto> searchArticles(Long lastId, String query, Pageable pageable) {
-        return articleRepository.findByTitleOrContentContaining(lastId,query, pageable).map(article -> article.IndextoDto());
+        return articleRepository.findByTitleOrContentContaining(lastId,query, pageable).map(article -> ArticleindexResponseDto.builder().article(article).build());
     }
 
     // 글 저장
@@ -234,15 +234,15 @@ public class ArticleService {
         article.setCommentcount(article.getCommentcount() + 1);
         em.flush();
         // 댓글 dto에 댓글 개수 증가된 Article Entity를 저장한다
-        commentRequestDto.setArticle(article);
-        commentRequestDto.setMember(member);
-        commentRequestDto.setCommentnumber(article.getCommentcount());
+        commentRequestDto.setComment(article, member);
         Optional<Comment> comment = Optional.ofNullable(commentRepository.save(commentRequestDto.toEntity()));
         if (!comment.isPresent()) {
             throw new RuntimeException("댓글 작성에 실패했습니다.");
         }
 
     }
+
+
     // 댓글 리스트를 페이지 형태로 불러오기
     @Transactional
     public Page<CommentResponseDto> findCommentid(Long id, Pageable pageable) {
@@ -271,13 +271,15 @@ public class ArticleService {
         // 쿠키카 Null일시 || 쿠키에 저장된 글 Id값과 조회한 글 Id값이 다를시 조회수를 올린다
         if(articleidCookie == null || !articleidCookie.equals(String.valueOf(id))){
             // Article Entity viewcount를 1 증가시킨다
-            article.setViewcount(article.getViewcount() + 1);
+            article.updatecount();
             // 쿠키에 조회수 올린 글 Id값을 저장한다. 유효기간은 1시간으로 설정한다.
             CookieUtill.addCookie(response,"articleid",String.valueOf(id),3600);
             return article;
         }
         return article;
     }
+
+
 
     // id로 Article Entity(글) 불러오기
     @Transactional

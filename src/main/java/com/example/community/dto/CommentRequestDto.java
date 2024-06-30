@@ -13,6 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommentRequestDto {
 
     private Long id;
@@ -40,7 +41,25 @@ public class CommentRequestDto {
 
     // dto -> Entity 생성
     public Comment toEntity() {
-        return Comment.builder().content(content).member(member).article(article).child(child).parent(parent).commentnumber(commentnumber).redepth(redepth).deleted(false).build();
+        return Comment.builder().
+                content(content).
+                member(member).
+                article(article).
+                child(child).
+                parent(parent).
+                commentnumber(commentnumber).
+                redepth(redepth).
+                deleted(false)
+                .build();
     }
+
+    public void setComment(Article article, Member member) {
+        this.article = article;
+        this.member = member;
+        this.commentnumber = article.getCommentcount();
+    }
+
+
+
 
 }

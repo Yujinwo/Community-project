@@ -1,5 +1,6 @@
 package com.example.community.dto;
 
+import com.example.community.entity.Article;
 import com.example.community.entity.BoardImage;
 import com.example.community.entity.Comment;
 import com.example.community.entity.Member;
@@ -50,18 +51,18 @@ public class ArticleResponseDto {
     private int commentcount;
 
     @Builder
-    public ArticleResponseDto(Long id, String title, String content, LocalDateTime createdDate, LocalDateTime modifiedDate, Member member, int viewcount, List<BoardImage> boardImages, List<Comment> comments , int commentcount ) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-        this.member = member;
+    public ArticleResponseDto(Article article) {
+        this.id = article.getId();
+        this.title = article.getTitle();
+        this.content = article.getContent();
+        this.createdDate = article.getCreatedDate();
+        this.modifiedDate = article.getModifiedDate();
+        this.member = article.getMember();
         //멤버 프록시 강제 초기화
         member.getUserpw();
-        this.viewcount = viewcount;
-        log.info("test");
+        this.viewcount = article.getViewcount();
         // 이미지 파일이 Null 아닐 시 url 리스트 생성
+        List<BoardImage> boardImages = article.getBoardImages();
         if (!boardImages.isEmpty()) {
             this.imageUrls = boardImages.stream()
                     .map(BoardImage::getUrl)
@@ -69,8 +70,16 @@ public class ArticleResponseDto {
         } else {
             this.imageUrls = Collections.emptyList();
         }
-        this.comments = comments;
-        this.commentcount = commentcount;
+        this.comments = article.getComments();
+        this.commentcount = article.getCommentcount();
     }
+
+    public ArticleResponseDto toDto(Article article) {
+
+        return ArticleResponseDto.builder()
+                .article(article)
+                .build();
+    }
+
 
 }

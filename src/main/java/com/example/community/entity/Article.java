@@ -30,7 +30,7 @@ public class Article extends BaseTime{
     private String content;
     // Member Entity 다:1 관계 설정 * 한 유저가 여러 게시글이 가능
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userid")
+    @JoinColumn(name = "user_id")
     private Member member;
     // 조회수
     @Column
@@ -47,16 +47,15 @@ public class Article extends BaseTime{
     // 댓글 수
     @Column
     private int commentcount;
-
-    // Entity -> ArticleResponseDto 생성
-    public ArticleResponseDto toDto() {
-
-        return ArticleResponseDto.builder().id(id).title(title).content(content).createdDate(createdDate).modifiedDate(modifiedDate).member(member).viewcount(viewcount).boardImages(boardImages).comments(comments).commentcount(commentcount).build();
+  
+    //연관관계 메서드
+    public void addBoardImages (BoardImage boardImage){
+        boardImage.setArticle(this);
+        this.getBoardImages().add(boardImage);
     }
 
-    public ArticleindexResponseDto IndextoDto() {
-
-        return ArticleindexResponseDto.builder().id(id).title(title).content(content).createdDate(createdDate).modifiedDate(modifiedDate).member(member).viewcount(viewcount).build();
+    public void updatecount() {
+        this.viewcount = viewcount + 1;
     }
 
 }
