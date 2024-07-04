@@ -47,7 +47,10 @@
         <!-- 다음 링크 있을시 활성화 없을시 비 활성화 -->
         <a th:if=${hasNext} class="page_next" th:classappend="${!hasNext} ? 'disabled'" th:href="${hasNext} ? @{/(previousId=${previousLastId},lastId=${nextLastId})} : '#'"> 다음 </a>
     </div>
+
     <script th:inline="javascript">
+
+
 
         $(document).ready(function() {
     // 엔터 키를 눌렀을 때 검색 실행
@@ -64,7 +67,7 @@
             window.location.href = '/articles/search?query=' + encodeURIComponent(query);
         }
     }
-});
+ });
     </script>
 </th:block>
 </html>

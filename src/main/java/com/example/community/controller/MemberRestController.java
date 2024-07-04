@@ -3,6 +3,7 @@ package com.example.community.controller;
 import com.example.community.dto.MemberDto;
 import com.example.community.entity.Member;
 import com.example.community.service.MemberService;
+import com.example.community.util.AuthenticationUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,19 @@ public class MemberRestController {
 
         resultdata.put("result","회원가입 완료 했습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(resultdata);
+    }
+
+    @GetMapping("/api/session")
+    public int ssesionCheck() {
+        // 인증된 Member Entity 가져오기
+        Member member = AuthenticationUtil.getCurrentMember();
+        if(member != null) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+
     }
 
     @PostMapping("/idcheck")

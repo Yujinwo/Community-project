@@ -2,6 +2,7 @@ package com.example.community.repository.querydsl.impl;
 
 import com.example.community.entity.*;
 import com.example.community.repository.querydsl.UserRepositoryCustom;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -48,8 +49,23 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     }
 
     @Override
+    public List<Notification> findByNoticication(Member user) {
+        QNotification qNotification = QNotification.notification;
+        QMember receiver = new QMember("receiver");
+
+
+        List<Notification> notificationlist = jpaQueryFactory.selectFrom(qNotification)
+                .join(qNotification.receiver,receiver)
+                .where(qNotification.receiver.eq(user))
+                .fetch();
+
+        return notificationlist;
+    }
+
+    @Override
     public Page<Article> findByArticlelist(Long lastId, Pageable pageable) {
         QArticle article = QArticle.article;
+
 
         JPAQuery<Article> query = jpaQueryFactory.selectFrom(article)
                 .where(lastId != null ? article.id.gt(lastId) : null)

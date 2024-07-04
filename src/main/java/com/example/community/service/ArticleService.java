@@ -33,13 +33,16 @@ public class ArticleService {
     private final BoardImageRepository boardImageRepository;
     private final S3Uploader s3Uploader;
 
+    private final NotificationService notificationService;
+
     private final EntityManager em;
     @Autowired
-    public ArticleService(ArticleRepository articleRepository, CommentRepository commentRepository, BoardImageRepository boardImageRepository, S3Uploader s3Uploader, EntityManager em) {
+    public ArticleService(ArticleRepository articleRepository, CommentRepository commentRepository, BoardImageRepository boardImageRepository, S3Uploader s3Uploader, NotificationService notificationService, EntityManager em) {
         this.articleRepository = articleRepository;
         this.commentRepository = commentRepository;
         this.boardImageRepository = boardImageRepository;
         this.s3Uploader = s3Uploader;
+        this.notificationService = notificationService;
         this.em = em;
     }
 
@@ -239,6 +242,7 @@ public class ArticleService {
         if (!comment.isPresent()) {
             throw new RuntimeException("댓글 작성에 실패했습니다.");
         }
+        notificationService.sendNotification(article.getMember(),member,article,commentRequestDto.getContent(),false);
 
     }
 

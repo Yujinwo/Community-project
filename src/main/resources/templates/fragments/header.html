@@ -11,6 +11,58 @@
         <link rel="stylesheet" th:href="@{/css/content.css}">
         <link rel="stylesheet" th:href="@{/css/common.css}">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <style>
+            /* 알림 팝업의 기본 스타일 */
+            .notification {
+                 width:250px;
+            }
+            .notification-popup {
+                background-color: white;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                padding: 20px;
+                max-width: 400px;
+                text-align: center;
+                display: none;
+                position: absolute;
+                z-index: 1000;
+                top:5%;
+            }
+            .notification-popup h2 {
+                margin-top: 0;
+            }
+
+        .notification h2 {
+            margin-top: 0;
+        }
+        .notification ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .notification li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .notification li:hover {
+            background-color: #f9f9f9;
+        }
+         .notification .notification-nametext {
+           font-weight: bold;
+           font-size : 15px;
+        }
+        .notification .notification-text {
+            flex: 1; /* 텍스트가 넘칠 경우 자동으로 줄바꿈 되도록 설정 */
+        }
+       .notification .notification-time {
+            color: #999;
+            font-size: 12px;
+            margin-top: 5px; /* 시간과 텍스트 사이의 간격 추가 */
+        }
+
+        </style>
     </head>
     <body>
     <!-- 자유/익명 게시판 -->
@@ -25,7 +77,23 @@
         <!-- 로그인/로그아웃 -->
             <div class="header_auth">
                 <a sec:authorize="isAnonymous" href="/login">로그인</a>
-                <div sec:authorize="isAuthenticated()">
+                <div sec:authorize="isAuthenticated()" style="display:flex;">
+                    <button class="emoji-button" id="notificationBtn" style="border:none; background-color:#FFFFFF;">
+                        🔔
+                    </button>
+                    <!-- 새로운 알림 메세지 표시 -->
+                    <div id="notificationIndicator" style="
+                            position: absolute;
+                            width: 15px;
+                            height: 15px;
+                            background-color: red;
+                            color: white;
+                            border-radius: 50%;
+                            display: none;
+                            justify-content: center;
+                            align-items: center;
+                            font-size: 14px;
+                      ">!</div>
                     <!-- Oauth2.0으로 로그인한 경우 -->
                     <div th:if="${#authentication != null and #authentication.principal instanceof T(org.springframework.security.oauth2.core.user.OAuth2User)}">
                         <span class="bold" th:if="${#authentication.principal.attributes['name'] != null}"
@@ -37,9 +105,19 @@
                     </div>
                     <!-- Spring Security 으로 직접 로그인한 경우 -->
                     <div th:if="${#authentication != null and #authentication.principal instanceof T(org.springframework.security.core.userdetails.UserDetails)}">
+
                         <span class="bold" th:if="${#authentication.principal.usernick != null}"
                               th:text="${#authentication.principal.usernick}"></span>
                         <span>님 안녕하세요</span>
+                    </div>
+                    <div id="notificationPopup" class="notification-popup">
+                        <h2>알림</h2>
+                        <div class="notification" style="width:200px">
+                            <ul id="notificationList">
+                                <!-- 여기에 API에서 가져온 알림 데이터가 동적으로 추가될 예정 -->
+                            </ul>
+
+                        </div>
                     </div>
                 </div>
                 <a sec:authorize="isAnonymous" href="/join">회원가입</a>
@@ -47,5 +125,128 @@
             </div>
         </div>
     </body>
+    <script>
+
+       const notificationButton = document.getElementById('notificationBtn');
+       const popup = document.getElementById('notificationPopup');
+       const closeButton = document.getElementById('closePopup');
+       if(notificationButton != null) {
+       notificationButton.addEventListener('click', function() {
+           $.ajax({
+                            type:'GET',
+                            contentType:'application/json',
+                            url:'/notifications/list',
+                            success:function(data){
+                               const notificationList = document.getElementById('notificationList');
+                               notificationList.innerHTML = '';
+                               data.result.forEach(notification => {
+
+                               const li = document.createElement('li');
+                               li.classList.add('notification-item');
+
+                               const a = document.createElement('a');
+                               li.appendChild(a);
+                               a.href= '/article/detail/' + notification.articleId
+
+
+                               // 메시지 텍스트 추가
+                               const nickNameText = document.createElement('p');
+                               nickNameText.classList.add('notification-nametext');
+                               nickNameText.textContent = notification.writerNickname;
+                               a.appendChild(nickNameText);
+
+
+                               // 메시지 텍스트 추가
+                               const articleTtiletext = document.createElement('p');
+                               articleTtiletext.classList.add('notification-text');
+                               articleTtiletext.textContent = "님이 " + "글 제목 : " + '"' + notification.articleTitle + '"'  + " 에 답변을 달았습니다.";
+                               a.appendChild(articleTtiletext);
+
+
+                               // 시간 추가
+                               const time = document.createElement('p');
+                               time.classList.add('notification-time');
+                               time.textContent = notification.commentCreatetime;
+                               a.appendChild(time);
+
+                               // 리스트에 추가
+                               notificationList.appendChild(li);
+                               });
+                            },
+                            error: function(e) {
+                                console.log(e);
+                            }
+                   });
+          popup.style.display = 'block';
+          notificationIndicator.style.display = 'none';
+      });
+
+
+      document.addEventListener('click', function(event) {
+           if (!popup.contains(event.target) && event.target !== notificationButton) {
+               popup.style.display = 'none';
+           }
+       });
+
+       // 전역 변수로 eventSource를 선언
+         let eventSource = null;
+
+         // 구독 함수
+         function subscribeToNotifications() {
+
+            if (eventSource !== null) {
+                 return;
+                }
+
+           // 새로운 EventSource 인스턴스를 생성하고 구독 시작
+              eventSource = new EventSource('/notifications');
+              const notificationIndicator = document.getElementById('notificationIndicator');
+               // 메시지 이벤트 리스너 추가
+              eventSource.addEventListener('notification', function(event) {
+              console.log(event.data);
+               // 새로운 알림을 수신하면 느낌표를 표시
+               if(event.data != "연결완료")
+               {
+                notificationIndicator.style.display = 'flex';
+                console.log('새 알림:', event.data);
+                }
+              });
+
+              // 오류 이벤트 리스너 추가
+              eventSource.addEventListener('error', function(event) {
+                console.error('EventSource 에러:', event);
+                // 에러가 발생하면 eventSource를 닫고 null로 초기화
+                eventSource.close();
+                eventSource = null;
+              });
+
+         }
+
+
+         // 페이지 로드 시 자동 구독 (원하는 경우)
+         window.onload = function() {
+          // 세션 상태 확인 여부
+               let ssesionStatus = 0
+               $.ajax({
+                        type:'get',
+                        contentType:'application/json',
+                        url:'/api/session',
+                        success:function(data){
+                           ssesionStatus = data;
+                           if(ssesionStatus == 1)
+                               {
+                                subscribeToNotifications();
+                               }
+                        },
+                        error: function(e) {
+                            console.log(e);
+                        }
+               });
+
+
+
+         };
+   }
+    </script>
 </th:block>
 </html>
