@@ -15,11 +15,16 @@
             /* 알림 팝업의 기본 스타일 */
             .notification {
                  width:250px;
+                 overflow-y: auto;
+                height: 400px; /* 원하는 높이로 설정 */
+                overflow-y: auto; /* 세로 스크롤 가능하게 설정 */
+                border: 1px solid #ccc; /* 테두리 설정 */
+                background-color: #fff; /* 배경색 설정 */
+                position: absolute; /* 위치를 절대값으로 설정 */
             }
             .notification-popup {
                 background-color: white;
                 box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                padding: 20px;
                 max-width: 400px;
                 text-align: center;
                 display: none;
@@ -111,11 +116,17 @@
                         <span>님 안녕하세요</span>
                     </div>
                     <div id="notificationPopup" class="notification-popup">
-                        <h2>알림</h2>
-                        <div class="notification" style="width:200px">
+                        <h2 style="width:250px; padding:10px; border: 1px solid;">알림</h2>
+                        <div class="notification" id="notification">
                             <ul id="notificationList">
                                 <!-- 여기에 API에서 가져온 알림 데이터가 동적으로 추가될 예정 -->
                             </ul>
+                            <div id="noFeedList" style="
+                                        margin-top: 200px;
+                                        display:none;
+                                    ">
+                                <span>받은 알림이 없습니다.</span>
+                            </div>
 
                         </div>
                     </div>
@@ -126,84 +137,120 @@
         </div>
     </body>
     <script>
+        let pageNumber = 0;
+        let pageLast = true;
 
-       const notificationButton = document.getElementById('notificationBtn');
-       const popup = document.getElementById('notificationPopup');
-       const closeButton = document.getElementById('closePopup');
-       if(notificationButton != null) {
-       notificationButton.addEventListener('click', function() {
-           $.ajax({
+        function addNotificaionList(pageNumber) {
+
+                       $.ajax({
                             type:'GET',
                             contentType:'application/json',
-                            url:'/notifications/list',
+                            url:'/notifications/list?page=' + pageNumber,
                             success:function(data){
                                const notificationList = document.getElementById('notificationList');
-                               notificationList.innerHTML = '';
-                               data.result.forEach(notification => {
+                               const noFeedList = document.getElementById('noFeedList');
 
-                               const li = document.createElement('li');
-                               li.classList.add('notification-item');
+                               if(data.count == 0) {
+                                   noFeedList.style.display = 'block';
+                                   pageNumber = 0;
+                               }
+                               else {
+                                   pageNumber = data.result.pageable.pageNumber;
+                                   pageLast = data.result.last;
+                                   noFeedList.style.display = 'none';
+                                   data.result.content.forEach(notification => {
 
-                               const a = document.createElement('a');
-                               li.appendChild(a);
-                               a.href= '/article/detail/' + notification.articleId
+                                       const li = document.createElement('li');
+                                       li.classList.add('notification-item');
 
-
-                               // 메시지 텍스트 추가
-                               const nickNameText = document.createElement('p');
-                               nickNameText.classList.add('notification-nametext');
-                               nickNameText.textContent = notification.writerNickname;
-                               a.appendChild(nickNameText);
-
-
-                               // 메시지 텍스트 추가
-                               const articleTtiletext = document.createElement('p');
-                               articleTtiletext.classList.add('notification-text');
-                               articleTtiletext.textContent = "님이 " + "글 제목 : " + '"' + notification.articleTitle + '"'  + " 에 답변을 달았습니다.";
-                               a.appendChild(articleTtiletext);
+                                       const a = document.createElement('a');
+                                       li.appendChild(a);
+                                       a.href= '/article/detail/' + notification.articleId
 
 
-                               // 시간 추가
-                               const time = document.createElement('p');
-                               time.classList.add('notification-time');
-                               time.textContent = notification.commentCreatetime;
-                               a.appendChild(time);
+                                       // 메시지 텍스트 추가
+                                       const nickNameText = document.createElement('p');
+                                       nickNameText.classList.add('notification-nametext');
+                                       nickNameText.textContent = notification.writerNickname;
+                                       a.appendChild(nickNameText);
 
-                               // 리스트에 추가
-                               notificationList.appendChild(li);
-                               });
+
+                                       // 메시지 텍스트 추가
+                                       const articleTtiletext = document.createElement('p');
+                                       articleTtiletext.classList.add('notification-text');
+                                       articleTtiletext.textContent = "님이 " + "글 제목 : " + '"' + notification.articleTitle + '"'  + " 에 답변을 달았습니다.";
+                                       a.appendChild(articleTtiletext);
+
+
+                                       // 시간 추가
+                                       const time = document.createElement('p');
+                                       time.classList.add('notification-time');
+                                       time.textContent = notification.commentCreatetime;
+                                       a.appendChild(time);
+
+                                       // 리스트에 추가
+                                       notificationList.appendChild(li);
+                                   });
+                               }
                             },
                             error: function(e) {
                                 console.log(e);
                             }
                    });
+
+           }
+
+
+
+       const notificationButton = document.getElementById('notificationBtn');
+       const popup = document.getElementById('notificationPopup');
+       const closeButton = document.getElementById('closePopup');
+       if(notificationButton != null) {
+            const notificationElement = document.getElementById('notification'); // 스크롤 가능한 요소의 ID를 가져옴
+             notificationElement.addEventListener('scroll', function() {
+                     setTimeout(function() {
+                        const scrollTop = notificationElement.scrollTop;
+                        const scrollHeight = notificationElement.scrollHeight;
+                        const clientHeight = notificationElement.clientHeight;
+
+                        if (scrollTop + clientHeight >= scrollHeight) {
+                          if(pageLast == false)
+                          {
+                             console.log('스크롤이 끝에 도달했습니다.');
+                             addNotificaionList(pageNumber+1)
+                           }
+                        }
+             });     }, 2000); // 200ms 내에 다시 호출되지 않도록 디바운스 설정
+
+
+        notificationButton.addEventListener('click', function() {
+          const notificationList = document.getElementById('notificationList');
+          notificationList.innerHTML = '';
           popup.style.display = 'block';
           notificationIndicator.style.display = 'none';
-      });
+          addNotificaionList(pageNumber)
+        });
 
 
-      document.addEventListener('click', function(event) {
-           if (!popup.contains(event.target) && event.target !== notificationButton) {
-               popup.style.display = 'none';
-           }
-       });
+         document.addEventListener('click', function(event) {
+               if (!popup.contains(event.target) && event.target !== notificationButton) {
+                   const notificationList = document.getElementById('notificationList');
+                   notificationList.innerHTML = '';
+                   popup.style.display = 'none';
+               }
+           });
 
-       // 전역 변수로 eventSource를 선언
-         let eventSource = null;
+
+
 
          // 구독 함수
          function subscribeToNotifications() {
-
-            if (eventSource !== null) {
-                 return;
-                }
 
            // 새로운 EventSource 인스턴스를 생성하고 구독 시작
               eventSource = new EventSource('/notifications');
               const notificationIndicator = document.getElementById('notificationIndicator');
                // 메시지 이벤트 리스너 추가
               eventSource.addEventListener('notification', function(event) {
-              console.log(event.data);
                // 새로운 알림을 수신하면 느낌표를 표시
                if(event.data != "연결완료")
                {
@@ -242,8 +289,6 @@
                             console.log(e);
                         }
                });
-
-
 
          };
    }

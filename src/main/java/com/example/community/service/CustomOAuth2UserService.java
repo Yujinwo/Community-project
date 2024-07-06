@@ -1,6 +1,7 @@
 package com.example.community.service;
 
 
+import com.example.community.config.CustomOAuth2User;
 import com.example.community.dto.OAuthAttributes;
 import com.example.community.entity.Member;
 import com.example.community.repository.MemberRepository;
@@ -37,15 +38,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService{
         // OAuthAttributes 객체를 생성하여 사용자의 속성과 관련된 정보를 캡슐화합니다.
         OAuthAttributes oAuthattributes = OAuthAttributes.of(registrationId, userNameAttributeName, attributes);
         // OAuthAttributes를 저장하거나 업데이트합니다.
-        saveOrUpdate(oAuthattributes);
-        return new DefaultOAuth2User(
+        Member member = saveOrUpdate(oAuthattributes);
+        return new CustomOAuth2User(
                 // 사용자에게 부여할 권한을 지정합니다.
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                 // 사용자의 속성(attributes)을 제공합니다.
                 oAuthattributes.getAttributes(),
                 // 사용자의 이름 속성(attribute) 키를 지정합니다.
-                oAuthattributes.getNameAttributeKey()
-        );
+                oAuthattributes.getNameAttributeKey(),
+                // 멤버 엔티티를 저장한다
+                member );
     }
     private Member saveOrUpdate(OAuthAttributes attributes) {
         // 기존 아이디가 존재하는지 확인한다

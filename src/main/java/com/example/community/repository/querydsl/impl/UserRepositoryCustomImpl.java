@@ -30,7 +30,8 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
                 .where(comment.article.id.eq(boardId));
 
         List<Comment> content = comments.fetch();
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+        long totalCount = countQuery.fetchOne();
+        return PageableExecutionUtils.getPage(content, pageable, () -> totalCount);
 
     }
 
@@ -49,17 +50,28 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     }
 
     @Override
-    public List<Notification> findByNoticication(Member user) {
+    public Page<Notification> findByNoticication(Member user,Pageable pageable) {
         QNotification qNotification = QNotification.notification;
         QMember receiver = new QMember("receiver");
 
-
-        List<Notification> notificationlist = jpaQueryFactory.selectFrom(qNotification)
+        JPAQuery<Notification> notifications = jpaQueryFactory.selectFrom(qNotification)
                 .join(qNotification.receiver,receiver)
                 .where(qNotification.receiver.eq(user))
-                .fetch();
+                .orderBy(qNotification.createdDate.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
 
-        return notificationlist;
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(qNotification.count())
+                .from(qNotification)
+                .where(qNotification.receiver.eq(user));
+
+        List<Notification>  notificationlist = notifications.fetch();
+        long totalCount = countQuery.fetchOne();
+
+
+        return PageableExecutionUtils.getPage(notificationlist,pageable,() -> totalCount);
+
     }
 
     @Override

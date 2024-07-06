@@ -3,8 +3,11 @@ package com.example.community.controller;
 import com.example.community.dto.ArticleRequestDto;
 import com.example.community.dto.CommentRequestDto;
 import com.example.community.entity.Article;
+import com.example.community.entity.Notification;
 import com.example.community.service.ArticleService;
+import com.example.community.service.NotificationService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +19,16 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@Slf4j
 public class ArticleRestController {
 
     private final ArticleService articleService;
+    private final NotificationService notificationService;
+
     @Autowired
-    public ArticleRestController(ArticleService articleService) {
+    public ArticleRestController(ArticleService articleService, NotificationService notificationService) {
         this.articleService = articleService;
+        this.notificationService = notificationService;
     }
 
 
@@ -71,7 +78,9 @@ public class ArticleRestController {
     @PostMapping("/comment/write")
     public ResponseEntity<Map<String,String>> commentwrite(@Valid @RequestBody CommentRequestDto commentRequestDto) {
         // 댓글 작성 서비스 메서드에 요청 Dto 전달
-        articleService.commentwrite(commentRequestDto);
+        Notification notification = articleService.commentwrite(commentRequestDto);
+        // SSE 댓글 메세지 전송
+        notificationService.sendRealTimeNotification(notification);
         // json 메세지 생성
         Map<String,String> responseJson = new HashMap<>();
         responseJson.put("message" , "댓글 작성 완료했습니다");

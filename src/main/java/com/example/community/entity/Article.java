@@ -38,7 +38,7 @@ public class Article extends BaseTime{
     // boardImages Entity 1:다 관계 설정 *한 게시글 안에 여러 이미지가 가능
     @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE)
     @OrderBy("id asc")
-    @BatchSize(size = 1000)
+    @BatchSize(size = 100)
     private List<BoardImage> boardImages;
     // comments Entity 1:다 관계 설정 * 한 게시글 안에 여러 댓글이 가능
     @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE)

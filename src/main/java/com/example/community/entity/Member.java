@@ -12,7 +12,7 @@ import org.hibernate.annotations.BatchSize;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@BatchSize(size = 1000)
+@BatchSize(size = 100)
 public class Member {
 
     @Id

@@ -9,6 +9,8 @@ import com.example.community.repository.NotificationRepository;
 import com.example.community.util.AuthenticationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -27,14 +29,16 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    @Transactional
-    public SseEmitter createEmitter(Member member) {
+    private final AuthenticationUtil authenticationUtil;
+
+
+    public SseEmitter createEmitter(Long memberId) {
         try {
-            Long userId = member.getId();
-            SseEmitter emitter = vaildDuplicateEmitter(userId);
+
+            SseEmitter emitter = vaildDuplicateEmitter(memberId);
             if(emitter == null) {
                 emitter = new SseEmitter(Long.MAX_VALUE);
-                userEmitters.put(userId, emitter);
+                userEmitters.put(memberId, emitter);
 
                 try {
                     emitter.send(SseEmitter.event()
@@ -42,13 +46,13 @@ public class NotificationService {
                             .data("연결완료"));
                 } catch (Exception e) {
                     log.info("에러 메세지 " + e.getMessage());
-                    userEmitters.remove(userId);
+                    userEmitters.remove(memberId);
                     // 예외 처리
                 }
 
-                emitter.onCompletion(() -> userEmitters.remove(userId));
-                emitter.onTimeout(() -> userEmitters.remove(userId));
-                emitter.onError((e) -> userEmitters.remove(userId));
+                emitter.onCompletion(() -> userEmitters.remove(memberId));
+                emitter.onTimeout(() -> userEmitters.remove(memberId));
+                emitter.onError((e) -> userEmitters.remove(memberId));
 
                 return emitter;
             }
@@ -74,7 +78,11 @@ public class NotificationService {
 
 
     @Transactional
-    public void sendNotification(Member receiver, Member writer, Article article,String message,boolean read) {
+    public Notification sendNotification(Member receiver, Member writer, Article article,String message,boolean read) {
+        if(receiver.getId() == writer.getId())
+        {
+            return null;
+        }
         Notification notification = Notification.
                                         builder()
                                         .receiver(receiver)
@@ -83,34 +91,38 @@ public class NotificationService {
                                         .message(message)
                                         .read(read).build();
         Notification savedNotification = notificationRepository.save(notification);
-        sendRealTimeNotification(savedNotification);
+        // 지연로딩 프록시 초기화
+        savedNotification.getWriter().getUsernick();
+        savedNotification.getArticle().getTitle();
+        return savedNotification;
+
     }
 
-    @Transactional
-    private void sendRealTimeNotification(Notification notification) {
-        SseEmitter emitter = userEmitters.get(notification.getReceiver().getId());
-        if (emitter != null) {
-                try {
-                    emitter.send(SseEmitter.event()
-                            .name("notification")
-                            .data(notification.getWriter().getUsernick() + " 님이 회원님이 작성한 " + notification.getArticle().getTitle() + "에 "  + notification.getMessage() + " 댓글을 작성했습니다."));
-                } catch (Exception e) {
-                    log.info(e.getMessage());
-                    userEmitters.remove(notification.getReceiver().getId());
-                    // 예외 처리
-                }
-
+    public void sendRealTimeNotification(Notification notification) {
+        if(notification != null)
+        {
+            SseEmitter emitter = userEmitters.get(notification.getReceiver().getId());
+            if (emitter != null) {
+                    try {
+                        emitter.send(SseEmitter.event()
+                                .name("notification")
+                                .data(notification.getWriter().getUsernick() + " 님이 회원님이 작성한 " + notification.getArticle().getTitle() + "에 "  + notification.getMessage() + " 댓글을 작성했습니다."));
+                    } catch (Exception e) {
+                        log.info(e.getMessage());
+                        userEmitters.remove(notification.getReceiver().getId());
+                        // 예외 처리
+                    }
+            }
         }
     }
-
-    public NotificationResultDto getnotifications() {
+    @Transactional
+    public NotificationResultDto getnotifications(Pageable pageable) {
         // 인증된 Member Entity 가져오기
-        Member member = AuthenticationUtil.getCurrentMember();
+        Member member = authenticationUtil.getCurrentMember();
         if(member != null)
         {
-            List<NotificationResponseDto> notificationList = notificationRepository.findByNoticication(member).stream().map(n -> n.changeNotificationDto()).collect(Collectors.toList());
-
-            return NotificationResultDto.builder().count(1).Result(notificationList).build();
+            Page<NotificationResponseDto> notificationList = notificationRepository.findByNoticication(member,pageable).map(n -> n.changeNotificationDto());
+            return NotificationResultDto.builder().count(notificationList.getTotalElements()).Result(notificationList).build();
         }
         return new NotificationResultDto();
 

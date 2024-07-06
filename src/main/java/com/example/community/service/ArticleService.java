@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,14 +37,17 @@ public class ArticleService {
     private final NotificationService notificationService;
 
     private final EntityManager em;
+
+    private final AuthenticationUtil authenticationUtil;
     @Autowired
-    public ArticleService(ArticleRepository articleRepository, CommentRepository commentRepository, BoardImageRepository boardImageRepository, S3Uploader s3Uploader, NotificationService notificationService, EntityManager em) {
+    public ArticleService(ArticleRepository articleRepository, CommentRepository commentRepository, BoardImageRepository boardImageRepository, S3Uploader s3Uploader, NotificationService notificationService, EntityManager em, AuthenticationUtil authenticationUtil) {
         this.articleRepository = articleRepository;
         this.commentRepository = commentRepository;
         this.boardImageRepository = boardImageRepository;
         this.s3Uploader = s3Uploader;
         this.notificationService = notificationService;
         this.em = em;
+        this.authenticationUtil = authenticationUtil;
     }
 
     // 글 리스트를 페이지 형태로 불러오기
@@ -65,7 +69,7 @@ public class ArticleService {
     @Transactional
     public void write(ArticleRequestDto articleRequestDto, List<MultipartFile> files) {
         // 인증된 Member Entity 가져오기
-        Member member = AuthenticationUtil.getCurrentMember();
+        Member member = authenticationUtil.getCurrentMember();
         // dto에 Member Entity set
         articleRequestDto.setMember(member);
         // dto -> Article Entity생성 -> 글 저장
@@ -99,7 +103,7 @@ public class ArticleService {
     public Article update(ArticleRequestDto articleRequestDto, List<MultipartFile> files) {
 
         // 인증된 Member Entity 가져오기
-        Member member = AuthenticationUtil.getCurrentMember();
+        Member member = authenticationUtil.getCurrentMember();
         // 글 Article Entity 불러오기
         Article article = this.findById(articleRequestDto.getId());
         // 기존 저장된 내용과 수정 요청한 내용이 같을 시 return 한다
@@ -214,7 +218,7 @@ public class ArticleService {
     @Transactional
     public void delete(Long id) {
         // 인증된 Member Entity 가져오기
-        Member member = AuthenticationUtil.getCurrentMember();
+        Member member = authenticationUtil.getCurrentMember();
         // 글 Article Entity 불러오기
         Article article = this.findById(id);
         // 인증된 유저와 글 작성한 유저 비교 || 요청한 글이 데이터베이스에 없을시
@@ -228,9 +232,9 @@ public class ArticleService {
 
     // 댓글 작성
     @Transactional
-    public void commentwrite(CommentRequestDto commentRequestDto) {
+    public Notification commentwrite(CommentRequestDto commentRequestDto) {
         // 인증된 Member Entity 가져오기
-        Member member = AuthenticationUtil.getCurrentMember();
+        Member member = authenticationUtil.getCurrentMember();
         // 글 Article Entity 불러오기
         Article article = this.findById(commentRequestDto.getBoardid());
         // 글 댓글 개수를 증가시킨다
@@ -242,8 +246,8 @@ public class ArticleService {
         if (!comment.isPresent()) {
             throw new RuntimeException("댓글 작성에 실패했습니다.");
         }
-        notificationService.sendNotification(article.getMember(),member,article,commentRequestDto.getContent(),false);
-
+        Notification notification = notificationService.sendNotification(article.getMember(),member,article,commentRequestDto.getContent(),false);
+        return notification;
     }
 
 
@@ -301,7 +305,7 @@ public class ArticleService {
     @Transactional
     public void commentdelete(CommentRequestDto commentRequestDto) {
         // 인증된 Member Entity 가져오기
-        Member member = AuthenticationUtil.getCurrentMember();
+        Member member = authenticationUtil.getCurrentMember();
         // 댓글 Comment Entity 불러오기
         Comment comment = commentRepository.findById(commentRequestDto.getId()).orElse(null);
         // 인증된 유저와 댓글 작성한 유저 비교 || 요청한 댓글이 데이터베이스에 없을시
@@ -332,7 +336,7 @@ public class ArticleService {
     @Transactional
     public void replywrite(CommentRequestDto replyRequestDto) {
         // 인증된 Member Entity 가져오기
-        Member member = AuthenticationUtil.getCurrentMember();
+        Member member = authenticationUtil.getCurrentMember();
         // 글 Article Entity 불러오기
         Article article = this.findById(replyRequestDto.getBoardid());
         // 글 댓글 개수를 증가시킨다
@@ -362,7 +366,7 @@ public class ArticleService {
     @Transactional
     public void  replydelete(CommentRequestDto replyRequestDto) {
         // 인증된 Member Entity 가져오기
-        Member member = AuthenticationUtil.getCurrentMember();
+        Member member = authenticationUtil.getCurrentMember();
         // 대댓글 Reply Entity 불러오기
         Comment reply = commentRepository.findById(replyRequestDto.getId()).orElse(null);
         // 인증된 유저와 댓글 작성한 유저 비교 || 요청한 대댓글이 데이터베이스에 없을시

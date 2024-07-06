@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -14,6 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 public class NotificationResultDto {
 
-    private int count;
-    private List<NotificationResponseDto> Result;
+    private Long count;
+    private Page<NotificationResponseDto> Result;
 }

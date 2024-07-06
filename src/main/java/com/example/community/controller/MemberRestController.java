@@ -2,13 +2,17 @@ package com.example.community.controller;
 
 import com.example.community.dto.MemberDto;
 import com.example.community.entity.Member;
+import com.example.community.entity.Notification;
 import com.example.community.service.MemberService;
+import com.example.community.service.NotificationService;
 import com.example.community.util.AuthenticationUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,9 +21,14 @@ public class MemberRestController {
 
 
     private final MemberService memberService;
+    private final NotificationService notificationService;
+
+    private final AuthenticationUtil authenticationUtil;
     @Autowired
-    public MemberRestController(MemberService memberService) {
+    public MemberRestController(MemberService memberService, NotificationService notificationService, AuthenticationUtil authenticationUtil) {
         this.memberService = memberService;
+        this.notificationService = notificationService;
+        this.authenticationUtil = authenticationUtil;
     }
 
     // 회원가입 기능
@@ -45,7 +54,7 @@ public class MemberRestController {
     @GetMapping("/api/session")
     public int ssesionCheck() {
         // 인증된 Member Entity 가져오기
-        Member member = AuthenticationUtil.getCurrentMember();
+        Member member = authenticationUtil.getCurrentMember();
         if(member != null) {
             return 1;
         }
