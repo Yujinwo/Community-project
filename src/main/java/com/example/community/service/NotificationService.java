@@ -91,9 +91,6 @@ public class NotificationService {
                                         .message(message)
                                         .read(read).build();
         Notification savedNotification = notificationRepository.save(notification);
-        // 지연로딩 프록시 초기화
-        savedNotification.getWriter().getUsernick();
-        savedNotification.getArticle().getTitle();
         return savedNotification;
 
     }

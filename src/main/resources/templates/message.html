@@ -1,0 +1,74 @@
+<!-- message.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>쪽지 보내기</title>
+    <style>
+        #message-container {
+          border-color:black;
+           border: 1px solid #b8b8b8;
+          border-radius: 3px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="message-container">
+    <h3 style="position:relative; text-align:center; border-bottom:1px solid black">쪽지 보내기</h3>
+    <form id="message-form">
+        <div style="padding:20px;">
+            <label for="recipient">받는 사람</label>
+            <input type="text" id="recipient" name="recipient" required style="width:242px;
+            border-color: #3889bf;
+            border: 1px solid #b8b8b8;
+             border-radius: 3px;"><br><br>
+            <label for="message">메시지</label><br>
+            <textarea id="message" name="message" required style="width:320px; height:160px;
+            border-color: #3889bf;
+            border: 1px solid #b8b8b8;
+            margin-top:10px;
+             border-radius: 3px;"></textarea><br><br>
+        </div>
+        <button type="submit" style="position:relative; left:160px; bottom:20px; width:70px;
+        color: #fff;
+        background-color: #4aa6e3;
+        border-color: #3889bf;
+        border: 1px solid #b8b8b8;
+        border-radius: 3px;">보내기</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('message-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const recipient = document.getElementById('recipient').value;
+      const message = document.getElementById('message').value;
+
+      fetch('https://example.com/api/sendMessage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          recipient: recipient,
+          message: message,
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('쪽지가 성공적으로 보내졌습니다!');
+          window.close();
+        } else {
+          alert('쪽지 보내기에 실패했습니다. 다시 시도해주세요.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('쪽지 보내기에 실패했습니다. 다시 시도해주세요.');
+      });
+    });
+</script>
+</body>
+</html>

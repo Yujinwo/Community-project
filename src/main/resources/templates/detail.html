@@ -26,13 +26,20 @@
         <!-- 글 내용 -->
         <div class="detail_content_area" th:text="${article.content}"></div></br>
         <!-- 글 작성자 -->
-        <span class="article_addtext bold" th:text="${article.member.usernick}"></span>
+        <span class="article_addtext bold" id="article_addtext_writer" th:text="${article.member.usernick}"></span>
         <span> · </span>
         <!-- 글 작성 시간 -->
         <span class="article_addtext" th:text="${@timeUtil.calculateTimeAgo(article.createdDate)}"></span>
         <span> · </span>
         <!-- 글 조회수  -->
         <span class="article_addtext" th:text="${article.viewcount}"></span></br>
+        <div style="position:absolute; display:none; margin-top:10px" id="noteSend_Window">
+            <ul>
+                <li>
+                    <button style="border-radius:5px; border:1px solid black" id="open-message-btn">쪽지 보내기</button>
+                </li>
+            </ul>
+        </div>
     </div>
     <!-- 글 이미지-->
     <div class="article_images" th:if="${article.imageUrls.size() != 0}">
@@ -139,6 +146,19 @@
     <script th:inline="javascript">
                  const modal = document.querySelector('.modal');
 
+                   $(document).ready(function() {
+                      document.getElementById('article_addtext_writer').addEventListener('click', function() {
+                        document.getElementById('noteSend_Window').style.display = 'block';
+                     });
+                     document.addEventListener('click', function(event) {
+                         if (!(document.getElementById('noteSend_Window').contains(event.target)) && event.target != document.getElementById('article_addtext_writer')) {
+                           document.getElementById('noteSend_Window').style.display = 'none';
+                       }
+                     });
+                             document.getElementById('open-message-btn').addEventListener('click', function() {
+                          window.open('/message', '쪽지 보내기', 'width=400,height=420');
+                     });
+                   });
 
                  // 삭제하기 버튼을 누를시 팝업창
                  function articleDelete() {
