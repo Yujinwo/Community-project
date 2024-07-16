@@ -7,7 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class NoteController {
 
     @GetMapping("/message")
-    public String Note() {
+    public String sendMessageWindow() {
         return "message";
+    }
+
+    @GetMapping("/note")
+    public String findNoteList() {
+        return "note";
     }
 }

@@ -99,22 +99,25 @@
                             align-items: center;
                             font-size: 14px;
                       ">!</div>
-                    <!-- Oauth2.0으로 로그인한 경우 -->
-                    <div th:if="${#authentication != null and #authentication.principal instanceof T(org.springframework.security.oauth2.core.user.OAuth2User)}">
-                        <span class="bold" th:if="${#authentication.principal.attributes['name'] != null}"
-                              th:text="${#authentication.principal.attributes['name']}"></span>
-                        <span class="bold" th:if="${#authentication.principal.attributes['properties']?.nickname != null}"
-                              th:text="${#authentication.principal.attributes['properties']?.nickname}">
-                        </span>
-                        <span>님 안녕하세요</span>
-                    </div>
                     <!-- Spring Security 으로 직접 로그인한 경우 -->
-                    <div th:if="${#authentication != null and #authentication.principal instanceof T(org.springframework.security.core.userdetails.UserDetails)}">
-
-                        <span class="bold" th:if="${#authentication.principal.usernick != null}"
-                              th:text="${#authentication.principal.usernick}"></span>
+                    <div th:if="${#authentication != null}">
+                        <a href="javascript:;">
+                        <span class="bold" id="usernick" th:if="${#authentication.principal.usernick != null}"
+                              th:text="${#authentication.principal.member.usernick}"></span>
+                        </a>
+                        <div id="my_page" class="list-group" style="position:absolute; display:none;">
+                            <ul>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                   마이페이지
+                                </a>
+                                <a href="/note" class="list-group-item list-group-item-action">
+                                    쪽지
+                                </a>
+                            </ul>
+                        </div>
                         <span>님 안녕하세요</span>
                     </div>
+
                     <div id="notificationPopup" class="notification-popup">
                         <h2 style="width:250px; padding:10px; border: 1px solid;">알림</h2>
                         <div class="notification" id="notification">
@@ -133,12 +136,21 @@
                 </div>
                 <a sec:authorize="isAnonymous" href="/join">회원가입</a>
                 <a sec:authorize="isAuthenticated()" href="/logout">로그아웃</a>
+
             </div>
         </div>
     </body>
     <script>
         let pageNumber = 0;
         let pageLast = true;
+
+
+        $(document).ready(function() {
+            document.getElementById("usernick").addEventListener('click', function(event) {
+                document.getElementById("my_page").style.display = 'block';
+            });
+        });
+
 
         function addNotificaionList(pageNumber) {
 
@@ -237,6 +249,10 @@
                    const notificationList = document.getElementById('notificationList');
                    notificationList.innerHTML = '';
                    popup.style.display = 'none';
+               }
+
+               if(!document.getElementById("my_page").contains(event.target) && event.target !== document.getElementById("usernick") ) {
+                document.getElementById("my_page").style.display = 'none';
                }
            });
 

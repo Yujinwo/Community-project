@@ -15,7 +15,7 @@
                 <!-- 이미지 -->
                 <div th:each="imageUrl : ${article.imageUrls}"  th:if="${article.imageUrls.size() != 0}">
                     <img th:src="@{${imageUrl}}" width="475px" height="240px">
-                    <button class="size_full" onclick="deleteImage(this)">삭제하기</button>
+                    <button class="size_full btn btn-primary" onclick="deleteImage(this)">삭제하기</button>
                 </div>
 
                 <!-- 이미지 첨부 -->
@@ -28,7 +28,7 @@
             <!-- 수정하기 버튼 -->
             <div class="button_flex">
                 <!-- 수정하기 버튼 -->
-                <button type="button" onclick="updateSubmit()" class="button_blue size_full">수정하기</button>
+                <button type="button" onclick="updateSubmit()" class="button_blue size_full btn btn-primary">수정하기</button>
             </div>
     </div>
 
