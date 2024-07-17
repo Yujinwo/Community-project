@@ -75,6 +75,26 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     }
 
     @Override
+    public Page<Note> findByNote(Member user, Pageable pageable) {
+        QNote note = QNote.note;
+
+        JPAQuery<Note> notelistsQuery = jpaQueryFactory.selectFrom(note)
+                .where(note.receiver.eq(user));
+
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(note.count())
+                .from(note)
+                .where(note.receiver.eq(user));
+
+
+        List<Note> notelist = notelistsQuery.fetch();
+        long totalCount = countQuery.fetchOne();
+
+        return PageableExecutionUtils.getPage(notelist,pageable,() -> totalCount);
+
+    }
+
+    @Override
     public Page<Article> findByArticlelist(Long lastId, Pageable pageable) {
         QArticle article = QArticle.article;
 

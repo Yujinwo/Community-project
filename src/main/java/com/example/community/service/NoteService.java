@@ -7,6 +7,8 @@ import com.example.community.entity.Note;
 import com.example.community.repository.NoteRespository;
 import com.example.community.util.AuthenticationUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,5 +30,16 @@ public class NoteService {
             return null;
         }
 
+    }
+    public Page<Note> findNotes(Pageable pageable){
+        Member member = authenticationUtil.getCurrentMember();
+        if(member != null)
+        {
+            Page<Note> notelists = noteRespository.findByNote(member,pageable);
+            return notelists;
+        }
+        else {
+            return null;
+        }
     }
 }

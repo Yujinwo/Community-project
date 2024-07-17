@@ -23,39 +23,52 @@
         <table class="table table-border table-Light">
             <thead class="table-success">
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">Handle</th>
+                <th scope="col">번호</th>
+                <th scope="col">보낸 사람</th>
+                <th scope="col">쪽지 내용</th>
+                <th scope="col">보낸 시각</th>
             </tr>
             </thead>
             <tbody class="table-group-divider">
-            <tr class="border-bottom">
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-            </tr>
-            <tr class="border-bottom">
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-            </tr>
-            <tr class="border-bottom">
-                <th scope="row">3</th>
-                <td colspan="2">Larry the Bird</td>
-                <td>@twitter</td>
+            <tr class="border-bottom" th:each="item : ${notelists}">
+
+                    <th th:text="${item.id}" scope="row"></th>
+                    <td th:text="${item.writer.usernick}" ></td>
+                    <td style="
+                    max-width: 50px;
+                    white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;">
+                     <a href="javascript:;" th:onclick="'receivemessage(' + ${item.id} + ')'" th:text="${item.message}" >  </a>
+                    </td>
+                    <td th:text="${item.createdDate}"></td>
+
             </tr>
             </tbody>
         </table>
-
+        <div th:if="${endPage != 0}" class="paging_list">
+            <!-- 이전 링크 있을시 활성화 없을시 비 활성화 -->
+            <a class="page_previous" th:classappend=" ${!notelists.hasPrevious()} ? 'disabled' " th:href="${!notelists.isFirst()} ? @{/note(page=${notelists.getPageable().getPageNumber()})}"> 이전 </a>
+            <!-- 시작페이지 -> 끝 페이지 까지 페이지 출력 -->
+            <span th:each="page: ${#numbers.sequence(startPage, endPage)}">
+		    <!-- 현재페이지는 링크 없이 숫자만 -->
+            <span th:if="${page == notelists.getPageable().getPageNumber() + 1}" th:text="${page}"></span>
+                <!-- 현재페이지 링크 X, 다른 페이지번호에는 링크를 보여준다 -->
+            <span th:unless="${page == notelists.getPageable().getPageNumber() + 1}">
+              <a th:href="@{/note,page=${page})}" th:text="${page}"></a>
+            </span>
+        </span>
+            <!-- 다음 링크 있을시 활성화 없을시 비 활성화 -->
+            <a class="page_next" th:classappend=" ${!notelists.hasNext()} ? 'disabled' "  th:href="${notelists.isLast()} ? '#' : @{/note(page=${notelists.number + 2})}"> 다음 </a>
+        </div>
     </div>
+    <script th:inline="javascript">
+        function receivemessage(id) {
+             window.open('/receivemessage/' + id, '쪽지', 'width=400,height=420');
+        }
 
+
+    </script>
 </th:block>
-<script>
 
-
-
-</script>
 </html>

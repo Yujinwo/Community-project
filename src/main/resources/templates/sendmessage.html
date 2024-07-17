@@ -1,4 +1,4 @@
-<!-- message.html -->
+<!-- sendmessage.html -->
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
@@ -21,7 +21,7 @@
     <form id="message-form">
         <div style="padding:0 35px;">
             <label for="recipient" class="form-label">받는 사람</label>
-            <input  class="form-control" type="text" id="recipient" name="recipient" required style="width:242px;
+            <input  th:value="${email}" class="form-control" type="text" id="recipient" name="recipient" required style="width:242px;
             border-color: #3889bf;
             border: 1px solid #b8b8b8;
              border-radius: 3px;"><br><br>
