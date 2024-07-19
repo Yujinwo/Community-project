@@ -66,7 +66,6 @@ public class NoteService {
                LocalDateTime now = LocalDateTime.now();
                LocalDateTime blockEndTime = now.plusHours(24); // 현재 시간에 24시간을 더함
                user.get().setTemporaryblockdate(blockEndTime);
-               log.info("zzzzzzzzzzzzzzzzzzzzzzzz");
                return userid;
            }
            else {
