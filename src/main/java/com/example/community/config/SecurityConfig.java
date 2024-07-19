@@ -23,11 +23,16 @@ public class SecurityConfig {
     private final UserDetailsService myUserDetailsService;
     private final UserLoginFailHandler userLoginFailHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
+
+    private final MyAuthenticationEntryPoint myAuthenticationEntryPoint;
+    private final MyAccessDeniedHandler myAccessDeniedHandler;
     @Autowired
-    public SecurityConfig(UserDetailsService myUserDetailsService, UserLoginFailHandler userLoginFailHandler, CustomOAuth2UserService customOAuth2UserService) {
+    public SecurityConfig(UserDetailsService myUserDetailsService, UserLoginFailHandler userLoginFailHandler, CustomOAuth2UserService customOAuth2UserService, MyAuthenticationEntryPoint myAuthenticationEntryPoint, MyAccessDeniedHandler myAccessDeniedHandler) {
         this.myUserDetailsService = myUserDetailsService;
         this.userLoginFailHandler = userLoginFailHandler;
         this.customOAuth2UserService = customOAuth2UserService;
+        this.myAuthenticationEntryPoint = myAuthenticationEntryPoint;
+        this.myAccessDeniedHandler = myAccessDeniedHandler;
     }
     // 패스워드 암호화
     @Bean
@@ -53,6 +58,9 @@ public class SecurityConfig {
                 .csrf((csrfConfig) ->
                         csrfConfig.disable()
                 )
+                .exceptionHandling((exceptionConfig) ->
+                        exceptionConfig.authenticationEntryPoint(myAuthenticationEntryPoint).accessDeniedHandler(myAccessDeniedHandler)
+                )
                 .requestCache(request -> request.requestCache(requestCache))
                 // X-Frame-Options 헤더 비활성화
                 .headers((headerConfig) ->
@@ -64,7 +72,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers("/article/detail/*","/").permitAll()
-                                .requestMatchers("/article/update/*","/article/write","/article/delete","/message").hasRole("USER")
+                                .requestMatchers("/article/update/*","/article/write","/article/delete","/message","/note").hasRole("USER")
                                 .requestMatchers("/admin").hasRole("ADMIN")
                                 .requestMatchers("/login","/join").permitAll()
                                 .anyRequest().permitAll()

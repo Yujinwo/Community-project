@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -79,12 +80,12 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         QNote note = QNote.note;
 
         JPAQuery<Note> notelistsQuery = jpaQueryFactory.selectFrom(note)
-                .where(note.receiver.eq(user));
+                .where(note.receiver.eq(user).and(note.createdDate.after(LocalDateTime.now().minusDays(90))));
 
         JPAQuery<Long> countQuery = jpaQueryFactory
                 .select(note.count())
                 .from(note)
-                .where(note.receiver.eq(user));
+                .where(note.receiver.eq(user).and(note.createdDate.after(LocalDateTime.now().minusDays(90))));
 
 
         List<Note> notelist = notelistsQuery.fetch();

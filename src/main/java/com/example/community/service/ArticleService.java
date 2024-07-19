@@ -10,7 +10,6 @@ import com.example.community.util.CookieUtill;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class ArticleService {
     }
 
     // 글 리스트를 페이지 형태로 불러오기
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<ArticleindexResponseDto> index(Long lastId, Pageable pageable) {
         // page 위치에 있는 값은 0부터 시작한다.
         int page = pageable.getPageNumber() - 1;
@@ -60,7 +60,7 @@ public class ArticleService {
         return articleDtos;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<ArticleindexResponseDto> searchArticles(Long lastId, String query, Pageable pageable) {
         return articleRepository.findByTitleOrContentContaining(lastId,query, pageable).map(article -> ArticleindexResponseDto.builder().article(article).build());
     }
@@ -252,7 +252,7 @@ public class ArticleService {
 
 
     // 댓글 리스트를 페이지 형태로 불러오기
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<CommentResponseDto> findCommentid(Long id, Pageable pageable) {
         // page 위치에 있는 값은 0부터 시작한다.
         int page = pageable.getPageNumber() - 1;
@@ -290,7 +290,7 @@ public class ArticleService {
 
 
     // id로 Article Entity(글) 불러오기
-    @Transactional
+    @Transactional(readOnly = true)
     public Article findById(Long id) {
         // 글 Article Entity 불러오기
         Article article = articleRepository.findById(id).orElse(null);

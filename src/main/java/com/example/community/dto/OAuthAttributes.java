@@ -5,6 +5,8 @@ import com.example.community.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Getter
@@ -75,6 +77,8 @@ public class OAuthAttributes {
                 .email(email)
                 .usernick(name)
                 .role(Role.USER)
+                .noteblockd(false)
+                .temporaryblockdate(LocalDateTime.now())
                 .build();
     }
 }

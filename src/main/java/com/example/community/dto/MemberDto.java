@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -35,6 +37,8 @@ public class MemberDto {
                 .usernick(usernick)
                 // User 권한 설정
                 .role(role.USER)
+                .noteblockd(false)
+                .temporaryblockdate(LocalDateTime.now())
                 .build();
     }
 }

@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -32,6 +34,12 @@ public class Member {
     @Column
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column
+    private Boolean noteblockd;
+
+    @Column
+    private LocalDateTime temporaryblockdate;
     // Entity -> MemberDto 생성
     public MemberDto toDto() {
         return MemberDto.builder().id(id).role(role).email(email).userpw(userpw).usernick(usernick).build();

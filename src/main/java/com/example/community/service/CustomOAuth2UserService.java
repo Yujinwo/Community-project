@@ -12,12 +12,13 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Collections;
 import java.util.Map;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService{
-
 
     private final MemberRepository memberRepository;
     @Autowired
@@ -49,6 +50,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService{
                 // 멤버 엔티티를 저장한다
                 member );
     }
+    @Transactional
     private Member saveOrUpdate(OAuthAttributes attributes) {
         // 기존 아이디가 존재하는지 확인한다
         Member member = memberRepository.findByEmail(attributes.getEmail()).orElse(null);

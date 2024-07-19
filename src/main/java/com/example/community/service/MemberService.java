@@ -3,11 +3,12 @@ package com.example.community.service;
 import com.example.community.dto.MemberDto;
 import com.example.community.entity.Member;
 import com.example.community.repository.MemberRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 
 @Service
@@ -34,7 +35,7 @@ public class MemberService {
         return member;
     }
     // ID 중복 체크
-    @Transactional
+    @Transactional(readOnly = true)
     public Member idcheck(String email) {
         // 이메일을 이용해서 회원을 조회한다
         Optional<Member> member = memberRepository.findByEmail(email);
@@ -48,6 +49,7 @@ public class MemberService {
         }
 
     }
+    @Transactional(readOnly = true)
     // 회원 조회
     public Member findByEmail(String email) {
         // 이메일을 이용해서 회원을 조회한다

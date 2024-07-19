@@ -23,7 +23,11 @@ public class QMember extends EntityPathBase<Member> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final BooleanPath noteblockd = createBoolean("noteblockd");
+
     public final EnumPath<com.example.community.domain.member.Role> role = createEnum("role", com.example.community.domain.member.Role.class);
+
+    public final DateTimePath<java.time.LocalDateTime> temporaryblockdate = createDateTime("temporaryblockdate", java.time.LocalDateTime.class);
 
     public final StringPath usernick = createString("usernick");
 

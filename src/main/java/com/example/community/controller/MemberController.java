@@ -26,6 +26,17 @@ public class MemberController {
     return "login";
     }
 
+    @GetMapping("/authentication-fail")
+    public String redirect_authentication_fail() {
+        return "authentication_fail";
+    }
+    @GetMapping("/authorization-fail")
+    public String redirect_authorization_fail() {
+        return "authorization_fail";
+    }
+
+
+
 
     @PostMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {

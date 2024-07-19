@@ -64,7 +64,6 @@ public class NotificationService {
             return null;
         }
     }
-    @Transactional
     // 생성된 Emitter가 있는지 확인
     public SseEmitter vaildDuplicateEmitter(Long userId) {
         SseEmitter emitter = userEmitters.get(userId);
@@ -112,7 +111,7 @@ public class NotificationService {
             }
         }
     }
-    @Transactional
+    @Transactional(readOnly = true)
     public NotificationResultDto getnotifications(Pageable pageable) {
         // 인증된 Member Entity 가져오기
         Member member = authenticationUtil.getCurrentMember();

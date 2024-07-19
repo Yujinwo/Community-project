@@ -146,9 +146,11 @@
 
 
         $(document).ready(function() {
-            document.getElementById("usernick").addEventListener('click', function(event) {
-                document.getElementById("my_page").style.display = 'block';
-            });
+            if(document.getElementById("usernick") != null) {
+                document.getElementById("usernick").addEventListener('click', function(event) {
+                    document.getElementById("my_page").style.display = 'block';
+                });
+            }
         });
 
 

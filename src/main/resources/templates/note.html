@@ -11,8 +11,30 @@
     border-radius: 10px;
     margin-bottom: 30px;">
         <h2>쪽지</h2>
-
     </div>
+    <div style="
+    margin: 0 auto;
+    width: 800px;
+    padding-left:720px;
+    margin-bottom: 30px;">
+        <a href="javascript:;">
+        <span>쪽지 차단</span>
+        </a>
+        <div id="my_page" class="list-group" style="position:absolute; display:block; padding-left:20px">
+            <ul>
+                <a href="javascript:;" id="Temporary_Block" class="list-group-item list-group-item-action">
+                    임시 거부
+                </a>
+                <a th:if="${member.noteblockd == false}" href="javascript:;" id="Permanent_Block" class="list-group-item list-group-item-action">
+                    영구 거부
+                </a>
+                <a th:if="${member.noteblockd == true}" href="javascript:;" id="Remove_Permanent_Block" class="list-group-item list-group-item-action">
+                    영구 거부 해제
+                </a>
+            </ul>
+        </div>
+    </div>
+
     <div style="
     margin: 0 auto;
     width: 800px;
@@ -63,6 +85,70 @@
         </div>
     </div>
     <script th:inline="javascript">
+
+        $(document).ready(function() {
+
+                  document.getElementById("Temporary_Block").addEventListener('click',function() {
+                                           $.ajax({
+                                        　　type:'post'
+                                        　　, contentType:'application/json'
+                                        　　, data: JSON.stringify({
+                                                block_type : 'temporary'
+                                            })
+                                        　　, url: '/api/updateNoteBlock'
+                                        　　, success: function(data) {
+                                              alert(data);
+                                        　　}
+                                           , error:function(e) {
+                                            alert(e.responseText);
+                                        　　}
+                                           });
+
+
+                 });
+             if(document.getElementById("Permanent_Block") != null) {
+                 document.getElementById("Permanent_Block").addEventListener('click',function() {
+
+                                         $.ajax({
+                                        　　type:'post'
+                                        　　, contentType:'application/json'
+                                        　　, data: JSON.stringify({
+                                                block_type : 'permanent'
+                                            })
+                                        　　, url: '/api/updateNoteBlock'
+                                        　　, success: function(data) {
+                                          alert(data);
+                                        　　}
+                                           , error:function(e) {
+                                            alert(e.responseText);
+                                        　　}
+                                           });
+
+                 });
+              }
+             if(document.getElementById("Remove_Permanent_Block") != null) {
+                 document.getElementById("Remove_Permanent_Block").addEventListener('click',function() {
+
+                                         $.ajax({
+                                        　　type:'post'
+                                        　　, contentType:'application/json'
+                                        　　, data: JSON.stringify({
+                                                block_type : 'remove_permanent'
+                                            })
+                                        　　, url: '/api/updateNoteBlock'
+                                        　　, success: function(data) {
+                                          alert(data);
+                                        　　}
+                                           , error:function(e) {
+                                            alert(e.responseText);
+                                        　　}
+                                           });
+
+                 });
+              }
+        });
+
+
         function receivemessage(id) {
              window.open('/receivemessage/' + id, '쪽지', 'width=400,height=420');
         }
