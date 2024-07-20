@@ -29,8 +29,6 @@ public class NoteService {
 
     @Transactional
     public Note saveNote(Member byemail, String message) {
-
-
             Member member = authenticationUtil.getCurrentMember();
             if(member != null)
             {
@@ -41,8 +39,6 @@ public class NoteService {
             else {
                 return null;
             }
-
-
     }
     @Transactional(readOnly = true)
     public Page<Note> findNotes(Pageable pageable){

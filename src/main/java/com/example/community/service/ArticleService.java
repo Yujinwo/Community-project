@@ -360,7 +360,6 @@ public class ArticleService {
         if (comment == null) {
             throw new RuntimeException("댓글 작성에 실패했습니다.");
         }
-
     }
 
     @Transactional
