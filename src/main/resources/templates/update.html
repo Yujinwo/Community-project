@@ -25,6 +25,10 @@
                     <label for="files">이미지 업로드</label>
                 </div>
             </div>
+            <div class="tag-container">
+                <ul id="tag-list"></ul>
+                <input type="text" id="tag-input" placeholder="설정할 태그를 입력해주세요">
+            </div>
             <!-- 수정하기 버튼 -->
             <div class="button_flex">
                 <!-- 수정하기 버튼 -->
@@ -33,84 +37,129 @@
     </div>
 
     <script th:inline="javascript">
-        var obj = {};
+        document.addEventListener('DOMContentLoaded', () => {
+               const tagInput = document.getElementById('tag-input');
+               const tagList = document.getElementById('tag-list');
+               const maxTags = 10;
 
-        var imageUrls = [[${article.imageUrls}]];
+               tagInput.addEventListener('keypress', function(event) {
+                 if (event.key === 'Enter') {
+                   event.preventDefault();
+                   if (tagList.children.length < maxTags) {
+                     addTag(tagInput.value);
+                     tagInput.value = '';
+                   } else {
+                     alert('최대 허용 태그는 10개 입니다.');
+                   }
+                 }
+               });
 
-        function deleteImage(button) {
-        var imageUrl = button.previousElementSibling.getAttribute('src');
+               function addTag(tag) {
+                 if (tag.trim() === '') return;
 
-        imageUrls = imageUrls.filter(function(item) {
-        return item !== imageUrl;
-        });
-        obj.imageUrls = imageUrls;
-        var parentDiv = button.parentNode;
-        parentDiv.remove(); // 부모 요소 삭제
-        }
+                 const tagItem = document.createElement('li');
+                 const tagText = document.createElement('span');
+                 tagText.className = 'tag-text';
+                 tagText.textContent = `#${tag.trim()}`;
 
+                 const removeTag = document.createElement('span');
+                 removeTag.className = 'remove-tag';
+                 removeTag.textContent = 'x';
+                 removeTag.onclick = () => {
+                   tagList.removeChild(tagItem);
+                   updateTagInputVisibility();
+                 };
 
-       // 수정하기
-       function updateSubmit() {
+                 tagItem.appendChild(tagText);
+                 tagItem.appendChild(removeTag);
+                 tagList.appendChild(tagItem);
 
-           obj.title = $("#title").val();
-           obj.content = $("#content").val();
-           obj.id = [[${article.id}]];
-
-           var formData = new FormData();
-           var fileInput = $('#files')[0]; // 파일 입력 필드 가져오기
-           var files = fileInput.files; // 선택된 파일들 가져오기
-           if(obj.imageUrls == undefined)
-           {
-                    obj.imageUrls = imageUrls;
-           }
-           // 첨부파일이 2개 이상일 시
-           if (files.length + obj.imageUrls.length > 2) {
-               alert("이미지는 최대 2개까지 첨부할 수 있습니다.");
-               fileInput.value = "";
-           }
-           else {
-               // FormData에 파일 추가
-               for (var i = 0; i < files.length; i++) {
-                   formData.append('value', files[i]);
+                 updateTagInputVisibility();
                }
-               formData.append('key', new Blob([JSON.stringify(obj)], { type: "application/json" }));
 
-               $.ajax({
-               　　type:'patch'
-               　   , processData: false // FormData를 사용하면 processData를 false로 설정해야 함
-                    , contentType: false // 파일 업로드 시에는 contentType을 false로 설정해야 함
-                　 　, data: formData
-               　  　, url: '/article/update'
-               　  　, success: function(data) {
-                       if(data.message == "제목과 내용을 수정해주세요")
-                       {
-                           alert(data.message);
-                       }
-                       else {
-                           location.href='/article/detail/' + obj.id;
-                       }
-               　 　}
-                    , error:function(e) {
+               function updateTagInputVisibility() {
+                 tagInput.style.display = tagList.children.length < maxTags ? 'block' : 'none';
+               }
+         });
 
-                       // 제목 에러 메시지 설정
-                       var jsonResponse = JSON.parse(e.responseText);
-                       if (jsonResponse.hasOwnProperty('title')) {
-                           document.getElementById("titleError").innerText = jsonResponse.title;
-                       } else {
-                           document.getElementById("titleError").innerText = "";
-                       }
+         var obj = {};
 
-                       // 내용 에러 메시지 설정
-                       if (jsonResponse.hasOwnProperty('content')) {
-                           document.getElementById("contentError").innerText = jsonResponse.content;
-                       } else {
-                           document.getElementById("contentError").innerText = "";
-                       }
-               　　　
-               　　}
-              });
-          }
-       }
+         var imageUrls = [[${article.imageUrls}]];
+
+         function deleteImage(button) {
+         var imageUrl = button.previousElementSibling.getAttribute('src');
+
+         imageUrls = imageUrls.filter(function(item) {
+         return item !== imageUrl;
+         });
+         obj.imageUrls = imageUrls;
+         var parentDiv = button.parentNode;
+         parentDiv.remove(); // 부모 요소 삭제
+         }
+
+
+        // 수정하기
+        function updateSubmit() {
+
+            obj.title = $("#title").val();
+            obj.content = $("#content").val();
+            obj.id = [[${article.id}]];
+
+            var formData = new FormData();
+            var fileInput = $('#files')[0]; // 파일 입력 필드 가져오기
+            var files = fileInput.files; // 선택된 파일들 가져오기
+            if(obj.imageUrls == undefined)
+            {
+                     obj.imageUrls = imageUrls;
+            }
+            // 첨부파일이 2개 이상일 시
+            if (files.length + obj.imageUrls.length > 2) {
+                alert("이미지는 최대 2개까지 첨부할 수 있습니다.");
+                fileInput.value = "";
+            }
+            else {
+                // FormData에 파일 추가
+                for (var i = 0; i < files.length; i++) {
+                    formData.append('value', files[i]);
+                }
+                formData.append('key', new Blob([JSON.stringify(obj)], { type: "application/json" }));
+
+                $.ajax({
+                　　type:'patch'
+                　   , processData: false // FormData를 사용하면 processData를 false로 설정해야 함
+                     , contentType: false // 파일 업로드 시에는 contentType을 false로 설정해야 함
+                 　 　, data: formData
+                　  　, url: '/article/update'
+                　  　, success: function(data) {
+                        if(data.message == "제목과 내용을 수정해주세요")
+                        {
+                            alert(data.message);
+                        }
+                        else {
+                            location.href='/article/detail/' + obj.id;
+                        }
+                　 　}
+                     , error:function(e) {
+
+                        // 제목 에러 메시지 설정
+                        var jsonResponse = JSON.parse(e.responseText);
+                        if (jsonResponse.hasOwnProperty('title')) {
+                            document.getElementById("titleError").innerText = jsonResponse.title;
+                        } else {
+                            document.getElementById("titleError").innerText = "";
+                        }
+
+                        // 내용 에러 메시지 설정
+                        if (jsonResponse.hasOwnProperty('content')) {
+                            document.getElementById("contentError").innerText = jsonResponse.content;
+                        } else {
+                            document.getElementById("contentError").innerText = "";
+                        }
+                　　　
+                　　}
+               });
+           }
+        }
     </script>
 </th:block>
 </html>

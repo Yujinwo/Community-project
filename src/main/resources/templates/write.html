@@ -15,13 +15,61 @@
                 <input type="file" name="files" class="form-control" id="files" multiple>
                 <label for="files">이미지 업로드</label>
             </div>
+        <div class="tag-container">
+            <ul id="tag-list"></ul>
+            <input type="text" id="tag-input" placeholder="설정할 태그를 입력해주세요">
+        </div>
         <!-- 수정하기 버튼 -->
         <div class="button_flex">
             <!-- 수정하기 버튼 -->
             <button onclick="submit()" class="button_blue size_full">작성하기</button>
         </div>
     </div>
-  <script>
+  <script th:inline="javascript">
+      document.addEventListener('DOMContentLoaded', () => {
+               const tagInput = document.getElementById('tag-input');
+               const tagList = document.getElementById('tag-list');
+               const maxTags = 10;
+
+               tagInput.addEventListener('keypress', function(event) {
+                 if (event.key === 'Enter') {
+                   event.preventDefault();
+                   if (tagList.children.length < maxTags) {
+                     addTag(tagInput.value);
+                     tagInput.value = '';
+                   } else {
+                     alert('최대 허용 태그는 10개 입니다.');
+                   }
+                 }
+               });
+
+               function addTag(tag) {
+                 if (tag.trim() === '') return;
+
+                 const tagItem = document.createElement('li');
+                 const tagText = document.createElement('span');
+                 tagText.className = 'tag-text';
+                 tagText.textContent = `#${tag.trim()}`;
+
+                 const removeTag = document.createElement('span');
+                 removeTag.className = 'remove-tag';
+                 removeTag.textContent = 'x';
+                 removeTag.onclick = () => {
+                   tagList.removeChild(tagItem);
+                   updateTagInputVisibility();
+                 };
+
+                 tagItem.appendChild(tagText);
+                 tagItem.appendChild(removeTag);
+                 tagList.appendChild(tagItem);
+
+                 updateTagInputVisibility();
+               }
+
+               function updateTagInputVisibility() {
+                 tagInput.style.display = tagList.children.length < maxTags ? 'block' : 'none';
+               }
+         });
       function submit() {
         var obj = {};
 
