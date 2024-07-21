@@ -71,10 +71,19 @@
                }
          });
       function submit() {
+      const tagList = document.getElementById('tag-list');
+        const tags = [];
+        tagList.querySelectorAll('li').forEach(tagItem => {
+             const spanText = tagItem.querySelector('span.tag-text').textContent;
+            const cleanedText = spanText.replace(/#/g, '');
+            tags.push(cleanedText);
+
+        });
         var obj = {};
 
      	obj.title = $("#title").val();
      	obj.content = $("#content").val();
+     	obj.tags = tags;
 
      	var formData = new FormData();
         var fileInput = $('#files')[0]; // 파일 입력 필드 가져오기

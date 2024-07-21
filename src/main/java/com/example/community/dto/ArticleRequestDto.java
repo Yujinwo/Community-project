@@ -22,6 +22,7 @@ public class ArticleRequestDto {
     private Member member;
     // 이미지 Url
     private List<String> imageUrls;
+    private List<String> tags;
     // dto -> Article Entity로 생성
     public Article toEntity() {
         return Article.builder().title(title).content(content).member(member).build();

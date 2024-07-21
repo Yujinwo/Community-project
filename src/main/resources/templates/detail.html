@@ -42,6 +42,13 @@
                 </li>
             </ul>
         </div>
+        <div class="detail_tag-container">
+            <ul id="tag-list" >
+                <li th:each="tag : ${article.tagConents}">
+                    <span th:text="${tag}" class="tag-text"></span>
+                </li>
+            </ul>
+        </div>
     </div>
     <!-- 글 이미지-->
     <div class="article_images" th:if="${article.imageUrls.size() != 0}">
@@ -50,9 +57,7 @@
             <img th:src="@{${imageUrl}}" width="750px" height="375px">
         </div>
     </div>
-    <div class="detail_tag-container">
-        <ul id="tag-list"></ul>
-    </div>
+
     <!-- 댓글 갯수 -->
     <div class="comment_count ">
         💬 댓글

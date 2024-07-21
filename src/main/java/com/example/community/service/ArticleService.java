@@ -5,11 +5,13 @@ import com.example.community.entity.*;
 import com.example.community.repository.ArticleRepository;
 import com.example.community.repository.BoardImageRepository;
 import com.example.community.repository.CommentRepository;
+import com.example.community.repository.TagRepository;
 import com.example.community.util.AuthenticationUtil;
 import com.example.community.util.CookieUtill;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,28 +29,18 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
     private final CommentRepository commentRepository;
     private final BoardImageRepository boardImageRepository;
     private final S3Uploader s3Uploader;
-
     private final NotificationService notificationService;
-
     private final EntityManager em;
-
     private final AuthenticationUtil authenticationUtil;
-    @Autowired
-    public ArticleService(ArticleRepository articleRepository, CommentRepository commentRepository, BoardImageRepository boardImageRepository, S3Uploader s3Uploader, NotificationService notificationService, EntityManager em, AuthenticationUtil authenticationUtil) {
-        this.articleRepository = articleRepository;
-        this.commentRepository = commentRepository;
-        this.boardImageRepository = boardImageRepository;
-        this.s3Uploader = s3Uploader;
-        this.notificationService = notificationService;
-        this.em = em;
-        this.authenticationUtil = authenticationUtil;
-    }
+    private final TagRepository tagRepository;
+
 
     // 글 리스트를 페이지 형태로 불러오기
     @Transactional(readOnly = true)
@@ -83,15 +75,31 @@ public class ArticleService {
             // 이미지를 하나씩 꺼낸다
             for (MultipartFile file : files) {
                 try {
-                    String fileName = s3Uploader.upload(file);
-                    // 저장된 파일 디렉터리를 저장한다.
-                    BoardImage image = BoardImage.builder()
-                            .url(fileName)
-                            .article(savedArticle)
-                            .build();
-                    boardImageRepository.save(image);
+                    if(!file.isEmpty())
+                    {
+                        String fileName = s3Uploader.upload(file);
+                        // 저장된 파일 디렉터리를 저장한다.
+                        BoardImage image = BoardImage.builder()
+                                .url(fileName)
+                                .article(savedArticle)
+                                .build();
+                        boardImageRepository.save(image);
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
+                }
+
+            }
+        }
+        if(articleRequestDto.getTags()!= null){
+            for (String tagname : articleRequestDto.getTags()) {
+                if(!tagname.isBlank())
+                {
+                    Tag tag = Tag.builder()
+                            .content(tagname)
+                            .article(savedArticle)
+                            .build();
+                    tagRepository.save(tag);
                 }
 
             }

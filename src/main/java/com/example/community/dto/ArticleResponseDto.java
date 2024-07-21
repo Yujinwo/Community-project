@@ -1,9 +1,6 @@
 package com.example.community.dto;
 
-import com.example.community.entity.Article;
-import com.example.community.entity.BoardImage;
-import com.example.community.entity.Comment;
-import com.example.community.entity.Member;
+import com.example.community.entity.*;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -44,6 +41,8 @@ public class ArticleResponseDto {
     private int viewcount;
     // 이미지
     private List<String> imageUrls;
+    // 태그
+    private List<String> tagConents;
     // 댓글
     private List<Comment> comments;
     // 댓글 수
@@ -69,6 +68,13 @@ public class ArticleResponseDto {
                     .collect(Collectors.toList());
         } else {
             this.imageUrls = Collections.emptyList();
+        }
+        List<Tag> tags = article.getTags();
+        if(!tags.isEmpty()) {
+            this.tagConents = tags.stream().map(tag -> tag.getContent()).collect(Collectors.toList());
+        }
+        else {
+            this.tagConents = Collections.emptyList();
         }
         this.comments = article.getComments();
         this.commentcount = article.getCommentcount();

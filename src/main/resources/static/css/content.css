@@ -270,7 +270,7 @@ display:flex;
 
 #tag-list {
   list-style-type: none;
-  margin: 0;
+  margin-top: 10px;
   padding: 0;
   display: flex;
   flex-wrap: wrap;

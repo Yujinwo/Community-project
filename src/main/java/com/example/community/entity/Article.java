@@ -44,6 +44,10 @@ public class Article extends BaseTime{
     @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE)
     @OrderBy("id asc")
     private List<Comment> comments;
+
+    @BatchSize(size = 100)
+    @OneToMany(mappedBy = "article",orphanRemoval = true,cascade = CascadeType.ALL)
+    private List<Tag> tags;
     // 댓글 수
     @Column
     private int commentcount;

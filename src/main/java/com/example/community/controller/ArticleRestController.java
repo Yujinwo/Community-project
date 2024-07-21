@@ -35,6 +35,8 @@ public class ArticleRestController {
     // 글 작성 기능
     @PostMapping("/article/write")
     public ResponseEntity<Map<String,String>> write(@Valid @RequestPart(value = "key") ArticleRequestDto articleRequestDto, @RequestPart(required = false,value = "value") List<MultipartFile> files) {
+        log.info("테스트 -> " + articleRequestDto.getTags());
+
         // 글 작성 서비스 메서드에 요청 Dto, 요청 파일 전달
         articleService.write(articleRequestDto,files);
         // json 메세지 생성
