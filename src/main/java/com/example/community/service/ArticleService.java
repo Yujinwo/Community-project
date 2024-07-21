@@ -18,11 +18,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,14 +49,17 @@ public class ArticleService {
     public Page<ArticleindexResponseDto> index(Long lastId, Pageable pageable) {
         // page 위치에 있는 값은 0부터 시작한다.
         int page = pageable.getPageNumber() - 1;
+        PageRequest pageRequest = PageRequest.of(page, pageable.getPageSize());
         // 페이지 형태로 글 불러오기
-        Page<ArticleindexResponseDto> articleDtos = articleRepository.findByArticlelist(lastId,pageable).map(article -> ArticleindexResponseDto.builder().article(article).build());
+        Page<ArticleindexResponseDto> articleDtos = articleRepository.findByArticlelist(lastId,pageRequest).map(article -> ArticleindexResponseDto.builder().article(article).build());
         return articleDtos;
     }
 
     @Transactional(readOnly = true)
     public Page<ArticleindexResponseDto> searchArticles(Long lastId, String query, Pageable pageable) {
-        return articleRepository.findByTitleOrContentContaining(lastId,query, pageable).map(article -> ArticleindexResponseDto.builder().article(article).build());
+        int page = pageable.getPageNumber() - 1;
+        PageRequest pageRequest = PageRequest.of(page, pageable.getPageSize());
+        return articleRepository.findByTitleOrContentContaining(lastId,query, pageRequest).map(article -> ArticleindexResponseDto.builder().article(article).build());
     }
 
     // 글 저장
@@ -220,6 +225,39 @@ public class ArticleService {
                 }
             }
         }
+        // 태그 리스트가 없을 시 저장했던 태그 모두 삭제
+        if(articleRequestDto.getTags().isEmpty()) {
+            Iterable<Long> iterable = new ArrayList<>();
+
+            Optional<Article> articleOptional = articleRepository.findById(articleRequestDto.getId());
+            if(articleOptional.isPresent()){
+
+                for (Tag tag : articleOptional.get().getTags()){
+                    ((ArrayList<Long>) iterable).add(tag.getId());
+                }
+                tagRepository.deleteAllByIdInBatch(iterable);
+            }
+        }
+        else {
+            Iterable<Long> iterable = new ArrayList<>();
+
+            Optional<Article> articleOptional = articleRepository.findById(articleRequestDto.getId());
+            if(articleOptional.isPresent()){
+
+                for (Tag tag : articleOptional.get().getTags()){
+                    ((ArrayList<Long>) iterable).add(tag.getId());
+                }
+                tagRepository.deleteAllByIdInBatch(iterable);
+                em.flush();
+
+                for (String tagContent : articleRequestDto.getTags()) {
+                    Tag tag = Tag.builder().content(tagContent).article(articleOptional.get()).build();
+                    articleOptional.get().getTags().add(tag);
+                }
+
+            }
+        }
+
         return article;
     }
     // 글 삭제

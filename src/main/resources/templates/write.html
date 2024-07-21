@@ -45,6 +45,13 @@
 
                function addTag(tag) {
                  if (tag.trim() === '') return;
+                   const existingTags = tagList.querySelectorAll('.tag-text');
+                      for (const tagText of existingTags) {
+                        if (tagText.textContent === "#" + tag) {
+                            alert('같은 이름을 가진 태그가 존재합니다.');
+                            return;
+                        }
+                    }
 
                  const tagItem = document.createElement('li');
                  const tagText = document.createElement('span');
@@ -71,7 +78,7 @@
                }
          });
       function submit() {
-      const tagList = document.getElementById('tag-list');
+        const tagList = document.getElementById('tag-list');
         const tags = [];
         tagList.querySelectorAll('li').forEach(tagItem => {
              const spanText = tagItem.querySelector('span.tag-text').textContent;

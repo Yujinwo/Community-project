@@ -26,7 +26,8 @@
                 </div>
             </div>
             <div class="tag-container">
-                <ul id="tag-list"></ul>
+                <ul id="tag-list">
+                </ul>
                 <input type="text" id="tag-input" placeholder="설정할 태그를 입력해주세요">
             </div>
             <!-- 수정하기 버튼 -->
@@ -37,129 +38,183 @@
     </div>
 
     <script th:inline="javascript">
-        document.addEventListener('DOMContentLoaded', () => {
-               const tagInput = document.getElementById('tag-input');
-               const tagList = document.getElementById('tag-list');
-               const maxTags = 10;
-
-               tagInput.addEventListener('keypress', function(event) {
-                 if (event.key === 'Enter') {
-                   event.preventDefault();
-                   if (tagList.children.length < maxTags) {
-                     addTag(tagInput.value);
-                     tagInput.value = '';
-                   } else {
-                     alert('최대 허용 태그는 10개 입니다.');
-                   }
-                 }
-               });
-
-               function addTag(tag) {
-                 if (tag.trim() === '') return;
-
-                 const tagItem = document.createElement('li');
-                 const tagText = document.createElement('span');
-                 tagText.className = 'tag-text';
-                 tagText.textContent = `#${tag.trim()}`;
-
-                 const removeTag = document.createElement('span');
-                 removeTag.className = 'remove-tag';
-                 removeTag.textContent = 'x';
-                 removeTag.onclick = () => {
-                   tagList.removeChild(tagItem);
-                   updateTagInputVisibility();
-                 };
-
-                 tagItem.appendChild(tagText);
-                 tagItem.appendChild(removeTag);
-                 tagList.appendChild(tagItem);
-
-                 updateTagInputVisibility();
-               }
-
-               function updateTagInputVisibility() {
-                 tagInput.style.display = tagList.children.length < maxTags ? 'block' : 'none';
-               }
-         });
-
-         var obj = {};
-
-         var imageUrls = [[${article.imageUrls}]];
-
-         function deleteImage(button) {
-         var imageUrl = button.previousElementSibling.getAttribute('src');
-
-         imageUrls = imageUrls.filter(function(item) {
-         return item !== imageUrl;
-         });
-         obj.imageUrls = imageUrls;
-         var parentDiv = button.parentNode;
-         parentDiv.remove(); // 부모 요소 삭제
-         }
+        var tags = [[${article.tagConents}]];
+        tags.forEach(tag => setTag(tag));
 
 
-        // 수정하기
-        function updateSubmit() {
+        function setTag(tag) {
+            const tagInput = document.getElementById('tag-input');
+            const tagList = document.getElementById('tag-list');
+            const maxTags = 10;
 
-            obj.title = $("#title").val();
-            obj.content = $("#content").val();
-            obj.id = [[${article.id}]];
+              if (tag.trim() === '') return;
 
-            var formData = new FormData();
-            var fileInput = $('#files')[0]; // 파일 입력 필드 가져오기
-            var files = fileInput.files; // 선택된 파일들 가져오기
-            if(obj.imageUrls == undefined)
-            {
-                     obj.imageUrls = imageUrls;
+              const tagItem = document.createElement('li');
+              const tagText = document.createElement('span');
+              tagText.className = 'tag-text';
+              tagText.textContent = `#${tag.trim()}`;
+
+              const removeTag = document.createElement('span');
+              removeTag.className = 'remove-tag';
+              removeTag.textContent = 'x';
+              removeTag.onclick = () => {
+                tagList.removeChild(tagItem);
+                setTagInputVisibility();
+              };
+
+              tagItem.appendChild(tagText);
+              tagItem.appendChild(removeTag);
+              tagList.appendChild(tagItem);
+
+              setTagInputVisibility();
+
+              function setTagInputVisibility() {
+              tagInput.style.display = tagList.children.length < maxTags ? 'block' : 'none';
             }
-            // 첨부파일이 2개 이상일 시
-            if (files.length + obj.imageUrls.length > 2) {
-                alert("이미지는 최대 2개까지 첨부할 수 있습니다.");
-                fileInput.value = "";
-            }
-            else {
-                // FormData에 파일 추가
-                for (var i = 0; i < files.length; i++) {
-                    formData.append('value', files[i]);
+      }
+
+
+
+
+
+       document.addEventListener('DOMContentLoaded', () => {
+                   const tagInput = document.getElementById('tag-input');
+            const tagList = document.getElementById('tag-list');
+            const maxTags = 10;
+            tagInput.addEventListener('keypress', function(event) {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                if (tagList.children.length < maxTags) {
+                  addTag(tagInput.value);
+                  tagInput.value = '';
+                } else {
+                  alert('최대 허용 태그는 10개 입니다.');
                 }
-                formData.append('key', new Blob([JSON.stringify(obj)], { type: "application/json" }));
+              }
+            });
 
-                $.ajax({
-                　　type:'patch'
-                　   , processData: false // FormData를 사용하면 processData를 false로 설정해야 함
-                     , contentType: false // 파일 업로드 시에는 contentType을 false로 설정해야 함
-                 　 　, data: formData
-                　  　, url: '/article/update'
-                　  　, success: function(data) {
-                        if(data.message == "제목과 내용을 수정해주세요")
-                        {
-                            alert(data.message);
+            function addTag(tag) {
+              if (tag.trim() === '') return;
+                      const existingTags = tagList.querySelectorAll('.tag-text');
+                      for (const tagText of existingTags) {
+                        if (tagText.textContent === "#" + tag) {
+                            alert('같은 이름을 가진 태그가 존재합니다.');
+                            return;
                         }
-                        else {
-                            location.href='/article/detail/' + obj.id;
-                        }
-                　 　}
-                     , error:function(e) {
+                    }
 
-                        // 제목 에러 메시지 설정
-                        var jsonResponse = JSON.parse(e.responseText);
-                        if (jsonResponse.hasOwnProperty('title')) {
-                            document.getElementById("titleError").innerText = jsonResponse.title;
-                        } else {
-                            document.getElementById("titleError").innerText = "";
-                        }
+              const tagItem = document.createElement('li');
+              const tagText = document.createElement('span');
+              tagText.className = 'tag-text';
+              tagText.textContent = `#${tag.trim()}`;
 
-                        // 내용 에러 메시지 설정
-                        if (jsonResponse.hasOwnProperty('content')) {
-                            document.getElementById("contentError").innerText = jsonResponse.content;
-                        } else {
-                            document.getElementById("contentError").innerText = "";
-                        }
-                　　　
-                　　}
-               });
-           }
+              const removeTag = document.createElement('span');
+              removeTag.className = 'remove-tag';
+              removeTag.textContent = 'x';
+              removeTag.onclick = () => {
+                tagList.removeChild(tagItem);
+                updateTagInputVisibility();
+              };
+
+              tagItem.appendChild(tagText);
+              tagItem.appendChild(removeTag);
+              tagList.appendChild(tagItem);
+
+              updateTagInputVisibility();
+            }
+
+            function updateTagInputVisibility() {
+              tagInput.style.display = tagList.children.length < maxTags ? 'block' : 'none';
+            }
+      });
+
+      var obj = {};
+
+      var imageUrls = [[${article.imageUrls}]];
+
+      function deleteImage(button) {
+      var imageUrl = button.previousElementSibling.getAttribute('src');
+
+      imageUrls = imageUrls.filter(function(item) {
+      return item !== imageUrl;
+      });
+      obj.imageUrls = imageUrls;
+      var parentDiv = button.parentNode;
+      parentDiv.remove(); // 부모 요소 삭제
+      }
+
+
+     // 수정하기
+     function updateSubmit() {
+      const tagList = document.getElementById('tag-list');
+        const tags = [];
+        tagList.querySelectorAll('li').forEach(tagItem => {
+             const spanText = tagItem.querySelector('span.tag-text').textContent;
+            const cleanedText = spanText.replace(/#/g, '');
+            tags.push(cleanedText);
+
+        });
+
+         obj.title = $("#title").val();
+         obj.content = $("#content").val();
+         obj.id = [[${article.id}]];
+         obj.tags = tags;
+
+         var formData = new FormData();
+         var fileInput = $('#files')[0]; // 파일 입력 필드 가져오기
+         var files = fileInput.files; // 선택된 파일들 가져오기
+         if(obj.imageUrls == undefined)
+         {
+                  obj.imageUrls = imageUrls;
+         }
+         // 첨부파일이 2개 이상일 시
+         if (files.length + obj.imageUrls.length > 2) {
+             alert("이미지는 최대 2개까지 첨부할 수 있습니다.");
+             fileInput.value = "";
+         }
+         else {
+             // FormData에 파일 추가
+             for (var i = 0; i < files.length; i++) {
+                 formData.append('value', files[i]);
+             }
+             formData.append('key', new Blob([JSON.stringify(obj)], { type: "application/json" }));
+
+             $.ajax({
+             　　type:'patch'
+             　   , processData: false // FormData를 사용하면 processData를 false로 설정해야 함
+                  , contentType: false // 파일 업로드 시에는 contentType을 false로 설정해야 함
+              　 　, data: formData
+             　  　, url: '/article/update'
+             　  　, success: function(data) {
+                     if(data.message == "제목과 내용을 수정해주세요")
+                     {
+                         alert(data.message);
+                     }
+                     else {
+                         location.href='/article/detail/' + obj.id;
+                     }
+             　 　}
+                  , error:function(e) {
+
+                     // 제목 에러 메시지 설정
+                     var jsonResponse = JSON.parse(e.responseText);
+                     if (jsonResponse.hasOwnProperty('title')) {
+                         document.getElementById("titleError").innerText = jsonResponse.title;
+                     } else {
+                         document.getElementById("titleError").innerText = "";
+                     }
+
+                     // 내용 에러 메시지 설정
+                     if (jsonResponse.hasOwnProperty('content')) {
+                         document.getElementById("contentError").innerText = jsonResponse.content;
+                     } else {
+                         document.getElementById("contentError").innerText = "";
+                     }
+             　　　
+             　　}
+            });
         }
+     }
     </script>
 </th:block>
 </html>

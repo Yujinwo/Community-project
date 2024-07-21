@@ -2,12 +2,16 @@ package com.example.community.dto;
 
 import com.example.community.entity.Article;
 import com.example.community.entity.Member;
+import com.example.community.entity.Tag;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -36,6 +40,8 @@ public class ArticleindexResponseDto {
     // 조회수
     @NotNull
     private int viewcount;
+    // 태그
+    private List<String> tagConents;
 
 
     @Builder
@@ -49,6 +55,13 @@ public class ArticleindexResponseDto {
         //멤버 프록시 강제 초기화
         member.getUserpw();
         this.viewcount = article.getViewcount();
+        List<Tag> tags = article.getTags();
+        if(!tags.isEmpty()) {
+            this.tagConents = tags.stream().map(tag -> tag.getContent()).collect(Collectors.toList());
+        }
+        else {
+            this.tagConents = Collections.emptyList();
+        }
     }
     public ArticleindexResponseDto toDto(Article article) {
 

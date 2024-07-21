@@ -105,12 +105,14 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
                 .orderBy(article.id.asc())
                 .limit(pageable.getPageSize());
 
+
+
         List<Article> content = query.fetch();
 
         JPAQuery<Long> countQuery = jpaQueryFactory
                 .select(article.count())
-                .from(article);
-
+                .from(article)
+                .where(lastId != null ? article.id.gt(lastId) : null);
         long totalCount = countQuery.fetchOne();
 
         return PageableExecutionUtils.getPage(content, pageable, () -> totalCount);

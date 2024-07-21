@@ -35,7 +35,11 @@ public class ArticleRestController {
     // 글 작성 기능
     @PostMapping("/article/write")
     public ResponseEntity<Map<String,String>> write(@Valid @RequestPart(value = "key") ArticleRequestDto articleRequestDto, @RequestPart(required = false,value = "value") List<MultipartFile> files) {
-        log.info("테스트 -> " + articleRequestDto.getTags());
+        if(articleRequestDto.getTags().size() > 10){
+            Map<String,String> responseJson = new HashMap<>();
+            responseJson.put("message" , "허용되지 않은 사이즈 입니다.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseJson);
+        }
 
         // 글 작성 서비스 메서드에 요청 Dto, 요청 파일 전달
         articleService.write(articleRequestDto,files);

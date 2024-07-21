@@ -47,7 +47,7 @@ public class NoteController {
     }
 
     @GetMapping("/note")
-    public String findNoteList( Pageable pageable, Model model) {
+    public String findNoteList(Pageable pageable, Model model) {
         Optional<Member> byId = memberRepository.findById(authenticationUtil.getCurrentMember().getId());
         if(byId.isPresent()) {
            model.addAttribute("member",byId.get());

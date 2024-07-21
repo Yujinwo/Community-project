@@ -34,6 +34,13 @@
         <span> · </span>
         <!-- 글 조회수 -->
         <span class="article_addtext" th:text="${article.viewcount}"></span></br>
+        <div class="detail_tag-container">
+            <ul id="tag-list" >
+                <li th:if="${article.tagConents != null}" th:each="tag : ${article.tagConents}">
+                    <span th:text="'#' + ${tag}" class="tag-text"></span>
+                </li>
+            </ul>
+        </div>
     </div>
     <div th:unless="${hasResults}" class="article">
         <p>검색 결과가 없습니다.</p>
@@ -41,11 +48,11 @@
     <!-- 글 페이지 리스트 -->
     <div th:if="${hasResults}" class="paging_list" >
         <!-- 이전 링크 있을시 활성화 없을시 비 활성화 -->
-        <a class="page_previous" th:classappend="${!hasPrevious} ? 'disabled'" th:href="${hasPrevious} ? @{/(previous=1,previousId=${previousId},lastId=${lastId})} : '#'"> 이전 </a>
+        <a  class="page_previous" th:classappend="${!hasPrevious} ? 'disabled'" th:href="${hasPrevious} ? @{/(previous=1,previousId=${previousId},lastId=${lastId})} : '#'"> 이전 </a>
 
 
         <!-- 다음 링크 있을시 활성화 없을시 비 활성화 -->
-        <a th:if=${hasNext} class="page_next" th:classappend="${!hasNext} ? 'disabled'" th:href="${hasNext} ? @{/(previousId=${previousLastId},lastId=${nextLastId})} : '#'"> 다음 </a>
+        <a th:if="${hasNext}" class="page_next" th:classappend="${!hasNext} ? 'disabled'" th:href="${hasNext} ? @{/(previousId=${previousLastId},lastId=${nextLastId})} : '#'"> 다음 </a>
     </div>
 
     <script th:inline="javascript">

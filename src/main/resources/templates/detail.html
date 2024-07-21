@@ -44,8 +44,8 @@
         </div>
         <div class="detail_tag-container">
             <ul id="tag-list" >
-                <li th:each="tag : ${article.tagConents}">
-                    <span th:text="${tag}" class="tag-text"></span>
+                <li th:if="${article.tagConents != null}" th:each="tag : ${article.tagConents}">
+                    <span th:text="'#' + ${tag}" class="tag-text"></span>
                 </li>
             </ul>
         </div>
