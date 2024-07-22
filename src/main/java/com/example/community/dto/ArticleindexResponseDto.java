@@ -64,10 +64,10 @@ public class ArticleindexResponseDto {
         }
     }
     public ArticleindexResponseDto toDto(Article article) {
-
         return ArticleindexResponseDto.builder()
                 .article(article)
                 .build();
     }
+
 
 }

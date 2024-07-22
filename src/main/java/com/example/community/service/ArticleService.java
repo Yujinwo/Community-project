@@ -56,10 +56,18 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleindexResponseDto> searchArticles(Long lastId, String query, Pageable pageable) {
+    public Page<ArticleindexResponseDto> searchArticles(Long lastId, String query, Pageable pageable,Boolean tagsearch) {
         int page = pageable.getPageNumber() - 1;
         PageRequest pageRequest = PageRequest.of(page, pageable.getPageSize());
-        return articleRepository.findByTitleOrContentContaining(lastId,query, pageRequest).map(article -> ArticleindexResponseDto.builder().article(article).build());
+
+        if(tagsearch)
+        {
+            return articleRepository.findByTagContaining(lastId,query, pageRequest,tagsearch).map(tag -> ArticleindexResponseDto.builder().article(tag.getArticle()).build());
+        }
+        else {
+            return articleRepository.findByTitleOrContentContaining(lastId,query, pageRequest).map(article -> ArticleindexResponseDto.builder().article(article).build());
+        }
+
     }
 
     // 글 저장

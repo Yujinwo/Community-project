@@ -2,7 +2,7 @@ package com.example.community.repository.querydsl.impl;
 
 import com.example.community.entity.*;
 import com.example.community.repository.querydsl.UserRepositoryCustom;
-import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +12,9 @@ import org.springframework.data.support.PageableExecutionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.example.community.entity.QArticle.article;
+import static com.example.community.entity.QTag.tag;
 
 @RequiredArgsConstructor
 public class UserRepositoryCustomImpl implements UserRepositoryCustom {
@@ -39,8 +42,6 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
     @Override
     public Article findByArticleAndMemberlist(Long Id) {
-        QArticle article = QArticle.article;
-
         Article countarticle = jpaQueryFactory.selectFrom(article)
                 .where(article.id.eq(Id))
                 .join(article.member, QMember.member).fetchJoin()
@@ -97,14 +98,10 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
     @Override
     public Page<Article> findByArticlelist(Long lastId, Pageable pageable) {
-        QArticle article = QArticle.article;
-
-
         JPAQuery<Article> query = jpaQueryFactory.selectFrom(article)
-                .where(lastId != null ? article.id.gt(lastId) : null)
+                .where(articleIdGt(lastId))
                 .orderBy(article.id.asc())
                 .limit(pageable.getPageSize());
-
 
 
         List<Article> content = query.fetch();
@@ -120,27 +117,51 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     }
 
     @Override
-    public Page<Article> findByTitleOrContentContaining(Long lastId,String query, Pageable pageable) {
-        QArticle article = QArticle.article;
+    public Page<Article> findByTitleOrContentContaining(Long lastId, String query, Pageable pageable) {
 
-        JPAQuery<Article> queryResult = jpaQueryFactory.selectFrom(article)
-                .where(article.title.containsIgnoreCase(query)
-                        .or(article.content.containsIgnoreCase(query)))
-                .where(lastId != null ? article.id.gt(lastId) : null)
-                .orderBy(article.id.asc())
-                .limit(pageable.getPageSize());
+            JPAQuery<Article> queryResult = jpaQueryFactory.selectFrom(article)
+                    .where(titleOrcontentCt(query),articleIdGt(lastId))
+                    .orderBy(article.id.asc())
+                    .limit(pageable.getPageSize());
 
+            List<Article> content = queryResult.fetch();
+            JPAQuery<Long> countQuery = jpaQueryFactory
+                    .select(article.count())
+                    .from(article)
+                    .where(titleOrcontentCt(query));
 
-        List<Article> content = queryResult.fetch();
-        JPAQuery<Long> countQuery = jpaQueryFactory
-                .select(article.count())
-                .from(article)
-                .where(article.title.containsIgnoreCase(query)
-                        .or(article.content.containsIgnoreCase(query)));
+            long totalCount = countQuery.fetchOne();
 
-        long totalCount = countQuery.fetchOne();
+            return PageableExecutionUtils.getPage(content, pageable, () -> totalCount);
 
-        return PageableExecutionUtils.getPage(content, pageable, () -> totalCount);
+    }
+    @Override
+    public Page<Tag> findByTagContaining(Long lastId, String query, Pageable pageable,Boolean tagsearch) {
+            JPAQuery<Tag> queryResult = jpaQueryFactory.selectFrom(tag)
+                    .where(tagcontentCt(query,tagsearch),articleIdGt(lastId))
+                    .rightJoin(tag.article,article).fetchJoin()
+                    .orderBy(article.id.asc())
+                    .limit(pageable.getPageSize());
+
+            List<Tag> content = queryResult.fetch();
+            JPAQuery<Long> countQuery = jpaQueryFactory
+                    .select(tag.count())
+                    .from(tag)
+                    .where(tagcontentCt(query,tagsearch));
+
+            long totalCount = countQuery.fetchOne();
+
+            return PageableExecutionUtils.getPage(content, pageable, () -> totalCount);
+
+    }
+    private BooleanExpression titleOrcontentCt(String query){
+        return query != null ? article.title.containsIgnoreCase(query).or(article.content.containsIgnoreCase(query)) : null;
+    }
+    private BooleanExpression tagcontentCt(String query,Boolean tagsearch){
+        return tagsearch ?  tag.content.containsIgnoreCase(query) : null;
+    }
+    private BooleanExpression articleIdGt(Long lastId) {
+        return lastId != null ? article.id.gt(lastId) : null;
     }
 
 

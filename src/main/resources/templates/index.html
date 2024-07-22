@@ -36,9 +36,13 @@
         <span class="article_addtext" th:text="${article.viewcount}"></span></br>
         <div class="detail_tag-container">
             <ul id="tag-list" >
-                <li th:if="${article.tagConents != null}" th:each="tag : ${article.tagConents}">
-                    <span th:text="'#' + ${tag}" class="tag-text"></span>
-                </li>
+
+                    <li th:if="${article.tagConents != null}" th:each="tag : ${article.tagConents}">
+                        <a th:href="'/articles/search?tagsearch=true&query=' + ${tag}">
+                            <span th:text="'#' + ${tag}" class="tag-text"></span>
+                        </a>
+                    </li>
+
             </ul>
         </div>
     </div>

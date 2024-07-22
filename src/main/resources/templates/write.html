@@ -45,6 +45,11 @@
 
                function addTag(tag) {
                  if (tag.trim() === '') return;
+                 const sanitizedValue = tag.replace(/[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]/g, '');
+                 if(sanitizedValue != tag) {
+                 alert('특수문자는 허용 되지 않습니다.');
+                 return;
+                 }
                    const existingTags = tagList.querySelectorAll('.tag-text');
                       for (const tagText of existingTags) {
                         if (tagText.textContent === "#" + tag) {
@@ -56,7 +61,7 @@
                  const tagItem = document.createElement('li');
                  const tagText = document.createElement('span');
                  tagText.className = 'tag-text';
-                 tagText.textContent = `#${tag.trim()}`;
+                 tagText.textContent = `#${sanitizedValue.trim()}`;
 
                  const removeTag = document.createElement('span');
                  removeTag.className = 'remove-tag';
