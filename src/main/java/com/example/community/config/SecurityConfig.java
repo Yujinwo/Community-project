@@ -2,23 +2,44 @@ package com.example.community.config;
 
 import com.example.community.exception.UserLoginFailHandler;
 import com.example.community.service.CustomOAuth2UserService;
+import com.example.community.util.CookieUtill;
+import jakarta.servlet.http.Cookie;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.stereotype.Component;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
+@Slf4j
 @EnableWebSecurity
-public class SecurityConfig {
+@RequiredArgsConstructor
+@Component
+public class SecurityConfig{
 
     private final UserDetailsService myUserDetailsService;
     private final UserLoginFailHandler userLoginFailHandler;
@@ -26,14 +47,7 @@ public class SecurityConfig {
 
     private final MyAuthenticationEntryPoint myAuthenticationEntryPoint;
     private final MyAccessDeniedHandler myAccessDeniedHandler;
-    @Autowired
-    public SecurityConfig(UserDetailsService myUserDetailsService, UserLoginFailHandler userLoginFailHandler, CustomOAuth2UserService customOAuth2UserService, MyAuthenticationEntryPoint myAuthenticationEntryPoint, MyAccessDeniedHandler myAccessDeniedHandler) {
-        this.myUserDetailsService = myUserDetailsService;
-        this.userLoginFailHandler = userLoginFailHandler;
-        this.customOAuth2UserService = customOAuth2UserService;
-        this.myAuthenticationEntryPoint = myAuthenticationEntryPoint;
-        this.myAccessDeniedHandler = myAccessDeniedHandler;
-    }
+
     // 패스워드 암호화
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -48,12 +62,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationConfiguration authConfig) throws Exception{
         // RequestParame 매개변수 설정 Null
         HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
         requestCache.setMatchingRequestParameterName(null);
 
         http
+
                 // csrf 토큰 비활성화
                 .csrf((csrfConfig) ->
                         csrfConfig.disable()
@@ -77,15 +92,17 @@ public class SecurityConfig {
                                 .requestMatchers("/login","/join").permitAll()
                                 .anyRequest().permitAll()
                 )
+                .logout((logout) -> logout.logoutSuccessUrl("/login"))
                 // form 로그인 설정
                 .formLogin((formLogin) ->
                         formLogin.loginPage("/login")
                                 .usernameParameter("email")
                                 .passwordParameter("userpw")
                                 .loginProcessingUrl("/login/proc")
+                                .successHandler(customLoginSuccessHandler())  // 로그인 성공 핸들러 설정
                                 // 로그인 실패시 핸들러 설정
                                 .failureHandler(userLoginFailHandler)
-                                .defaultSuccessUrl("/")
+
                 )
                 // UserDetails 서비스 설정
                 .userDetailsService(myUserDetailsService)
@@ -103,6 +120,37 @@ public class SecurityConfig {
         return http.build();
 
 
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+        corsConfiguration.setAllowedOriginPatterns(List.of("*"));
+        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
+        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+        corsConfiguration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration); // 모든 경로에 대해서 CORS 설정을 적용
+
+        return source;
+    }
+
+
+    @Bean
+    public AuthenticationSuccessHandler customLoginSuccessHandler() {
+        return (request, response, authentication) -> {
+            String rememberMe = request.getParameter("rememberMe");
+            if ("on".equals(rememberMe)) {
+                // 쿠키 설정 예시
+                CookieUtill.addCookie(response,"userId",request.getParameter("email"),30 * 24 * 60 * 60);
+            }
+            else {
+                CookieUtill.removeCookie(response,"userId");
+            }
+            response.sendRedirect("/");  // 로그인 성공 후 리디렉션
+        };
     }
 
 

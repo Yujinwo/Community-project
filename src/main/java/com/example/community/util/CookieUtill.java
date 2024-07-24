@@ -15,6 +15,16 @@ public class CookieUtill {
        // HttpServletResponse에 쿠키 추가
        response.addCookie(cookie);
    }
+    public static void removeCookie(HttpServletResponse response,String name){
+        // 새로운 쿠키 객체 생성
+        Cookie cookie = new Cookie(name, null);
+        // 쿠키의 만료 시간 설정
+        cookie.setMaxAge(0);
+        // 쿠키의 경로 설정
+        cookie.setPath("/");
+        // HttpServletResponse에 쿠키 추가
+        response.addCookie(cookie);
+    }
    public static String getCookieValue(HttpServletRequest request,String name){
        // HttpServletRequest에서 모든 쿠키를 가져옵니다.
        Cookie[] cookies = request.getCookies();

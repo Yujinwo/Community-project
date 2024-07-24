@@ -24,9 +24,16 @@
         <!-- Spring Security 로그인 -->
          <form class="form-signin" method="post" th:action="@{/login/proc}">
              <!-- 아이디 입력창 -->
-             <input type="text" id="username" name="email" class="form-control" placeholder="아이디" autofocus="" />
+             <input th:value="${userId}" type="text" id="username" name="email" class="form-control" placeholder="아이디" autofocus="" />
              <!-- 비밀번호 입력창 -->
              <input type="password" id="password" name="userpw" class="form-control" placeholder="비밀번호" />
+             <div style="display:flex; align-items:center; margin-left:10px;">
+                 <input th:checked="${rememberMe}"  type="checkbox" name="rememberMe"/>
+                 <label style="margin-left:10px">
+                      ID 저장
+                 </label>
+             </div>
+
              <!-- 로그인 에러 메세지 -->
              <p id="valid" class="alert alert-danger" th:if=${exception} th:text="${exception}"></p>
              <!-- 로그인 버튼 -->

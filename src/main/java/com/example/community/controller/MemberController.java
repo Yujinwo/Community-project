@@ -1,6 +1,7 @@
 package com.example.community.controller;
 
 import com.example.community.config.CustomUserDetails;
+import com.example.community.util.CookieUtill;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -19,8 +20,18 @@ public class MemberController {
 
     // 로그인 페이지
     @GetMapping("/login")
-    public String login(@RequestParam(value = "error",required = false) String error, @RequestParam(value = "exception",required = false) String exception, Model model) {
-    // 로그인 실패 시 에러 메세지를 뷰에 전달
+    public String login(@RequestParam(value = "error",required = false) String error, @RequestParam(value = "exception",required = false) String exception, Model model,HttpServletRequest request) {
+    String userId = CookieUtill.getCookieValue(request,"userId");
+
+    if(userId != null) {
+        model.addAttribute("rememberMe",true);
+        model.addAttribute("userId", userId);
+    }
+    else {
+        model.addAttribute("rememberMe",false);
+    }
+
+        // 로그인 실패 시 에러 메세지를 뷰에 전달
     model.addAttribute("error",error);
     model.addAttribute("exception",exception);
     return "login";

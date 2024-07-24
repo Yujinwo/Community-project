@@ -4,15 +4,13 @@ package com.example.community.entity;
 import com.example.community.dto.NoteResponseDto;
 import com.example.community.dto.NotificationResponseDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Builder
 @AllArgsConstructor
