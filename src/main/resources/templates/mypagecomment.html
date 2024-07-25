@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns="http://www.w3.org/1999/html" layout:decorate="layout/default_layout">
+<th:block layout:fragment="content">
+     <div style="
+                    margin:0 auto;
+                    width:800px;
+                    padding: 20px;
+                    border:1px solid #e3e3e3;
+                    border-radius:10px;
+                    margin-bottom:30px;">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="/mypage?type=article_list">작성한 글</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/mypage?type=comment_list">작성한 댓글</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/mypage?type=edit_profile">내 정보 수정</a>
+                </li>
+            </ul>
+         
+     </div>
+    <script inline="javascript">
+
+
+    </script>
+
+
+</th:block>

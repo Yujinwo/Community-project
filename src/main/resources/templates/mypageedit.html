@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns="http://www.w3.org/1999/html" layout:decorate="layout/default_layout">
+<th:block layout:fragment="content">
+     <div style="
+                    margin:0 auto;
+                    width:800px;
+                    padding: 20px;
+                    border:1px solid #e3e3e3;
+                    border-radius:10px;
+                    margin-bottom:30px;">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="/mypage?type=article_list">작성한 글</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/mypage?type=comment_list">작성한 댓글</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/mypage?type=edit_profile">내 정보 수정</a>
+                </li>
+            </ul>
+         <div class="input-group mb-3" style="width:500px; margin: 0 auto;">
+             <span class="input-group-text" id="basic-addon1" style="margin:20px 0;">닉네임</span>
+             <input type="text" class="form-control" id="Username" placeholder="닉네임을 입력해주세요" aria-label="Username" aria-describedby="basic-addon1">
+             <button class="btn btn-outline-secondary" type="button" id="nickcheck_button" style="margin:20px 0;">중복 체크</button>
+         </div>
+         <div class="input-group mb-3" style="width:500px; margin: 0 auto; bottom:20px">
+             <span class="input-group-text" id="basic-addon2" style="margin:20px 0;">PW</span>
+             <input type="text" class="form-control" id="Pw"  placeholder="비밀번호를 입력해주세요" aria-label="Pw" aria-describedby="basic-addon1">
+
+         </div>
+         <div class="input-group mb-3" style="width:500px; margin: 0 auto; bottom:40px">
+             <span class="input-group-text" id="basic-addon3" style="margin:20px 0;">PW 재확인</span>
+             <input type="text" class="form-control" placeholder="재확인 비밀번호를 입력해주세요" aria-label="Pw" aria-describedby="basic-addon1">
+
+         </div>
+         <div class="d-grid gap-2" style="width:500px; margin: 0 auto; position:relative; bottom:40px">
+             <button class="btn btn-primary" id="prifileupdate_button" type="button">수정하기</button>
+         </div>
+     </div>
+    <script inline="javascript">
+
+        $(document).ready(function() {
+            document.getElementById('nickcheck_button').addEventListener('click',function() {
+
+            });
+            document.getElementById('prifileupdate_button').addEventListener('click',function(event) {
+              event.preventDefault();
+
+            });
+
+        });
+
+
+    </script>
+
+
+</th:block>
