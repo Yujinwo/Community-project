@@ -68,6 +68,17 @@ background-color: #000000;
 top:5px;
 width:100px
 }
+.nickcheck_btn {
+position:relative;
+border-radius:10px;
+color:#FFFFFF;
+margin:15px 5px 5px 5px;
+height:40px;
+border:3px solid #000000;
+background-color: #000000;
+top:5px;
+width:150px
+}
 /* 버튼 flex */
 .button_flex {
 display:flex;
@@ -107,6 +118,10 @@ white-space: pre-line;
 display:flex;
 position:relative;
 top:10px;
+}
+.join_nickcheck{
+display:flex;
+position:relative;
 }
 /* 수정페이지 내용 div */
 .update_content_area{

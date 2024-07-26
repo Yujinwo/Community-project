@@ -86,11 +86,10 @@ public class SecurityConfig{
                 // Url 권한 설정
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("/article/detail/*","/").permitAll()
-                                .requestMatchers("/article/update/*","/article/write","/article/delete","/message","/note").hasRole("USER")
                                 .requestMatchers("/admin").hasRole("ADMIN")
-                                .requestMatchers("/login","/join").permitAll()
-                                .anyRequest().permitAll()
+                                .requestMatchers("/login","/join").anonymous()
+                                .requestMatchers("/article/detail/*","/").permitAll()
+                                .anyRequest().hasRole("USER")
                 )
                 .logout((logout) -> logout.logoutSuccessUrl("/login"))
                 // form 로그인 설정

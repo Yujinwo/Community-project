@@ -28,7 +28,7 @@ public class Member {
     @Column
     private String userpw;
     // 닉네임
-    @Column
+    @Column(unique = true)
     private String usernick;
     // 유저 권한
     @Column

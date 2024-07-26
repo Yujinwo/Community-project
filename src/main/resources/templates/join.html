@@ -11,14 +11,17 @@
             <!-- ID 입력창 -->
             <input type="text" id="email" name="email" class="form-control" placeholder="아이디" autofocus=""/>
             <!-- ID 중복체크 버튼 -->
-            <button class="idcheck_btn" onclick="idcheck()">중복체크</button>
+            <button class="idcheck_btn" onclick="idcheck()">ID 체크</button>
         </div>
         <span style="color:#0054FF" id="emailError"></span>
         <!-- 비밀번호 입력창 -->
         <input type="password" id="userpw" name="userpw" class="form-control" placeholder="비밀번호" />
         <span style="color:#0054FF" id="userpwError"></span>
         <!-- 닉네임 입력창 -->
-        <input type="text" id="usernick" name="usernick" class="form-control" placeholder="닉네임" />
+        <div class="join_nickcheck">
+            <input type="text" id="usernick" name="usernick" class="form-control" placeholder="닉네임" />
+            <button class="nickcheck_btn" onclick="nickcheck()">닉네임 체크</button>
+        </div>
         <span style="color:#0054FF" id="usernickError"></span>
         <!-- 회원가입 버튼 -->
         <div class="button_flex">
@@ -28,6 +31,8 @@
     </div>
 
     <script th:inline="javascript">
+        var idcheckdstate = "false";
+        var nickcheckdstate = "false";
         // ID 중복체크
         function idcheck() {
                 var checkdata = {
@@ -40,14 +45,46 @@
                          url:'/idcheck',
                          success:function(data){
                              alert(data);
+                             idcheckdstate = "true";
                          },
                          error: function(e) {
-                             console.log(e);
+                             alert(e.responseText);
+                             idcheckdstate = "false";
+                         }
+                });
+        };
+
+        function nickcheck() {
+                var checkdata = {
+                      Usernick : $('#usernick').val()
+                }
+                $.ajax({
+                         type:'post',
+                         contentType:'application/json',
+                         data:JSON.stringify(checkdata),
+                         url:'/nickcheck',
+                         success:function(data){
+                             alert(data);
+                             nickcheckdstate = "true";
+                         },
+                         error: function(e) {
+                             alert(e.responseText);
+                             nickcheckdstate = "false";
                          }
                 });
         };
         // 회원가입
         function joinBtn() {
+                 if(idcheckdstate == "false")
+                 {
+                 alert('ID 체크를 해주세요.');
+                  return;
+                 }
+                  if(nickcheckdstate == "false")
+                 {
+                 alert('닉네임 체크를 해주세요.');
+                  return;
+                 }
                 var joindata = {
                   email : $('#email').val(),
                   userpw : $('#userpw').val(),

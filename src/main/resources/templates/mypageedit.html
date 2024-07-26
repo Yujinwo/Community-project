@@ -22,17 +22,17 @@
             </ul>
          <div class="input-group mb-3" style="width:500px; margin: 0 auto;">
              <span class="input-group-text" id="basic-addon1" style="margin:20px 0;">닉네임</span>
-             <input type="text" class="form-control" id="Username" placeholder="닉네임을 입력해주세요" aria-label="Username" aria-describedby="basic-addon1">
+             <input type="text" class="form-control" id="Usernick" placeholder="닉네임을 입력해주세요" aria-label="Usernick" aria-describedby="basic-addon1">
              <button class="btn btn-outline-secondary" type="button" id="nickcheck_button" style="margin:20px 0;">중복 체크</button>
          </div>
          <div class="input-group mb-3" style="width:500px; margin: 0 auto; bottom:20px">
              <span class="input-group-text" id="basic-addon2" style="margin:20px 0;">PW</span>
-             <input type="text" class="form-control" id="Pw"  placeholder="비밀번호를 입력해주세요" aria-label="Pw" aria-describedby="basic-addon1">
+             <input type="password" class="form-control" id="password"  placeholder="비밀번호를 입력해주세요" aria-label="password" aria-describedby="basic-addon1">
 
          </div>
          <div class="input-group mb-3" style="width:500px; margin: 0 auto; bottom:40px">
              <span class="input-group-text" id="basic-addon3" style="margin:20px 0;">PW 재확인</span>
-             <input type="text" class="form-control" placeholder="재확인 비밀번호를 입력해주세요" aria-label="Pw" aria-describedby="basic-addon1">
+             <input type="password" class="form-control" id="confirmPassword" placeholder="재확인 비밀번호를 입력해주세요" aria-label="confirmPassword" aria-describedby="basic-addon1">
 
          </div>
          <div class="d-grid gap-2" style="width:500px; margin: 0 auto; position:relative; bottom:40px">
@@ -41,12 +41,60 @@
      </div>
     <script inline="javascript">
 
+        var nickcheckstate = "false";
+
         $(document).ready(function() {
             document.getElementById('nickcheck_button').addEventListener('click',function() {
+            var checkdata = {
+                      Usernick : $('#Usernick').val()
+                }
+                $.ajax({
+                         type:'post',
+                         contentType:'application/json',
+                         data:JSON.stringify(checkdata),
+                         url:'/nickcheck',
+                         success:function(data){
+                             alert(data);
+                             nickcheckstate = "true";
+                         },
+                         error: function(e) {
+                             alert(e.responseText);
+                             nickcheckstate = "false";
+                         }
+                });
 
             });
             document.getElementById('prifileupdate_button').addEventListener('click',function(event) {
-              event.preventDefault();
+                 if(nickcheckstate == "false") {
+                  alert('닉네임 체크를 해주세요.');
+                  return;
+                 }
+                event.preventDefault();
+                var password = document.getElementById('password').value;
+                var confirmPassword = document.getElementById('confirmPassword').value;
+                if (password !== confirmPassword) {
+                    alert('비밀번호가 일치하지 않습니다.');
+                    return;
+                }
+                var updatedata = {
+                      usernick : $('#Usernick').val(),
+                      userpw : password,
+                      confirmuserpw : confirmPassword
+
+                }
+
+                $.ajax({
+                         type:'post',
+                         contentType:'application/json',
+                         data:JSON.stringify(updatedata),
+                         url:'/api/user/update',
+                         success:function(data){
+                            alert(data.result);
+                         },
+                         error: function(e) {
+                             alert(e.responseJSON.result);
+                         }
+                });
 
             });
 

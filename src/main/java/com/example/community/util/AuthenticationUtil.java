@@ -25,14 +25,6 @@ import java.util.Map;
 
 @Component
 public class AuthenticationUtil {
-    private MemberService memberService;
-
-    private EntityManager em;
-
-    public AuthenticationUtil(EntityManager em, MemberService memberService) {
-        this.em = em;
-        this.memberService = memberService;
-    }
 
     // Security / Oauth2.0 인증된 회원 정보를 온다.
     public Member getCurrentMember() {
