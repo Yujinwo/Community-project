@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface UserRepositoryCustom {
     Page<Article> findByArticlelist(Long lastId, Pageable pageable);
+    Page<Article> findBymyArticlelist(Member user,Pageable pageable);
     Page<Article> findByTitleOrContentContaining(Long lastId,String query, Pageable pageable);
     Page<Tag> findByTagContaining(Long lastId,String query, Pageable pageable,Boolean tagsearch);
     Article findByArticleAndMemberlist(Long Id);

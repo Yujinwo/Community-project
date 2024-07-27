@@ -34,15 +34,13 @@
         <span> · </span>
         <!-- 글 조회수 -->
         <span class="article_addtext" th:text="${article.viewcount}"></span></br>
-        <div class="detail_tag-container">
+        <div th:if="${article.tagConents.size() != 0}"  class="detail_tag-container">
             <ul id="tag-list" >
-
-                    <li th:if="${article.tagConents != null}" th:each="tag : ${article.tagConents}">
+                    <li th:each="tag : ${article.tagConents}">
                         <a th:href="'/articles/search?tagsearch=true&query=' + ${tag}">
                             <span th:text="'#' + ${tag}" class="tag-text"></span>
                         </a>
                     </li>
-
             </ul>
         </div>
     </div>

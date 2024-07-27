@@ -2,10 +2,13 @@ package com.example.community.entity;
 
 import com.example.community.dto.ArticleindexResponseDto;
 import com.example.community.dto.ArticleResponseDto;
+import com.example.community.dto.MyArticleResponseDto;
+import com.example.community.dto.NoteResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Entity
@@ -56,6 +59,12 @@ public class Article extends BaseTime{
     public void addBoardImages (BoardImage boardImage){
         boardImage.setArticle(this);
         this.getBoardImages().add(boardImage);
+    }
+
+    public MyArticleResponseDto changeMyArticleResponseDto() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String createdFormatDate = createdDate.format(formatter);
+        return MyArticleResponseDto.builder().id(id).title(title).createdDate(createdFormatDate).build();
     }
 
     public void updatecount() {

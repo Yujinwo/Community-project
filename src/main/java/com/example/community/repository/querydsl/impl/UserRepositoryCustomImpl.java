@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.example.community.entity.QArticle.article;
+import static com.example.community.entity.QMember.member;
 import static com.example.community.entity.QTag.tag;
 
 @RequiredArgsConstructor
@@ -114,6 +115,22 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
         return PageableExecutionUtils.getPage(content, pageable, () -> totalCount);
 
+    }
+
+    @Override
+    public Page<Article> findBymyArticlelist(Member user, Pageable pageable) {
+        JPAQuery<Article> queryResult = jpaQueryFactory.selectFrom(article)
+                .where(article.member.id.eq(user.getId()))
+                .join(article.member,member).fetchJoin()
+                .limit(pageable.getPageSize());
+        List<Article> content = queryResult.fetch();
+        JPAQuery<Long> countQuery = jpaQueryFactory.select(article.count())
+                .from(article)
+                .where(article.member.id.eq(user.getId()));
+
+        long totalCount = countQuery.fetchOne();
+
+        return PageableExecutionUtils.getPage(content, pageable, () -> totalCount);
     }
 
     @Override

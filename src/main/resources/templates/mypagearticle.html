@@ -20,8 +20,45 @@
                     <a class="nav-link" href="/mypage?type=edit_profile">내 정보 수정</a>
                 </li>
             </ul>
+         <table class="table table-border table-Light">
+             <colgroup>
+                 <col style="width:70%">
+                 <col style="width:30%">
+             </colgroup>
+             <thead class="table-success">
+             <tr>
+                 <th scope="col" style="text-align: center;">제목</th>
+                 <th scope="col" style="text-align: center;">작성시간</th>
+             </tr>
+             </thead>
+             <tbody class="table-group-divider">
+             <tr class="border-bottom" th:each="item : ${article}">
 
+                     <td style="text-align: center;">
+                         <a th:href="@{/article/detail/{id}(id=${item.id})}" th:text="${item.title}" />
+                     </td>
+                     <td style="text-align: center;" th:text="${item.createdDate}"></td>
+
+             </tr>
+             </tbody>
+         </table>
+         <div th:if="${endPage != 0}" class="paging_list">
+             <!-- 이전 링크 있을시 활성화 없을시 비 활성화 -->
+             <a class="page_previous" th:classappend=" ${!article.hasPrevious()} ? 'disabled' " th:href="${!article.isFirst()} ? @{/mypage(type=article_list,page=${article.number})}"> 이전 </a>
+             <!-- 시작페이지 -> 끝 페이지 까지 페이지 출력 -->
+             <span th:each="page: ${#numbers.sequence(startPage, endPage)}">
+		    <!-- 현재페이지는 링크 없이 숫자만 -->
+            <span th:if="${page == article.number + 1}" th:text="${page}"></span>
+                 <!-- 현재페이지 링크 X, 다른 페이지번호에는 링크를 보여준다 -->
+            <span th:unless="${page == article.number + 1}">
+              <a th:href="@{/mypage(type=article_list,page=${page})}" th:text="${page}"></a>
+            </span>
+        </span>
+             <!-- 다음 링크 있을시 활성화 없을시 비 활성화 -->
+             <a class="page_next" th:classappend=" ${!article.hasNext()} ? 'disabled' "  th:href="${article.isLast()} ? '#' : @{/mypage(type=article_list,page=${article.number+2})}"> 다음 </a>
+         </div>
      </div>
+
     <script inline="javascript">
 
 

@@ -109,6 +109,8 @@ public class ArticleController {
         return "detail";
     }
 
+
+
     @GetMapping("/articles/search")
     public String searchArticles(@RequestParam("query") String query, @RequestParam(value = "tagsearch",required = false,defaultValue = "false") Boolean tagsearch,@RequestParam(value = "lastId", required = false) Long lastId, @RequestParam(value = "previousId", required = false) Long previousId,@RequestParam(value = "previous", required = false,defaultValue = "0") int previous,Model model, @PageableDefault(page = 1)  Pageable pageable) {
         if (previous == 0) {

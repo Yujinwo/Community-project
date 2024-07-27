@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -432,5 +433,12 @@ public class ArticleService {
         article.setCommentcount(article.getCommentcount() - 1);
         // 대댓글을 삭제한다
         commentRepository.delete(reply);
+    }
+
+    public Page<MyArticleResponseDto> findMyArticleList(Pageable pageable) {
+
+        Page<MyArticleResponseDto> bymyArticlelist = articleRepository.findBymyArticlelist(authenticationUtil.getCurrentMember(), pageable).map(m-> m.changeMyArticleResponseDto());
+        return bymyArticlelist;
+
     }
 }
