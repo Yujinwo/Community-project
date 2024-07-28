@@ -90,6 +90,7 @@
                          url:'/api/user/update',
                          success:function(data){
                             alert(data.result);
+                           window.location.href = '/';
                          },
                          error: function(e) {
                              alert(e.responseJSON.result);

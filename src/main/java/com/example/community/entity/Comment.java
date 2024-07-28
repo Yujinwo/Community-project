@@ -1,9 +1,12 @@
 package com.example.community.entity;
 
 import com.example.community.dto.CommentResponseDto;
+import com.example.community.dto.MyArticleResponseDto;
+import com.example.community.dto.MyCommentResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +54,13 @@ public class Comment extends BaseTime{
         return CommentResponseDto.builder().id(id).content(content).member(member).article(article).createdDate(getCreatedDate()).modifiedDate(getModifiedDate()).child(child).parent(parent).commentnumber(commentnumber).redepth(redepth).deleted(deleted).build();
 
     }
+
+    public MyCommentResponseDto changeMyCommentResponseDto() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String createdFormatDate = createdDate.format(formatter);
+        return MyCommentResponseDto.builder().article_id(article.getId()).article_title(article.getTitle()).content(content).createdDate(createdFormatDate).build();
+    }
+
 
 
 

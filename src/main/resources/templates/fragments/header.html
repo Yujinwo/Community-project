@@ -103,7 +103,7 @@
                     <div th:if="${#authentication != null}">
                         <a href="javascript:;">
                         <span class="bold" id="usernick" th:if="${#authentication.principal.usernick != null}"
-                              th:text="${#authentication.principal.member.usernick}"></span>
+                              th:text="${#authentication.principal.usernick}"></span>
                         </a>
                         <div id="my_page" class="list-group" style="position:absolute; display:none;">
                             <ul>

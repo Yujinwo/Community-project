@@ -15,6 +15,7 @@ import java.util.List;
 
 import static com.example.community.entity.QArticle.article;
 import static com.example.community.entity.QMember.member;
+import static com.example.community.entity.QComment.comment;
 import static com.example.community.entity.QTag.tag;
 
 @RequiredArgsConstructor
@@ -37,6 +38,24 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         List<Comment> content = comments.fetch();
         long totalCount = countQuery.fetchOne();
         return PageableExecutionUtils.getPage(content, pageable, () -> totalCount);
+
+    }
+
+    @Override
+    public Page<Comment> findBymyCommentlist(Member user, Pageable pageable) {
+        JPAQuery<Comment> comments = jpaQueryFactory.selectFrom(comment)
+                .where(comment.member.id.eq(user.getId()))
+                .join(comment.article,article).fetchJoin()
+                .limit(pageable.getPageSize());
+
+        JPAQuery<Long> countQuery = jpaQueryFactory.select(comment.count())
+                .from(comment)
+                .where(comment.member.id.eq(user.getId()));
+
+        List<Comment> commentList = comments.fetch();
+        long totalcount = countQuery.fetchOne();
+
+        return PageableExecutionUtils.getPage(commentList,pageable,() -> totalcount);
 
     }
 
@@ -121,7 +140,6 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     public Page<Article> findBymyArticlelist(Member user, Pageable pageable) {
         JPAQuery<Article> queryResult = jpaQueryFactory.selectFrom(article)
                 .where(article.member.id.eq(user.getId()))
-                .join(article.member,member).fetchJoin()
                 .limit(pageable.getPageSize());
         List<Article> content = queryResult.fetch();
         JPAQuery<Long> countQuery = jpaQueryFactory.select(article.count())

@@ -3,6 +3,7 @@ package com.example.community.config;
 import com.example.community.domain.member.Role;
 import com.example.community.entity.Member;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,6 +40,11 @@ public class CustomUserDetails implements UserDetails {
     // Member Entity Get
     public Member getUserEntity() {
         return member;
+    }
+
+    public void changeMyProfile(String usernick,String password) {
+        this.usernick = usernick;
+        this.password = password;
     }
 
     // 계정 만료 여부 확인

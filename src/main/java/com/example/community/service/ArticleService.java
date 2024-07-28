@@ -441,4 +441,9 @@ public class ArticleService {
         return bymyArticlelist;
 
     }
+
+    public Page<MyCommentResponseDto> findMyCommentList(Pageable pageable) {
+        Page<MyCommentResponseDto> bymyCommentlist = articleRepository.findBymyCommentlist(authenticationUtil.getCurrentMember(), pageable).map(m-> m.changeMyCommentResponseDto());
+        return bymyCommentlist;
+    }
 }

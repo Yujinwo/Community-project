@@ -1,13 +1,17 @@
 package com.example.community.service;
 
+import com.example.community.config.CustomUserDetails;
 import com.example.community.dto.MemberDto;
 import com.example.community.dto.updateMemberDto;
 import com.example.community.entity.Member;
 import com.example.community.repository.MemberRepository;
 import com.example.community.util.AuthenticationUtil;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +27,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final AuthenticationUtil authenticationUtil;
     private final PasswordEncoder passwordEncoder;
+    private final EntityManager em;
 
     // 회원 생성
     @Transactional
@@ -81,14 +86,15 @@ public class MemberService {
     }
     @Transactional
     public ResponseEntity<Map<String, String>> updateUser(updateMemberDto requestDto) {
+        Member user = authenticationUtil.getCurrentMember();
 
-        Optional<Member> byEmail = memberRepository.findByEmail(authenticationUtil.getCurrentMember().getEmail());
+        Optional<Member> byEmail = memberRepository.findByEmail(user.getEmail());
         if(byEmail.isPresent())
         {
             Map<String, String> resultdata = new HashMap<>();
             //닉네임이 같으면
             if( byEmail.get().getUsernick().equals(requestDto.getUsernick()) ) {
-                if(passwordEncoder.matches(requestDto.getUserpw(),authenticationUtil.getCurrentMember().getUserpw()) ){
+                if(passwordEncoder.matches(requestDto.getUserpw(),user.getUserpw()) ){
                     resultdata.put("result","현재 사용하고 있는 비밀번호입니다.");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultdata);
                 }
@@ -102,7 +108,7 @@ public class MemberService {
                     resultdata.put("result","닉네임 중복체크를 해주세요.");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultdata);
                 }
-                else if(passwordEncoder.matches(requestDto.getUserpw(),authenticationUtil.getCurrentMember().getUserpw()) ){
+                else if(passwordEncoder.matches(requestDto.getUserpw(),user.getUserpw()) ){
                     resultdata.put("result","현재 사용하고 있는 비밀번호입니다.");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultdata);
                 }
@@ -110,6 +116,10 @@ public class MemberService {
                     // 닉네임과 비밀번호 변경
                     byEmail.get().setUsernick(requestDto.getUsernick());
                     byEmail.get().setUserpw(passwordEncoder.encode(requestDto.getUserpw()));
+                    em.flush();
+                    em.clear();
+                    CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                    userDetails.changeMyProfile(byEmail.get().getUsernick(),byEmail.get().getUserpw());
                     resultdata.put("result","회원 정보 수정이 완료되었습니다.");
                     return ResponseEntity.status(HttpStatus.OK).body(resultdata);
                 }

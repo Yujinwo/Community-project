@@ -11,6 +11,7 @@ public interface UserRepositoryCustom {
     Page<Tag> findByTagContaining(Long lastId,String query, Pageable pageable,Boolean tagsearch);
     Article findByArticleAndMemberlist(Long Id);
     Page<Comment> findByCommentlist(Long boardId, Pageable pageable);
+    Page<Comment> findBymyCommentlist(Member user,Pageable pageable);
     Page<Notification> findByNoticication(Member user,Pageable pageable);
     Page<Note> findByNote(Member user, Pageable pageable);
 }
