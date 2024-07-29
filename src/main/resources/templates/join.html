@@ -42,7 +42,7 @@
                          type:'post',
                          contentType:'application/json',
                          data:JSON.stringify(checkdata),
-                         url:'/idcheck',
+                         url:'/api/userid/check',
                          success:function(data){
                              alert(data);
                              idcheckdstate = "true";
@@ -62,7 +62,7 @@
                          type:'post',
                          contentType:'application/json',
                          data:JSON.stringify(checkdata),
-                         url:'/nickcheck',
+                         url:'/api/usernick/check',
                          success:function(data){
                              alert(data);
                              nickcheckdstate = "true";
@@ -95,7 +95,7 @@
                          type:'post',
                          contentType:'application/json',
                          data:JSON.stringify(joindata),
-                         url:'/join',
+                         url:'/api/user/join',
                          success: function(data) {
                             // 회원가입 결과 메시지 설정
                             if (data.hasOwnProperty('result')) {

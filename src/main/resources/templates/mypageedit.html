@@ -52,7 +52,7 @@
                          type:'post',
                          contentType:'application/json',
                          data:JSON.stringify(checkdata),
-                         url:'/nickcheck',
+                         url:'/api/usernick/check',
                          success:function(data){
                              alert(data);
                              nickcheckstate = "true";

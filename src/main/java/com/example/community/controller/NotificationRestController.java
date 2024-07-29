@@ -23,7 +23,7 @@ public class NotificationRestController {
     private final NotificationService notificationService;
     private final AuthenticationUtil authenticationUtil;
 
-    @GetMapping(path = "/notifications", produces = "text/event-stream")
+    @GetMapping(path = "/api/notification/subscribe", produces = "text/event-stream")
     public SseEmitter streamNotifications() {
         // 인증된 Member Entity 가져오기
         Member member = authenticationUtil.getCurrentMember();
@@ -35,7 +35,7 @@ public class NotificationRestController {
         }
 
     }
-    @GetMapping(path = "/notifications/list")
+    @GetMapping(path = "/api/notifications/get")
     public NotificationResultDto getnotifications(Pageable pageable) {
 
         return notificationService.getnotifications(pageable);

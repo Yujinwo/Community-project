@@ -159,7 +159,7 @@
                        $.ajax({
                             type:'GET',
                             contentType:'application/json',
-                            url:'/notifications/list?page=' + pageNumber,
+                            url:'/api/notifications/get?page=' + pageNumber,
                             success:function(data){
                                const notificationList = document.getElementById('notificationList');
                                const noFeedList = document.getElementById('noFeedList');
@@ -265,7 +265,7 @@
          function subscribeToNotifications() {
 
            // 새로운 EventSource 인스턴스를 생성하고 구독 시작
-              eventSource = new EventSource('/notifications');
+              eventSource = new EventSource('/api/notification/subscribe');
               const notificationIndicator = document.getElementById('notificationIndicator');
                // 메시지 이벤트 리스너 추가
               eventSource.addEventListener('notification', function(event) {
@@ -295,7 +295,7 @@
                $.ajax({
                         type:'get',
                         contentType:'application/json',
-                        url:'/api/session',
+                        url:'/api/session/check',
                         success:function(data){
                            ssesionStatus = data;
                            if(ssesionStatus == 1)

@@ -28,7 +28,7 @@ public class NoteRestController {
     private final NoteService noteService;
     private final AuthenticationUtil authenticationUtil;
 
-    @PostMapping("/api/SaveNote")
+    @PostMapping("/api/Note/save")
     public ResponseEntity<String> saveNote(@Valid @RequestBody NoteSaveRequestDto noteSaveRequestDto, BindingResult bindingResult) {
         if(bindingResult.hasErrors())
         {
@@ -67,7 +67,7 @@ public class NoteRestController {
         }
 
     }
-    @PostMapping("/api/updateNoteBlock")
+    @PostMapping("/api/NoteBlock/update")
     public ResponseEntity<String> updateNoteBlock(@RequestBody NoteBlockRequestDto noteBlockRequestDto) {
         if(noteBlockRequestDto.getBlock_type().equals("temporary")) {
             Long userid =  noteService.setTemporaryBlockDate();

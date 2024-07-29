@@ -33,7 +33,7 @@ public class ArticleRestController {
 
 
     // 글 작성 기능
-    @PostMapping("/article/write")
+    @PostMapping("/api/article/write")
     public ResponseEntity<Map<String,String>> write(@Valid @RequestPart(value = "key") ArticleRequestDto articleRequestDto, @RequestPart(required = false,value = "value") List<MultipartFile> files) {
         if(articleRequestDto.getTags().size() > 10){
             Map<String,String> responseJson = new HashMap<>();
@@ -51,7 +51,7 @@ public class ArticleRestController {
     }
 
     // 글 삭제 기능
-    @DeleteMapping("/article/delete/{id}")
+    @DeleteMapping("/api/article/delete/{id}")
     public ResponseEntity<Map<String,String>> delete(@Valid @PathVariable Long id)
     {
         // 글 삭제 서비스 메서드에 요청 Dto 전달
@@ -63,7 +63,7 @@ public class ArticleRestController {
     }
 
     // 글 수정 기능
-    @PatchMapping("/article/update")
+    @PatchMapping("/api/article/update")
     public ResponseEntity<Map<String,String>> update(@Valid @RequestPart(value = "key") ArticleRequestDto articleRequestDto, @RequestPart(required = false,value = "value") List<MultipartFile> files)
     {
        // 글 수정 서비스 메서드에 요청 Dto, 요청 파일 전달
@@ -81,7 +81,7 @@ public class ArticleRestController {
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
     // 댓글 작성 기능
-    @PostMapping("/comment/write")
+    @PostMapping("/api/comment/write")
     public ResponseEntity<Map<String,String>> commentwrite(@Valid @RequestBody CommentRequestDto commentRequestDto) {
         // 댓글 작성 서비스 메서드에 요청 Dto 전달
         Notification notification = articleService.commentwrite(commentRequestDto);
@@ -93,7 +93,7 @@ public class ArticleRestController {
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
     // 댓글 삭제 기능
-    @DeleteMapping("/comment/delete")
+    @DeleteMapping("/api/comment/delete")
     public ResponseEntity<Map<String,String>> commentdelete(@Valid @RequestBody CommentRequestDto commentRequestDto) {
         // 댓글 삭제 서비스 메서드에 요청 Dto 전달
         articleService.commentdelete(commentRequestDto);
@@ -103,7 +103,7 @@ public class ArticleRestController {
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
     // 대댓글 작성 기능
-    @PostMapping("/reply/write")
+    @PostMapping("/api/reply/write")
     public ResponseEntity<Map<String,String>> replywrite(@Valid @RequestBody CommentRequestDto ReplyRequestDto) {
         // 대댓글 작성 서비스 메서드에 요청 Dto 전달
         articleService.replywrite(ReplyRequestDto);
@@ -112,15 +112,6 @@ public class ArticleRestController {
         responseJson.put("message" , "답글 작성 완료했습니다");
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
-    // 대댓글 삭제 기능
-    @DeleteMapping("/reply/delete")
-    public ResponseEntity<Map<String,String>> replydelete(@Valid @RequestBody CommentRequestDto ReplyRequestDto) {
-        // 대댓글 삭제 서비스 메서드에 요청 Dto 전달
-        articleService.replydelete(ReplyRequestDto);
-        // json 메세지 생성
-        Map<String,String> responseJson = new HashMap<>();
-        responseJson.put("message" , "답글 삭제 완료했습니다");
-        return ResponseEntity.status(HttpStatus.OK).body(responseJson);
-    }
+
 
 }
