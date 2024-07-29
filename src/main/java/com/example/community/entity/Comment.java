@@ -37,7 +37,10 @@ public class Comment extends BaseTime{
     private Comment parent;
     // 댓글 번호
     @Column
-    private int commentnumber;
+    private Long commentnumber;
+
+    @Column
+    private Long commentorder;
     // 댓글 깊이
     @Column
     private int redepth;

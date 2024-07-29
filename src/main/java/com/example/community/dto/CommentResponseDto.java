@@ -42,7 +42,7 @@ public class CommentResponseDto {
     private Boolean deleted;
     @NotNull
     // 댓글 번호
-    private int commentnumber;
+    private Long commentnumber;
     @NotNull
     // 댓글 깊이
     private int redepth;

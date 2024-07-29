@@ -26,7 +26,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         QComment comment = QComment.comment;
         JPAQuery<Comment> comments = jpaQueryFactory.selectFrom(comment)
                 .where(comment.article.id.eq(boardId))
-                .orderBy(comment.commentnumber.asc(), comment.redepth.asc() , comment.createdDate.asc())
+                .orderBy(comment.createdDate.asc(),comment.commentnumber.asc(),comment.commentorder.asc(),comment.redepth.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 

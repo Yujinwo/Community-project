@@ -406,7 +406,16 @@ public class ArticleService {
         // 부모 댓글 Comment Entity로 설정한다.
         replyRequestDto.setParent(parentcomment);
         // 댓글 넘버를 저장한다.
-        replyRequestDto.setCommentnumber(parentcomment.getCommentnumber());
+        if(parentcomment.getCommentorder() == 0)
+        {
+            replyRequestDto.setCommentnumber(parentcomment.getCommentnumber());
+            replyRequestDto.setCommentorder((long) article.getCommentcount());
+        }
+        else {
+            replyRequestDto.setCommentnumber(parentcomment.getCommentnumber());
+            replyRequestDto.setCommentorder(parentcomment.getCommentorder());
+        }
+
         // 댓글 깊이를 저장한다.
         replyRequestDto.setRedepth(parentcomment.getRedepth() + 1);
         // 댓글을 저장한다

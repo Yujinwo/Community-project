@@ -31,7 +31,9 @@ public class CommentRequestDto {
     // 부모댓글
     private Comment parent;
     // 댓글 번호
-    private int commentnumber;
+    private Long commentnumber;
+    // 댓글 번호
+    private Long commentorder;
     // 댓글 깊이
     private int redepth;
     // 대댓글
@@ -48,6 +50,7 @@ public class CommentRequestDto {
                 child(child).
                 parent(parent).
                 commentnumber(commentnumber).
+                commentorder(commentorder).
                 redepth(redepth).
                 deleted(false)
                 .build();
@@ -56,7 +59,8 @@ public class CommentRequestDto {
     public void setComment(Article article, Member member) {
         this.article = article;
         this.member = member;
-        this.commentnumber = article.getCommentcount();
+        this.commentnumber = (long) article.getCommentcount();
+        this.commentorder = 0L;
     }
 
 
