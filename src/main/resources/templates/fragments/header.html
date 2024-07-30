@@ -146,9 +146,10 @@
 
 
         $(document).ready(function() {
-            if(document.getElementById("usernick") != null) {
-                document.getElementById("usernick").addEventListener('click', function(event) {
-                    document.getElementById("my_page").style.display = 'block';
+            if($('#usernick').length) {
+                $('#usernick').on('click', function() {
+                    console.log('text');
+                    $('#my_page').css('display','block');
                 });
             }
         });
@@ -161,49 +162,34 @@
                             contentType:'application/json',
                             url:'/api/notifications/get?page=' + pageNumber,
                             success:function(data){
-                               const notificationList = document.getElementById('notificationList');
-                               const noFeedList = document.getElementById('noFeedList');
+                               const $notificationList = $('#notificationList');
+                               const $noFeedList = $('#noFeedList');
 
                                if(data.count == 0) {
-                                   noFeedList.style.display = 'block';
+                                   $noFeedList.show();
                                    pageNumber = 0;
                                }
                                else {
                                    pageNumber = data.result.pageable.pageNumber;
                                    pageLast = data.result.last;
-                                   noFeedList.style.display = 'none';
+                                   $noFeedList.hide();
                                    data.result.content.forEach(notification => {
-
-                                       const li = document.createElement('li');
-                                       li.classList.add('notification-item');
-
-                                       const a = document.createElement('a');
-                                       li.appendChild(a);
-                                       a.href= '/article/detail/' + notification.articleId
-
+                                       const $li = $('<li>',{ class:'notification-item' });
+                                       const $a = $('<a>', { href: '/article/detail/' + notification.articleId });
 
                                        // 메시지 텍스트 추가
-                                       const nickNameText = document.createElement('p');
-                                       nickNameText.classList.add('notification-nametext');
-                                       nickNameText.textContent = notification.writerNickname;
-                                       a.appendChild(nickNameText);
-
+                                       const $nickNameText = $('<p>',{ class: 'notification-nametext',text: notification.writerNickname});
 
                                        // 메시지 텍스트 추가
-                                       const articleTtiletext = document.createElement('p');
-                                       articleTtiletext.classList.add('notification-text');
-                                       articleTtiletext.textContent = "님이 " + "글 제목 : " + '"' + notification.articleTitle + '"'  + " 에 답변을 달았습니다.";
-                                       a.appendChild(articleTtiletext);
-
+                                       const $articleTitleText = $('<p>',{ class: 'notification-text',text : "님이 " + "글 제목 : " + '"' + notification.articleTitle + '"'  + " 에 답변을 달았습니다." });
 
                                        // 시간 추가
-                                       const time = document.createElement('p');
-                                       time.classList.add('notification-time');
-                                       time.textContent = notification.commentCreatetime;
-                                       a.appendChild(time);
+                                       const $time = $('<p>',{class: 'notification-time',text: notification.commentCreatetime});
+                                       $a.append($nickNameText,$articleTitleText,$time);
 
+                                       $li.append($a);
                                        // 리스트에 추가
-                                       notificationList.appendChild(li);
+                                       $notificationList.append($li);
                                    });
                                }
                             },
@@ -216,16 +202,16 @@
 
 
 
-       const notificationButton = document.getElementById('notificationBtn');
-       const popup = document.getElementById('notificationPopup');
-       const closeButton = document.getElementById('closePopup');
-       if(notificationButton != null) {
-            const notificationElement = document.getElementById('notification'); // 스크롤 가능한 요소의 ID를 가져옴
-             notificationElement.addEventListener('scroll', function() {
+       const $notificationButton = $('#notificationBtn');
+       const $popup = $('#notificationPopup');
+       const $closeButton = $('#closePopup');
+       if($notificationButton != null) {
+            const $notificationElement = $('#notification'); // 스크롤 가능한 요소의 ID를 가져옴
+             $notificationElement.on('scroll', function() {
                      setTimeout(function() {
-                        const scrollTop = notificationElement.scrollTop;
-                        const scrollHeight = notificationElement.scrollHeight;
-                        const clientHeight = notificationElement.clientHeight;
+                       const scrollTop = $notificationElement.scrollTop();
+                    const scrollHeight = $notificationElement[0].scrollHeight; // jQuery 객체에서 원본 DOM 요소를 가져와서 사용
+                    const clientHeight = $notificationElement[0].clientHeight;
 
                         if (scrollTop + clientHeight >= scrollHeight) {
                           if(pageLast == false)
@@ -234,27 +220,28 @@
                              addNotificaionList(pageNumber+1)
                            }
                         }
-             });     }, 2000); // 200ms 내에 다시 호출되지 않도록 디바운스 설정
+             }, 2000);
+           }); // 200ms 내에 다시 호출되지 않도록 디바운스 설정
 
 
-        notificationButton.addEventListener('click', function() {
-          const notificationList = document.getElementById('notificationList');
-          notificationList.innerHTML = '';
-          popup.style.display = 'block';
-          notificationIndicator.style.display = 'none';
+        $notificationButton.on('click', function() {
+          const $notificationList = $('#notificationList');
+          $notificationList.innerHTML = '';
+          $popup.show()
+          $('#notificationIndicator').hide();
           addNotificaionList(pageNumber)
         });
 
 
          document.addEventListener('click', function(event) {
-               if (!popup.contains(event.target) && event.target !== notificationButton) {
-                   const notificationList = document.getElementById('notificationList');
-                   notificationList.innerHTML = '';
-                   popup.style.display = 'none';
+               if (!$popup.is(event.target) && !$notificationButton.is(event.target) && !$popup.has(event.target).length) {
+                   const $notificationList = $('#notificationList');
+                   $notificationList.text('');
+                   $popup.hide();
                }
 
-               if(!document.getElementById("my_page").contains(event.target) && event.target !== document.getElementById("usernick") ) {
-                document.getElementById("my_page").style.display = 'none';
+               if(!$("#my_page").has(event.target).length && !$("#usernick").is(event.target)) {
+                $("#my_page").hide();
                }
            });
 
@@ -266,13 +253,13 @@
 
            // 새로운 EventSource 인스턴스를 생성하고 구독 시작
               eventSource = new EventSource('/api/notification/subscribe');
-              const notificationIndicator = document.getElementById('notificationIndicator');
+              const $notificationIndicator = $('#notificationIndicator');
                // 메시지 이벤트 리스너 추가
               eventSource.addEventListener('notification', function(event) {
                // 새로운 알림을 수신하면 느낌표를 표시
                if(event.data != "연결완료")
                {
-                notificationIndicator.style.display = 'flex';
+                $notificationIndicator.css('display','flex');
                 console.log('새 알림:', event.data);
                 }
               });
