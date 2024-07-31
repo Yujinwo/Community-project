@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns="http://www.w3.org/1999/html" layout:decorate="layout/default_layout">
 <th:block layout:fragment="content">
-
     <!-- 로그인 form -->
     <div class="form_middle">
          <h2>로그인 </h2></br>
@@ -33,7 +32,6 @@
                       ID 저장
                  </label>
              </div>
-
              <!-- 로그인 에러 메세지 -->
              <p id="valid" class="alert alert-danger" th:if=${exception} th:text="${exception}"></p>
              <!-- 로그인 버튼 -->

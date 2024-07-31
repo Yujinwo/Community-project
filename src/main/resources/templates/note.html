@@ -88,12 +88,12 @@
 
         $(document).ready(function() {
 
-            document.getElementById("note_block_button").addEventListener('click',function() {
-                     document.getElementById("Note_blockpage").style.display = 'block';
+            $("#note_block_button").click(function() {
+                     $("#Note_blockpage").show();
             });
 
 
-            document.getElementById("Temporary_Block").addEventListener('click',function() {
+            $("#Temporary_Block").click(function() {
                                            $.ajax({
                                         　　type:'post'
                                         　　, contentType:'application/json'
@@ -110,10 +110,9 @@
                                            });
 
 
-                 });
-             if(document.getElementById("Permanent_Block") != null) {
-                 document.getElementById("Permanent_Block").addEventListener('click',function() {
-
+              });
+             if($("#Permanent_Block") != null) {
+                 $("#Permanent_Block").click(function() {
                                          $.ajax({
                                         　　type:'post'
                                         　　, contentType:'application/json'
@@ -122,18 +121,16 @@
                                             })
                                         　　, url: '/api/NoteBlock/update'
                                         　　, success: function(data) {
-                                          alert(data);
+                                            alert(data);
                                         　　}
                                            , error:function(e) {
                                             alert(e.responseText);
                                         　　}
                                            });
-
                  });
               }
-             if(document.getElementById("Remove_Permanent_Block") != null) {
-                 document.getElementById("Remove_Permanent_Block").addEventListener('click',function() {
-
+             if($("#Remove_Permanent_Block") != null) {
+                 $("#Remove_Permanent_Block").click(function() {
                                          $.ajax({
                                         　　type:'post'
                                         　　, contentType:'application/json'
@@ -142,7 +139,7 @@
                                             })
                                         　　, url: '/api/NoteBlock/update'
                                         　　, success: function(data) {
-                                          alert(data);
+                                            alert(data);
                                         　　}
                                            , error:function(e) {
                                             alert(e.responseText);
@@ -152,9 +149,9 @@
                  });
               }
 
-              document.addEventListener('click', function(event) {
-               if(!document.getElementById("my_page").contains(event.target) && event.target !== document.getElementById("note_block_button") ) {
-                document.getElementById("Note_blockpage").style.display = 'none';
+              $(document).click(function(event) {
+               if(!$("#Note_blockpage").has(event.target).length && !$("#note_block_button").is(event.target) ) {
+                  $("#Note_blockpage").hide();
                }
            });
         });

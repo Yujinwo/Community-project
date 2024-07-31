@@ -62,12 +62,5 @@
              <!-- 다음 링크 있을시 활성화 없을시 비 활성화 -->
              <a class="page_next" th:classappend=" ${!comment.hasNext()} ? 'disabled' "  th:href="${comment.isLast()} ? '#' : @{/mypage(type=comment_list,page=${comment.number+2})}"> 다음 </a>
          </div>
-         
      </div>
-    <script inline="javascript">
-
-
-    </script>
-
-
 </th:block>

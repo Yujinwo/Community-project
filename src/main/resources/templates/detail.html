@@ -42,9 +42,9 @@
                 </li>
             </ul>
         </div>
-        <div class="detail_tag-container">
+        <div th:if="${article.tagConents.size() != 0}"  class="detail_tag-container">
             <ul id="tag-list" >
-                <li th:if="${article.tagConents != null}" th:each="tag : ${article.tagConents}">
+                <li th:each="tag : ${article.tagConents}">
                     <span th:text="'#' + ${tag}" class="tag-text"></span>
                 </li>
             </ul>

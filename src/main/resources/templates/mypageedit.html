@@ -40,11 +40,9 @@
          </div>
      </div>
     <script inline="javascript">
-
         var nickcheckstate = "false";
-
         $(document).ready(function() {
-            document.getElementById('nickcheck_button').addEventListener('click',function() {
+            $('#nickcheck_button').click(function() {
             var checkdata = {
                       Usernick : $('#Usernick').val()
                 }
@@ -64,14 +62,14 @@
                 });
 
             });
-            document.getElementById('prifileupdate_button').addEventListener('click',function(event) {
+            $('#prifileupdate_button').click(function(event) {
                  if(nickcheckstate == "false") {
                   alert('닉네임 체크를 해주세요.');
                   return;
                  }
                 event.preventDefault();
-                var password = document.getElementById('password').value;
-                var confirmPassword = document.getElementById('confirmPassword').value;
+                var password = $('#password').val();
+                var confirmPassword = $('#confirmPassword').val();
                 if (password !== confirmPassword) {
                     alert('비밀번호가 일치하지 않습니다.');
                     return;
@@ -80,9 +78,7 @@
                       usernick : $('#Usernick').val(),
                       userpw : password,
                       confirmuserpw : confirmPassword
-
                 }
-
                 $.ajax({
                          type:'post',
                          contentType:'application/json',
@@ -96,13 +92,7 @@
                              alert(e.responseJSON.result);
                          }
                 });
-
             });
-
         });
-
-
     </script>
-
-
 </th:block>

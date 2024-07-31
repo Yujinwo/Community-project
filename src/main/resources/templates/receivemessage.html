@@ -37,12 +37,11 @@
 </div>
 
 <script th:inline="javascript">
-    document.getElementById('message-form').addEventListener('submit', function(event) {
+      $('#message-form').submit(function(event) {
       event.preventDefault();
-      const recipient = document.getElementById('recipient').value;
-      const message = document.getElementById('message').value;
-
-       $.ajax({
+      const recipient = $('#recipient').value;
+      const message = $('#message').value;
+      $.ajax({
                                 　　type:'post'
                                 　　, contentType:'application/json'
                                 　　, data: JSON.stringify({
@@ -55,7 +54,6 @@
                                        window.close();
                                 　　}
                                    , error:function(e) {
-
                                        alert(e.responseText);
                                 　　}
                          });

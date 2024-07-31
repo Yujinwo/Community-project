@@ -41,123 +41,119 @@
         var tags = [[${article.tagConents}]];
         tags.forEach(tag => setTag(tag));
 
-
         function setTag(tag) {
-            const tagInput = document.getElementById('tag-input');
-            const tagList = document.getElementById('tag-list');
+            const $tagInput = $('#tag-input');
+            const $tagList = $('#tag-list');
             const maxTags = 10;
 
               if (tag.trim() === '') return;
 
-              const tagItem = document.createElement('li');
-              const tagText = document.createElement('span');
-              tagText.className = 'tag-text';
-              tagText.textContent = `#${tag.trim()}`;
+              const $tagItem = $('<li>',{class:'tag-item'});
+              const $tagText = $('<span>',{ class:'tag-text', text: `#${tag.trim()}`});
 
-              const removeTag = document.createElement('span');
-              removeTag.className = 'remove-tag';
-              removeTag.textContent = 'x';
-              removeTag.onclick = () => {
-                tagList.removeChild(tagItem);
-                setTagInputVisibility();
-              };
+              const $removeTag = $('<span>',{ class:'remove-tag',
+                                              text:'x',
+                                              click : function() {
+                                                   $(this).closest('.tag-item').remove();
+                                                   setTagInputVisibility();
+                                               }
+                                              });
 
-              tagItem.appendChild(tagText);
-              tagItem.appendChild(removeTag);
-              tagList.appendChild(tagItem);
-
+              $tagItem.append($tagText,$removeTag);
+              $tagList.append($tagItem);
               setTagInputVisibility();
 
               function setTagInputVisibility() {
-              tagInput.style.display = tagList.children.length < maxTags ? 'block' : 'none';
+              $tagInput.css('display', $tagList.children('li').length < maxTags ? 'block' : 'none');
             }
       }
 
 
+        $(document).ready(function() {
 
+               const $tagInput = $("#tag-input");
+               const $tagList = $("#tag-list");
+               const maxTags = 10;
 
+               $tagInput.keypress(function(event) {
+                 if (event.key === 'Enter') {
+                   let duplicate = 0;
+                   event.preventDefault();
+                   const tagValue = $tagInput.val().trim();
+                   const tagCount = $tagList.children('li').length;
+                   if (tagCount < maxTags) {
+                         const $existingTags = $tagList.find('.tag-text');
+                         $existingTags.each(function() {
+                             if($(this).text() === "#" + tagValue){
+                                alert('같은 이름을 가진 태그가 존재합니다.');
+                                duplicate = 1;
+                                $tagInput.val('');
+                                return false;
+                             }
+                         });
+                         if(duplicate == 0){
+                           addTag(tagValue);
+                           $tagInput.val('');
+                         }
 
-       document.addEventListener('DOMContentLoaded', () => {
-                   const tagInput = document.getElementById('tag-input');
-            const tagList = document.getElementById('tag-list');
-            const maxTags = 10;
-            tagInput.addEventListener('keypress', function(event) {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-                if (tagList.children.length < maxTags) {
-                  addTag(tagInput.value);
-                  tagInput.value = '';
-                } else {
-                  alert('최대 허용 태그는 10개 입니다.');
-                }
-              }
-            });
-
-            function addTag(tag) {
-              if (tag.trim() === '') return;
-              const sanitizedValue = tag.replace(/[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]/g, '');
-                 if(sanitizedValue != tag) {
-                 alert('특수문자는 허용 되지 않습니다.');
-                 return;
+                   }
+                   else {
+                     alert('최대 허용 태그는 10개 입니다.');
+                   }
                  }
-                      const existingTags = tagList.querySelectorAll('.tag-text');
-                      for (const tagText of existingTags) {
-                        if (tagText.textContent === "#" + tag) {
-                            alert('같은 이름을 가진 태그가 존재합니다.');
-                            return;
-                        }
-                    }
+               });
 
-              const tagItem = document.createElement('li');
-              const tagText = document.createElement('span');
-              tagText.className = 'tag-text';
-              tagText.textContent = `#${tag.trim()}`;
+               function addTag(tag) {
+                 if (tag.trim() === '') return;
+                 const sanitizedValue = tag.replace(/[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]/g, '');
+                 if(sanitizedValue != tag) {
+                     alert('특수문자는 허용 되지 않습니다.');
+                     return;
+                 }
 
-              const removeTag = document.createElement('span');
-              removeTag.className = 'remove-tag';
-              removeTag.textContent = 'x';
-              removeTag.onclick = () => {
-                tagList.removeChild(tagItem);
-                updateTagInputVisibility();
-              };
+                 const $tagItem = $('<li>',{ class : 'tag-item'});
+                 const $tagText = $('<span>',{ class: 'tag-text', text: `#${sanitizedValue.trim()}`});
+                 const $removeTag = $('<span>',
+                    { class:'remove-tag',
+                      text:'x',
+                      click: function() {
+                         $(this).closest('.tag-item').remove();
+                         updateTagInputVisibility();
+                      }
+                    });
 
-              tagItem.appendChild(tagText);
-              tagItem.appendChild(removeTag);
-              tagList.appendChild(tagItem);
+                 $tagItem.append($tagText,$removeTag);
+                 $tagList.append($tagItem);
+                 updateTagInputVisibility();
+               }
 
-              updateTagInputVisibility();
-            }
-
-            function updateTagInputVisibility() {
-              tagInput.style.display = tagList.children.length < maxTags ? 'block' : 'none';
-            }
+               function updateTagInputVisibility() {
+                $tagInput.css('display',$tagList.children('li').length < maxTags ? 'block' : 'none');
+               }
       });
 
       var obj = {};
-
       var imageUrls = [[${article.imageUrls}]];
 
       function deleteImage(button) {
-      var imageUrl = button.previousElementSibling.getAttribute('src');
-
-      imageUrls = imageUrls.filter(function(item) {
-      return item !== imageUrl;
-      });
-      obj.imageUrls = imageUrls;
-      var parentDiv = button.parentNode;
-      parentDiv.remove(); // 부모 요소 삭제
+          var imageUrl = button.previousElementSibling.getAttribute('src');
+          imageUrls = imageUrls.filter(function(item) {
+          return item !== imageUrl;
+          });
+          obj.imageUrls = imageUrls;
+          var parentDiv = button.parentNode;
+          parentDiv.remove(); // 부모 요소 삭제
       }
 
 
      // 수정하기
      function updateSubmit() {
-      const tagList = document.getElementById('tag-list');
+        const $tagList = $('#tag-list');
         const tags = [];
-        tagList.querySelectorAll('li').forEach(tagItem => {
-             const spanText = tagItem.querySelector('span.tag-text').textContent;
+        $tagList.find('li').each(function() {
+            const spanText = $(this).find('.tag-text').text();
             const cleanedText = spanText.replace(/#/g, '');
             tags.push(cleanedText);
-
         });
 
          obj.title = $("#title").val();
@@ -204,16 +200,16 @@
                      // 제목 에러 메시지 설정
                      var jsonResponse = JSON.parse(e.responseText);
                      if (jsonResponse.hasOwnProperty('title')) {
-                         document.getElementById("titleError").innerText = jsonResponse.title;
+                         $("#titleError").text(jsonResponse.title);
                      } else {
-                         document.getElementById("titleError").innerText = "";
+                         $("#titleError").text("");
                      }
 
                      // 내용 에러 메시지 설정
                      if (jsonResponse.hasOwnProperty('content')) {
-                         document.getElementById("contentError").innerText = jsonResponse.content;
+                         $("#contentError").text(jsonResponse.content);
                      } else {
-                         document.getElementById("contentError").innerText = "";
+                         $("#contentError").text("");
                      }
              　　　
              　　}

@@ -102,29 +102,28 @@
                                 alert(data.result);
                                 location.href = '/login';
                             }
-
                          },
                          error: function(e) {
                             // 이메일 에러 메시지 설정
                             var jsonResponse = JSON.parse(e.responseText);
                             if (jsonResponse.hasOwnProperty('email')) {
-                                document.getElementById("emailError").innerText = jsonResponse.email;
+                                $("#emailError").text(jsonResponse.email);
                             } else {
-                                document.getElementById("emailError").innerText = "";
+                                $("#emailError").text("");
                             }
 
                             // 패스워드 에러 메시지 설정
                             if (jsonResponse.hasOwnProperty('userpw')) {
-                                document.getElementById("userpwError").innerText = jsonResponse.userpw;
+                                $("#userpwError").text(jsonResponse.userpw);
                             } else {
-                                document.getElementById("userpwError").innerText = "";
+                                $("#userpwError").text("");
                             }
 
                             // 닉네임 에러 메시지 설정
                             if (jsonResponse.hasOwnProperty('usernick')) {
-                                document.getElementById("usernickError").innerText = jsonResponse.usernick;
+                                $("#usernickError").text(jsonResponse.usernick);
                             } else {
-                                document.getElementById("usernickError").innerText = "";
+                                $("#usernickError").text("");
                             }
 
                             // 회원가입 결과 메시지 설정

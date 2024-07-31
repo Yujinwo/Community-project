@@ -61,21 +61,21 @@
     <script th:inline="javascript">
 
         $(document).ready(function() {
-    // 엔터 키를 눌렀을 때 검색 실행
-    $('#searchInput').keypress(function(event) {
-        if (event.keyCode === 13) { // 엔터 키 코드: 13
-            event.preventDefault(); // 기본 엔터 키 동작 방지
-            searchArticles(); // 검색 함수 호출
-        }
-    });
+            // 엔터 키를 눌렀을 때 검색 실행
+            $('#searchInput').keypress(function(event) {
+                if (event.keyCode === 13) { // 엔터 키 코드: 13
+                    event.preventDefault(); // 기본 엔터 키 동작 방지
+                    searchArticles(); // 검색 함수 호출
+                }
+            });
 
-    function searchArticles() {
-        var query = $('#searchInput').val();
-        if (query) {
-            window.location.href = '/articles/search?query=' + encodeURIComponent(query);
-        }
-    }
-});
+            function searchArticles() {
+                var query = $('#searchInput').val();
+                if (query) {
+                    window.location.href = '/articles/search?query=' + encodeURIComponent(query);
+                }
+            }
+        });
     </script>
 </th:block>
 </html>

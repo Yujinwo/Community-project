@@ -58,11 +58,4 @@
              <a class="page_next" th:classappend=" ${!article.hasNext()} ? 'disabled' "  th:href="${article.isLast()} ? '#' : @{/mypage(type=article_list,page=${article.number+2})}"> 다음 </a>
          </div>
      </div>
-
-    <script inline="javascript">
-
-
-    </script>
-
-
 </th:block>
