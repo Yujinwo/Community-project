@@ -49,6 +49,11 @@
                 </li>
             </ul>
         </div>
+        <div style="display: flex; justify-content:end;">
+            <a href="javascript:;" >
+                <span class="bookmark" id="bookmark"></span>
+            </a>
+        </div>
     </div>
     <!-- 글 이미지-->
     <div class="article_images" th:if="${article.imageUrls.size() != 0}">
@@ -154,25 +159,31 @@
             </div>
     </div>
     <script th:inline="javascript">
-                 const modal = document.querySelector('.modal');
+                 const modal = $(document).find('.modal');
 
                    $(document).ready(function() {
-                      document.getElementById('article_addtext_writer').addEventListener('click', function() {
-                        document.getElementById('noteSend_Window').style.display = 'block';
+
+                   $("#bookmark").click(function() {
+                    var $bookmark = $("#bookmark").toggleClass("active");
+                   });
+
+
+                      $('#article_addtext_writer').click(function() {
+                        $('#noteSend_Window').show()
                      });
-                     document.addEventListener('click', function(event) {
-                         if (!(document.getElementById('noteSend_Window').contains(event.target)) && event.target != document.getElementById('article_addtext_writer')) {
-                           document.getElementById('noteSend_Window').style.display = 'none';
+                     $(document).click(function(event) {
+                      if (!$('#noteSend_Window').has(event.target) && !$('#article_addtext_writer').is(event.target)) {
+                           $('#noteSend_Window').hide();
                        }
                      });
-                             document.getElementById('open-message-btn').addEventListener('click', function() {
+                             $('#open-message-btn').click(function() {
                           window.open('/message?id=' + [[${article.member.email}]], '쪽지 보내기', 'width=400,height=420');
                      });
                    });
 
                  // 삭제하기 버튼을 누를시 팝업창
                  function articleDelete() {
-                        modal.style.display = 'block';
+                        modal.show();
                  }
                  // 예 버튼을 누를시 글 삭제
                  function articleDeleteYes(articleId) {
@@ -184,7 +195,7 @@
                         　　, data: JSON.stringify(obj)
                         　　, url: '/api/article/delete/' + obj.id
                         　　, success: function(data) {
-                                 modal.style.display = 'none';
+                                modal.hide();
                                  location.href='/';
                         　　}
                            , error:function(e) {
@@ -194,7 +205,7 @@
                  }
                  // 아니요 버튼을 누를시 팝업창 닫기
                  function articleDeleteNo() {
-                         modal.style.display = 'none';
+                         modal.hide();
                  }
                  // 댓글 작성
                  function commentSubmit(articleId) {

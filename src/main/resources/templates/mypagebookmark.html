@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns="http://www.w3.org/1999/html" layout:decorate="layout/default_layout">
+<th:block layout:fragment="content">
+     <div style="
+                    margin:0 auto;
+                    width:800px;
+                    padding: 20px;
+                    border:1px solid #e3e3e3;
+                    border-radius:10px;
+                    margin-bottom:30px;">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="/mypage?type=article_list">작성한 글</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/mypage?type=comment_list">작성한 댓글</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/mypage?type=bookmark_list">즐겨찾기</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/mypage?type=edit_profile">내 정보 수정</a>
+                </li>
+            </ul>
+         <div>
+             <ul th:each="item : ${bookmark}">
+                 <li style="  margin:0 auto;
+                        width:700px;
+                        padding: 20px;
+                        border:1px solid #e3e3e3;
+                        border-radius:10px;
+                        margin-top:15px;">
+                     <div style="display:flex;">
+                         <span style="border-radius:2px; border:1px solid blue" th:text="${item.id}">
+                         </span>
+                         <div style="
+                         margin:0 auto;
+                         width:600px" >
+                             <a th:href="@{/article/detail/{id}(id=${item.id})}" th:text="${item.title}">
+                             </a>
+                         </div>
+                     </div>
+                 </li>
+             </ul>
+
+
+         </div>
+         <div th:if="${endPage != 0}" class="paging_list">
+             <!-- 이전 링크 있을시 활성화 없을시 비 활성화 -->
+             <a class="page_previous" th:classappend=" ${!bookmark.hasPrevious()} ? 'disabled' " th:href="${!bookmark.isFirst()} ? @{/mypage(type=bookmark_list,page=${bookmark.number})}"> 이전 </a>
+             <!-- 시작페이지 -> 끝 페이지 까지 페이지 출력 -->
+             <span th:each="page: ${#numbers.sequence(startPage, endPage)}">
+		    <!-- 현재페이지는 링크 없이 숫자만 -->
+            <span th:if="${page == bookmark.number + 1}" th:text="${page}"></span>
+                 <!-- 현재페이지 링크 X, 다른 페이지번호에는 링크를 보여준다 -->
+            <span th:unless="${page == bookmark.number + 1}">
+              <a th:href="@{/mypage(type=bookmark_list,page=${page})}" th:text="${page}"></a>
+            </span>
+        </span>
+             <!-- 다음 링크 있을시 활성화 없을시 비 활성화 -->
+             <a class="page_next" th:classappend=" ${!bookmark.hasNext()} ? 'disabled' "  th:href="${bookmark.isLast()} ? '#' : @{/mypage(type=bookmark_list,page=${bookmark.number+2})}"> 다음 </a>
+         </div>
+     </div>
+</th:block>

@@ -1,3 +1,16 @@
+.bookmark {
+        display: inline-block; /* span을 블록 요소처럼 표시하거나, */
+        margin-top:5px;
+        width: 25px;
+        height: 25px;
+        background-image: url('../images/bookmark_off.png');
+        background-size: cover; /* 배경 이미지 크기 조절 */
+        background-position: center; /* 배경 이미지 위치 조절 */
+}
+.bookmark.active {
+        background-image: url('../images/bookmark_on.png');
+}
+
 /* 메인 홈페이지 글 */
 .article {
 margin:0 auto;
