@@ -2,10 +2,7 @@ package com.example.community.service;
 
 import com.example.community.dto.*;
 import com.example.community.entity.*;
-import com.example.community.repository.ArticleRepository;
-import com.example.community.repository.BoardImageRepository;
-import com.example.community.repository.CommentRepository;
-import com.example.community.repository.TagRepository;
+import com.example.community.repository.*;
 import com.example.community.util.AuthenticationUtil;
 import com.example.community.util.CookieUtill;
 import jakarta.persistence.EntityManager;
@@ -13,12 +10,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,8 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -36,8 +30,10 @@ import java.util.stream.Collectors;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
+    private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
     private final BoardImageRepository boardImageRepository;
+    private final BookmarkRepository bookmarkRepository;
     private final S3Uploader s3Uploader;
     private final NotificationService notificationService;
     private final EntityManager em;
@@ -454,5 +450,32 @@ public class ArticleService {
     public Page<MyCommentResponseDto> findMyCommentList(Pageable pageable) {
         Page<MyCommentResponseDto> bymyCommentlist = articleRepository.findBymyCommentlist(authenticationUtil.getCurrentMember(), pageable).map(m-> m.changeMyCommentResponseDto());
         return bymyCommentlist;
+    }
+
+    public Page<MyBookmarkResponseDto> findMyBookmarkList(Pageable pageable) {
+        Page<MyBookmarkResponseDto> bymyBookmarklist = bookmarkRepository.findBymyBookmarklist(authenticationUtil.getCurrentMember(), pageable).map(m-> MyBookmarkResponseDto.builder().id(m.getId()).article_title(m.getArticle().getTitle()).build());
+        return bymyBookmarklist;
+    }
+
+    @Transactional
+    public String setBookmark(Long id, String type) {
+        Optional<Article> articleOptional = articleRepository.findById(id);
+        Optional<Member> byId = memberRepository.findById(authenticationUtil.getCurrentMember().getId());
+
+        if(articleOptional.isPresent() && byId.isPresent() && type.equals("create")) {
+            bookmarkRepository.save(Bookmark.builder().article(articleOptional.get()).member(byId.get()).build());
+            return "즐겨 찾기 완료했습니다.";
+        }
+        else if (articleOptional.isPresent() && byId.isPresent() && type.equals("delete")) {
+            bookmarkRepository.deleteById(articleOptional.get().getId());
+            return "즐겨 찾기 삭제 완료했습니다.";
+        }
+        else {
+            return "올바른 데이터 접근이 아닙니다.";
+        }
+    }
+
+    public Boolean checkBookmark(Long articleId) {
+        return bookmarkRepository.findByMemberAndArticle(authenticationUtil.getCurrentMember().getId(),articleId).isPresent();
     }
 }

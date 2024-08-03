@@ -1,9 +1,6 @@
 package com.example.community.controller;
 
-import com.example.community.dto.ArticleResponseDto;
-import com.example.community.dto.CommentResponseDto;
-import com.example.community.dto.MyArticleResponseDto;
-import com.example.community.dto.MyCommentResponseDto;
+import com.example.community.dto.*;
 import com.example.community.entity.Article;
 import com.example.community.service.ArticleService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,16 +58,16 @@ public class MypageController {
         }
         else if(type.equals("bookmark_list")){
             // 글 댓글 불러오기
-            Page<MyArticleResponseDto> articles = articleService.findMyArticleList(pageable);
+            Page<MyBookmarkResponseDto> bookmarks = articleService.findMyBookmarkList(pageable);
             // 페이지 최대 개수 설정
             int blockLimit = 3;
             // 시작 페이지
-            int startPage = Math.max(1, articles.getPageable().getPageNumber() - blockLimit);
+            int startPage = Math.max(1, bookmarks.getPageable().getPageNumber() - blockLimit);
             // 마지막 페이지
-            int endPage = Math.min(articles.getPageable().getPageNumber()+4, articles.getTotalPages());
+            int endPage = Math.min(bookmarks.getPageable().getPageNumber()+4, bookmarks.getTotalPages());
 
             // 뷰에 데이터 전달
-            model.addAttribute("bookmark",articles);
+            model.addAttribute("bookmark",bookmarks);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
             return "mypagebookmark";

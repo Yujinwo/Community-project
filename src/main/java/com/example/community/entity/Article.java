@@ -20,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@BatchSize(size = 100)
 public class Article extends BaseTime{
 
     @Id

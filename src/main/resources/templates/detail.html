@@ -51,7 +51,7 @@
         </div>
         <div style="display: flex; justify-content:end;">
             <a href="javascript:;" >
-                <span class="bookmark" id="bookmark"></span>
+                <span th:classappend=" ${bookmark_state} ? 'active'" class="bookmark" id="bookmark"></span>
             </a>
         </div>
     </div>
@@ -160,11 +160,45 @@
     </div>
     <script th:inline="javascript">
                  const modal = $(document).find('.modal');
+                 const articleId = [[${article.id}]];
 
                    $(document).ready(function() {
 
                    $("#bookmark").click(function() {
                     var $bookmark = $("#bookmark").toggleClass("active");
+                    if($bookmark.hasClass("active")) {
+
+                             var obj = {};
+                             obj.id = articleId
+                             $.ajax({
+                                　　type:'get'
+                                　　, contentType:'application/json'
+                                　　, url: '/api/article/bookmark?id=' + obj.id +'&type=create'
+                                　　, success: function(data) {
+                                　　}
+                                   , error:function(e) {
+                                        console.log(e);
+                                　　}
+                                });
+                    }
+                    else {
+
+                             var obj = {};
+                             obj.id = articleId
+                             $.ajax({
+                                　　type:'get'
+                                　　, contentType:'application/json'
+                                　　, url: '/api/article/bookmark?id=' + obj.id +'&type=delete'
+                                　　, success: function(data) {
+                                　　}
+                                   , error:function(e) {
+                                        console.log(e);
+                                　　}
+                                });
+
+
+
+                    }
                    });
 
 

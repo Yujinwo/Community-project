@@ -13,5 +13,6 @@ public interface UserRepositoryCustom {
     Page<Comment> findByCommentlist(Long boardId, Pageable pageable);
     Page<Comment> findBymyCommentlist(Member user,Pageable pageable);
     Page<Notification> findByNoticication(Member user,Pageable pageable);
+    Page<Bookmark> findBymyBookmarklist(Member user,Pageable pageable);
     Page<Note> findByNote(Member user, Pageable pageable);
 }

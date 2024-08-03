@@ -15,6 +15,7 @@ import java.util.List;
 
 import static com.example.community.entity.QArticle.article;
 import static com.example.community.entity.QMember.member;
+import static com.example.community.entity.QBookmark.bookmark;
 import static com.example.community.entity.QComment.comment;
 import static com.example.community.entity.QTag.tag;
 
@@ -94,6 +95,21 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
         return PageableExecutionUtils.getPage(notificationlist,pageable,() -> totalCount);
 
+    }
+
+    @Override
+    public Page<Bookmark> findBymyBookmarklist(Member user, Pageable pageable) {
+        JPAQuery<Bookmark> queryResult = jpaQueryFactory.selectFrom(bookmark)
+                .where(bookmark.member.id.eq(user.getId()))
+                .limit(pageable.getPageSize());
+        List<Bookmark> content = queryResult.fetch();
+        JPAQuery<Long> countQuery = jpaQueryFactory.select(bookmark.count())
+                .from(bookmark)
+                .where(bookmark.member.id.eq(user.getId()));
+
+        long totalCount = countQuery.fetchOne();
+
+        return PageableExecutionUtils.getPage(content, pageable, () -> totalCount);
     }
 
     @Override

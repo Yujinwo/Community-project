@@ -4,9 +4,12 @@ import com.example.community.dto.ArticleResponseDto;
 import com.example.community.dto.ArticleindexResponseDto;
 import com.example.community.dto.CommentResponseDto;
 import com.example.community.entity.Article;
+import com.example.community.entity.Bookmark;
+import com.example.community.repository.BookmarkRepository;
 import com.example.community.service.ArticleService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,16 +22,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.awt.print.Book;
+
 @Controller
 @Slf4j
+@RequiredArgsConstructor
 public class ArticleController {
 
 
     private final ArticleService articleService;
-    @Autowired
-    public ArticleController(ArticleService articleService) {
-        this.articleService = articleService;
-    }
+
 
     @GetMapping("/")
     public String page(@RequestParam(value = "lastId", required = false,defaultValue = "0") Long lastId, @RequestParam(value = "previousId", required = false,defaultValue = "0") Long previousId,@RequestParam(value = "previous", required = false,defaultValue = "0") int previous,@PageableDefault(page = 1) Pageable pageable, Model model) {
@@ -94,6 +97,9 @@ public class ArticleController {
 
         // 글 댓글 불러오기
         Page<CommentResponseDto> comments = articleService.findCommentid(id,pageable);
+
+        // 즐겨찾기 현황 체크
+        Boolean bookmark_state = articleService.checkBookmark(id);
         // 페이지 최대 개수 설정
         int blockLimit = 3;
         // 시작 페이지
@@ -106,6 +112,7 @@ public class ArticleController {
         model.addAttribute("comment",comments);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
+        model.addAttribute("bookmark_state",bookmark_state);
         return "detail";
     }
 

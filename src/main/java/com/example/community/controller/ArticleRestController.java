@@ -62,6 +62,31 @@ public class ArticleRestController {
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
 
+
+    // 즐겨찾기 기능
+    @GetMapping("/api/article/bookmark")
+    public ResponseEntity<Map<String,String>> bookmark(@RequestParam(name = "id",required = true) Long id,@RequestParam(name = "type",required = true) String type)
+    {
+
+        if(id == null || type.isEmpty())
+        {
+            Map<String,String> responseMap = new HashMap<>();
+            responseMap.put("message","비정상적인 데이터입니다.");
+             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+        }
+        else {
+            String responseJson = articleService.setBookmark(id,type);
+            Map<String,String> responseMap = new HashMap<>();
+            responseMap.put("message" , responseJson);
+            if(responseJson.equals("올바른 데이터 접근이 아닙니다."))
+            {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+        }
+
+    }
+
     // 글 수정 기능
     @PatchMapping("/api/article/update")
     public ResponseEntity<Map<String,String>> update(@Valid @RequestPart(value = "key") ArticleRequestDto articleRequestDto, @RequestPart(required = false,value = "value") List<MultipartFile> files)
