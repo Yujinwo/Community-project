@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 
@@ -440,15 +439,15 @@ public class ArticleService {
         commentRepository.delete(reply);
     }
 
-    public Page<MyArticleResponseDto> findMyArticleList(Pageable pageable) {
+    public Page<MyArticleResponseDto> findMyArticleList(Pageable pageable, Member user) {
 
-        Page<MyArticleResponseDto> bymyArticlelist = articleRepository.findBymyArticlelist(authenticationUtil.getCurrentMember(), pageable).map(m-> m.changeMyArticleResponseDto());
+        Page<MyArticleResponseDto> bymyArticlelist = articleRepository.findBymyArticlelist(user, pageable).map(m-> m.changeMyArticleResponseDto());
         return bymyArticlelist;
 
     }
 
-    public Page<MyCommentResponseDto> findMyCommentList(Pageable pageable) {
-        Page<MyCommentResponseDto> bymyCommentlist = articleRepository.findBymyCommentlist(authenticationUtil.getCurrentMember(), pageable).map(m-> m.changeMyCommentResponseDto());
+    public Page<MyCommentResponseDto> findMyCommentList(Pageable pageable,Member user) {
+        Page<MyCommentResponseDto> bymyCommentlist = articleRepository.findBymyCommentlist(user, pageable).map(m-> m.changeMyCommentResponseDto());
         return bymyCommentlist;
     }
 

@@ -2,7 +2,10 @@ package com.example.community.controller;
 
 import com.example.community.dto.*;
 import com.example.community.entity.Article;
+import com.example.community.entity.Member;
+import com.example.community.repository.MemberRepository;
 import com.example.community.service.ArticleService;
+import com.example.community.util.AuthenticationUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,18 +18,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Optional;
+
 @Controller
 @RequiredArgsConstructor
 public class MypageController {
 
     private final ArticleService articleService;
+    private final MemberRepository memberRepository;
+    private final AuthenticationUtil authenticationUtil;
     @GetMapping("/mypage")
-    public String mypage(@RequestParam(name = "type",required = true,defaultValue = "article_list") String type,Model model,Pageable pageable) {
+    public String mypage(@RequestParam(name = "userid",defaultValue = "0") Long userid,@RequestParam(name = "type",required = true,defaultValue = "article_list") String type,Model model,Pageable pageable) {
+
+        Member optionalUser = memberRepository.findById(userid).orElse(authenticationUtil.getCurrentMember());
+        model.addAttribute("user",optionalUser);
 
         if(type.equals("article_list"))
         {
+            Member optionalArticleUser = memberRepository.findById(userid).orElse(authenticationUtil.getCurrentMember());
             // 글 댓글 불러오기
-            Page<MyArticleResponseDto> articles = articleService.findMyArticleList(pageable);
+            Page<MyArticleResponseDto> articles = articleService.findMyArticleList(pageable,optionalArticleUser);
             // 페이지 최대 개수 설정
             int blockLimit = 3;
             // 시작 페이지
@@ -41,8 +52,9 @@ public class MypageController {
             return "mypagearticle";
         }
         else if(type.equals("comment_list")) {
+            Member optionalCommentUser = memberRepository.findById(userid).orElse(authenticationUtil.getCurrentMember());
             // 댓글 댓글 불러오기
-            Page<MyCommentResponseDto> comments = articleService.findMyCommentList(pageable);
+            Page<MyCommentResponseDto> comments = articleService.findMyCommentList(pageable,optionalCommentUser);
             // 페이지 최대 개수 설정
             int blockLimit = 3;
             // 시작 페이지

@@ -9,20 +9,29 @@
                     border:1px solid #e3e3e3;
                     border-radius:10px;
                     margin-bottom:30px;">
-            <ul class="nav nav-tabs">
-                <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="/mypage?type=article_list">작성한 글</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/mypage?type=comment_list">작성한 댓글</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="/mypage?type=bookmark_list">즐겨찾기</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/mypage?type=edit_profile">내 정보 수정</a>
-                </li>
-            </ul>
+         <div style="border:1px solid black; border-radius:10px;">
+             <div>
+                 <div style="padding:20px">
+                     <span style="font-size:30px;" th:text="${#authentication.principal.usernick}"></span>
+                 </div>
+             </div>
+             <div style="border-top:1px solid black; border-top-width:1px;">
+                 <ul class="nav nav-tabs" style="padding:20px">
+                     <li class="nav-item">
+                         <a class="nav-link" aria-current="page" th:href="@{/mypage(userid=${user.id},type=article_list)}">작성한 글</a>
+                     </li>
+                     <li class="nav-item">
+                         <a class="nav-link" th:href="@{/mypage(userid=${user.id},type=comment_list)}" >작성한 댓글</a>
+                     </li>
+                     <li class="nav-item" th:if="${user.id == @authenticationUtil.getCurrentMember()?.id}">
+                         <a class="nav-link active" href="/mypage?type=bookmark_list">즐겨찾기</a>
+                     </li>
+                     <li class="nav-item" th:if="${user.id == @authenticationUtil.getCurrentMember()?.id}">
+                         <a class="nav-link" href="/mypage?type=edit_profile">내 정보 수정</a>
+                     </li>
+                 </ul>
+             </div>
+         </div>
          <div>
              <ul th:each="item : ${bookmark}">
                  <li style="  margin:0 auto;
