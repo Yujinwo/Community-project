@@ -52,7 +52,7 @@
                 </li>
             </ul>
         </div>
-        <div style="display: flex; justify-content:end;">
+        <div style="display: flex; justify-content:end;" sec:authorize="isAuthenticated()">
             <a href="javascript:;" >
                 <span th:classappend=" ${bookmark_state} ? 'active'" class="bookmark" id="bookmark"></span>
             </a>

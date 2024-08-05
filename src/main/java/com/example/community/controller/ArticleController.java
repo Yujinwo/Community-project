@@ -7,6 +7,7 @@ import com.example.community.entity.Article;
 import com.example.community.entity.Bookmark;
 import com.example.community.repository.BookmarkRepository;
 import com.example.community.service.ArticleService;
+import com.example.community.util.AuthenticationUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class ArticleController {
 
 
     private final ArticleService articleService;
+    private final AuthenticationUtil authenticationUtil;
 
 
     @GetMapping("/")
@@ -97,9 +99,13 @@ public class ArticleController {
 
         // 글 댓글 불러오기
         Page<CommentResponseDto> comments = articleService.findCommentid(id,pageable);
+        if(authenticationUtil.getCurrentMember() != null)
+        {
+            // 즐겨찾기 현황 체크
+            Boolean bookmark_state = articleService.checkBookmark(id);
+            model.addAttribute("bookmark_state",bookmark_state);
+        }
 
-        // 즐겨찾기 현황 체크
-        Boolean bookmark_state = articleService.checkBookmark(id);
         // 페이지 최대 개수 설정
         int blockLimit = 3;
         // 시작 페이지
@@ -112,7 +118,7 @@ public class ArticleController {
         model.addAttribute("comment",comments);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-        model.addAttribute("bookmark_state",bookmark_state);
+
         return "detail";
     }
 
