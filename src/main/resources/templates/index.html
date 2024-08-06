@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/default_layout">
 <th:block layout:fragment="content">
-    <div class="article_header">
-        <!-- 검색 창 -->
-        <div class="search_box">
-            <input type="text" placeholder="검색어를 입력하세요" id="searchInput" />
-
-        </div>
-
+    <div style="
+        display:flex;
+        margin-bottom:5px;
+        margin: 0 auto;
+        width:800px">
         <!-- 글 작성 버튼 -->
         <div class="article_button">
-            <button class="button_blue btn btn-primary" onclick="location.href='/article/write'">작성하기</button>
+            <a href="/article/write" style="margin-top:15px; margin-right:10px ">
+                <img src="https://cdn-icons-png.flaticon.com/128/5948/5948954.png" loading="lazy" alt="펜 " title="펜 " width="37" height="37">
+                </img>
+            </a>
         </div>
+            <select class="form-select"  style="width:125px; height:40px; margin-top:15px" aria-label="Default select example">
+                <option value="1">오래된 순</option>
+                <option selected value="2">최신 순</option>
+                <option value="3">조회 순</option>
+            </select>
     </div>
     <!-- 작성된 글 리스트가 없을 시 문구 표시 -->
     <div th:if="${endPage == 0}" class="article">
@@ -44,8 +50,13 @@
             </ul>
         </div>
     </div>
-    <div th:unless="${hasResults}" class="article">
-        <p>검색 결과가 없습니다.</p>
+    <div class="search_header">
+        <input class="form-control" style="margin-left:200px" type="text" placeholder="검색어를 입력하세요" id="searchInput" />
+        <select class="form-select"  style="width:130px; height:40px; margin-top:19px; margin-right:150px" aria-label="Default select example">
+            <option selected value="1">제목+내용</option>
+            <option value="2">제목</option>
+            <option value="3">내용</option>
+        </select>
     </div>
     <!-- 글 페이지 리스트 -->
     <div th:if="${hasResults}" class="paging_list" >

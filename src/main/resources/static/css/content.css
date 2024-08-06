@@ -18,7 +18,7 @@ width:800px;
 padding: 20px;
 border:1px solid #e3e3e3;
 border-radius:10px;
-margin-bottom:30px;
+margin-bottom:15px;
 }
 /* 글 상세 페이지 이미지 */
 .article_images {
@@ -115,7 +115,6 @@ width:500px;
 display:flex;
 justify-content:space-between;
 margin: 0 auto;
-margin-Top:20px;
 width:500px;
 }
 /* 글 작성/수정 시간,글쓴이,조회수 정보 */
@@ -253,8 +252,11 @@ margin: 0 15px;
 margin:0 auto;
 width:800px;
 display:flex;
-
-
+}
+.search_header {
+margin:0 auto;
+width:800px;
+display:flex;
 }
 
 .search_box {

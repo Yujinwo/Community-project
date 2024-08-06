@@ -88,7 +88,7 @@ public class SecurityConfig{
                         authorizeRequests
                                 .requestMatchers("/admin").hasRole("ADMIN")
                                 .requestMatchers("/login","/join").anonymous()
-                                .requestMatchers("/article/detail/*","/","/authentication-fail","/authorization-fail").permitAll()
+                                .requestMatchers("/","/article/detail/*","/articles/search","/api/userid/check","/api/usernick/check","/authentication-fail","/authorization-fail").permitAll()
                                 .anyRequest().hasRole("USER")
                 )
                 .logout((logout) -> logout.logoutSuccessUrl("/login"))
