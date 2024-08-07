@@ -42,26 +42,26 @@ public class ArticleService {
 
     // 글 리스트를 페이지 형태로 불러오기
     @Transactional(readOnly = true)
-    public Page<ArticleindexResponseDto> index(Long lastId, Pageable pageable) {
+    public Page<ArticleindexResponseDto> index(Pageable pageable, String sort) {
         // page 위치에 있는 값은 0부터 시작한다.
         int page = pageable.getPageNumber() - 1;
         PageRequest pageRequest = PageRequest.of(page, pageable.getPageSize());
         // 페이지 형태로 글 불러오기
-        Page<ArticleindexResponseDto> articleDtos = articleRepository.findByArticlelist(lastId,pageRequest).map(article -> ArticleindexResponseDto.builder().article(article).build());
+        Page<ArticleindexResponseDto> articleDtos = articleRepository.findByArticlelist(pageRequest,sort).map(article -> ArticleindexResponseDto.builder().article(article).build());
         return articleDtos;
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleindexResponseDto> searchArticles(Long lastId, String query, Pageable pageable,Boolean tagsearch) {
+    public Page<ArticleindexResponseDto> searchArticles(String query, Pageable pageable, Boolean tagsearch, String sort, String search) {
         int page = pageable.getPageNumber() - 1;
         PageRequest pageRequest = PageRequest.of(page, pageable.getPageSize());
 
         if(tagsearch)
         {
-            return articleRepository.findByTagContaining(lastId,query, pageRequest,tagsearch).map(tag -> ArticleindexResponseDto.builder().article(tag.getArticle()).build());
+            return articleRepository.findByTagContaining(sort,query, pageRequest,tagsearch).map(tag -> ArticleindexResponseDto.builder().article(tag.getArticle()).build());
         }
         else {
-            return articleRepository.findByTitleOrContentContaining(lastId,query, pageRequest).map(article -> ArticleindexResponseDto.builder().article(article).build());
+            return articleRepository.findByTitleOrContentContaining(sort,query, pageRequest,search).map(article -> ArticleindexResponseDto.builder().article(article).build());
         }
 
     }

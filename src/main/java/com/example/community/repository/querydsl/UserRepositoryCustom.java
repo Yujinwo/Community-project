@@ -5,10 +5,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface UserRepositoryCustom {
-    Page<Article> findByArticlelist(Long lastId, Pageable pageable);
+    Page<Article> findByArticlelist(Pageable pageable, String sort);
     Page<Article> findBymyArticlelist(Member user,Pageable pageable);
-    Page<Article> findByTitleOrContentContaining(Long lastId,String query, Pageable pageable);
-    Page<Tag> findByTagContaining(Long lastId,String query, Pageable pageable,Boolean tagsearch);
+    Page<Article> findByTitleOrContentContaining(String sort, String query, Pageable pageable, String search);
+    Page<Tag> findByTagContaining(String sort, String query, Pageable pageable, Boolean tagsearch);
     Article findByArticleAndMemberlist(Long Id);
     Page<Comment> findByCommentlist(Long boardId, Pageable pageable);
     Page<Comment> findBymyCommentlist(Member user,Pageable pageable);

@@ -36,52 +36,34 @@ public class ArticleController {
 
 
     @GetMapping("/")
-    public String page(@RequestParam(value = "lastId", required = false,defaultValue = "0") Long lastId, @RequestParam(value = "previousId", required = false,defaultValue = "0") Long previousId,@RequestParam(value = "previous", required = false,defaultValue = "0") int previous,@PageableDefault(page = 1) Pageable pageable, Model model) {
-        Long PreviousLastId = Math.max(lastId - pageable.getPageSize(),1);
-        if(PreviousLastId == 1)
-            PreviousLastId = lastId;
-        Long PreviousbeforeId = Math.max(previousId - pageable.getPageSize(),1);
-        model.addAttribute("lastId", PreviousLastId);
-        model.addAttribute("previousId", PreviousbeforeId);
-        // 다음 누를시
-        if (previous == 0) {
+    public String page(@RequestParam(value = "sort",defaultValue = "newest",required = true) String sort ,@PageableDefault(page = 1) Pageable pageable, Model model) {
 
-            // 페이지 데이터 불러오기
-            Page<ArticleindexResponseDto> slicepage = articleService.index(lastId, pageable);
-            boolean hasPrevious = false;
-            model.addAttribute("article", slicepage.getContent());
-            model.addAttribute("hasNext", slicepage.hasNext());
-            model.addAttribute("hasResults", !slicepage.getContent().isEmpty());
-            model.addAttribute("hasPrevious", slicepage.getContent().get(0).getId() != 1); // 이전 페이지가 있는지 여부
-            Long previousLastId = 1L;
-            if (!slicepage.getContent().isEmpty()) {
-
-                previousLastId = slicepage.getContent().get(0).getId();
-
-                Long nextLastId = slicepage.getContent().get(slicepage.getContent().size() - 1).getId();
-                model.addAttribute("previousLastId", previousLastId);
-                model.addAttribute("nextLastId", nextLastId);
-            }
-        //이전 누를시
-        } else {
-            Page<ArticleindexResponseDto> slicepage = articleService.index(previousId-1, pageable);
-            boolean hasPrevious = false;
-            model.addAttribute("article", slicepage.getContent());
-            model.addAttribute("hasNext", slicepage.hasNext());
-            model.addAttribute("hasResults", !slicepage.getContent().isEmpty());
-            model.addAttribute("hasPrevious", slicepage.getContent().get(0).getId() != 1); // 이전 페이지가 있는지 여부
-
-            if (!slicepage.getContent().isEmpty()) {
-                Long previousLastId = previousId - pageable.getPageSize();
-
-                Long nextLastId = lastId - pageable.getPageSize();
-                model.addAttribute("previousLastId", previousLastId);
-                model.addAttribute("nextLastId", nextLastId);
-
-            }
-
-        }
+        Page<ArticleindexResponseDto> page = articleService.index(pageable,sort);
+        int startPage = Math.max(1, page.getPageable().getPageNumber() - 3);
+        int endPage = Math.min(page.getPageable().getPageNumber()+4, page.getTotalPages());
+        model.addAttribute("hasResults", page.hasContent());
+        model.addAttribute("sort",sort);
+        model.addAttribute("article",page);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
         return "index";
+    }
+
+
+    @GetMapping("/articles/search")
+    public String searchArticles(@RequestParam(value = "search",defaultValue = "newest",required = true) String search,@RequestParam(value = "sort",defaultValue = "newest",required = true) String sort,@RequestParam("query") String query, @RequestParam(value = "tagsearch",required = false,defaultValue = "false") Boolean tagsearch,Model model, @PageableDefault(page = 1)  Pageable pageable) {
+            Page<ArticleindexResponseDto> page = articleService.searchArticles(query, pageable,tagsearch,sort,search);
+            int startPage = Math.max(1, page.getPageable().getPageNumber() - 3);
+            int endPage = Math.min(page.getPageable().getPageNumber()+4, page.getTotalPages());
+            model.addAttribute("sort",sort);
+            model.addAttribute("article", page);
+            model.addAttribute("query", query);
+            model.addAttribute("sort",search);
+            model.addAttribute("hasResults", page.hasContent());
+            model.addAttribute("startPage", startPage);
+            model.addAttribute("endPage", endPage);
+
+        return "searchindex";
     }
     // 글 작성 페이지
     @GetMapping("/article/write")
@@ -124,29 +106,6 @@ public class ArticleController {
 
 
 
-    @GetMapping("/articles/search")
-    public String searchArticles(@RequestParam("query") String query, @RequestParam(value = "tagsearch",required = false,defaultValue = "false") Boolean tagsearch,@RequestParam(value = "lastId", required = false) Long lastId, @RequestParam(value = "previousId", required = false) Long previousId,@RequestParam(value = "previous", required = false,defaultValue = "0") int previous,Model model, @PageableDefault(page = 1)  Pageable pageable) {
-        if (previous == 0) {
-            Page<ArticleindexResponseDto> slicepage = articleService.searchArticles(lastId, query, pageable,tagsearch);
-            model.addAttribute("article", slicepage.getContent());
-            model.addAttribute("query", query);
-            model.addAttribute("hasNext", slicepage.hasNext());
-            model.addAttribute("hasResults", !slicepage.getContent().isEmpty());
-            model.addAttribute("hasPrevious", lastId != null); // 이전 페이지가 있는지 여부
-
-            if (!slicepage.getContent().isEmpty()) {
-                if (slicepage.hasNext()) {
-                    previousId = slicepage.getContent().get(0).getId();
-                }
-
-                Long nextLastId = slicepage.getContent().get(slicepage.getContent().size() - 1).getId();
-                model.addAttribute("previousLastId", previousId);
-                model.addAttribute("nextLastId", nextLastId);
-            }
-        }
-
-        return "searchindex";
-    }
 
     // 글 수정 페이지
     @GetMapping("/article/update/{id}")

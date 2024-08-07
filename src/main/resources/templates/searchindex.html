@@ -13,16 +13,11 @@
                 </img>
             </a>
         </div>
-        <select class="form-select"  style="width:125px; height:40px; margin-top:15px" aria-label="Default select example">
-            <option value="1">오래된 순</option>
-            <option selected value="2">최신 순</option>
-            <option value="3">조회 순</option>
+        <select id="sort-select" class="form-select"  style="width:125px; height:40px; margin-top:15px" aria-label="Default select example">
+            <option value="latest">오래된 순</option>
+            <option selected value="newest">최신 순</option>
+            <option value="mostrecent">조회 순</option>
         </select>
-    </div>
-    <!-- 작성된 글 리스트가 없을 시 문구 표시 -->
-    <div th:if="${endPage == 0}" class="article">
-        <h2>첫 글의 주인공이 되어 보세요!</h2></br>
-        <h5>글을 작성해보세요!</h5>
     </div>
     <!-- 글 정보 -->
     <div th:if="${hasResults}" th:each="article : ${article}" class="article">
@@ -57,20 +52,46 @@
     </div>
     <div class="search_header">
         <input class="form-control" style="margin-left:200px" type="text" placeholder="검색어를 입력하세요" id="searchInput" />
-        <select class="form-select"  style="width:130px; height:40px; margin-top:19px; margin-right:150px" aria-label="Default select example">
-            <option selected value="1">제목+내용</option>
-            <option value="2">제목</option>
-            <option value="3">내용</option>
+        <select id="search-select" class="form-select"  style="width:130px; height:40px; margin-top:19px; margin-right:150px" aria-label="Default select example">
+            <option selected value="titleAndcontent">제목+내용</option>
+            <option value="title">제목</option>
+            <option value="content">내용</option>
         </select>
     </div>
     <!-- 글 페이지 리스트 -->
-    <div th:if="${hasResults}" class="search_paging_list" >
+    <div th:if="${endPage != 0}" class="paging_list">
+        <!-- 이전 링크 있을시 활성화 없을시 비 활성화 -->
+        <a class="page_previous" th:classappend=" ${!article.hasPrevious()} ? 'disabled' " th:href="${!article.isFirst()} ? @{/articles/search(query=${query},sort=${sort},page=${article.number})}"> 이전 </a>
+        <!-- 시작페이지 -> 끝 페이지 까지 페이지 출력 -->
+        <span th:each="page: ${#numbers.sequence(startPage, endPage)}">
+		    <!-- 현재페이지는 링크 없이 숫자만 -->
+            <span th:if="${page == article.number + 1}" th:text="${page}"></span>
+            <!-- 현재페이지 링크 X, 다른 페이지번호에는 링크를 보여준다 -->
+            <span th:unless="${page == article.number + 1}">
+              <a th:href="@{/(sort=${sort},page=${page})}" th:text="${page}"></a>
+            </span>
+        </span>
         <!-- 다음 링크 있을시 활성화 없을시 비 활성화 -->
-        <a th:if=${hasNext} class="page_next" th:classappend="${!hasNext} ? 'disabled'" th:href="${hasNext} ? @{/articles/search(query=${query},previousId=${previousLastId},lastId=${nextLastId})} : '#'"> 다음 </a>
+        <a class="page_next" th:classappend=" ${!article.hasNext()} ? 'disabled' "  th:href="${article.isLast()} ? '#' : @{/articles/search(query=${query},sort=${sort},page=${article.number+2})}"> 다음 </a>
     </div>
     <script th:inline="javascript">
 
         $(document).ready(function() {
+
+            var nowsort = [[${sort}]];
+            var nowquery = [[${query}]];
+            if(nowsort != "latest" && nowsort != "newest" && nowsort != "mostrecent")
+            {
+              $('#sort-select').val("newest");
+            }
+            else {
+                 $('#sort-select').val(nowsort);
+            }
+            $('#sort-select').change(function() {
+                var sort = $('#sort-select').val();
+               window.location.href = '?sort=' + sort + '&query=' + nowquery;
+
+            });
             // 엔터 키를 눌렀을 때 검색 실행
             $('#searchInput').keypress(function(event) {
                 if (event.keyCode === 13) { // 엔터 키 코드: 13
@@ -81,8 +102,10 @@
 
             function searchArticles() {
                 var query = $('#searchInput').val();
+                var sort = $('#sort-select').val();
+                var search = $('#search-select').val();
                 if (query) {
-                    window.location.href = '/articles/search?query=' + encodeURIComponent(query);
+                    window.location.href = '/articles/search?query=' + encodeURIComponent(query) + '&sort=' + sort + '&search=' + search;
                 }
             }
         });

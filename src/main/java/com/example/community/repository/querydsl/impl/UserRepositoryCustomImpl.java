@@ -2,6 +2,7 @@ package com.example.community.repository.querydsl.impl;
 
 import com.example.community.entity.*;
 import com.example.community.repository.querydsl.UserRepositoryCustom;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -14,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.example.community.entity.QArticle.article;
-import static com.example.community.entity.QMember.member;
 import static com.example.community.entity.QBookmark.bookmark;
 import static com.example.community.entity.QComment.comment;
 import static com.example.community.entity.QTag.tag;
@@ -133,24 +133,23 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     }
 
     @Override
-    public Page<Article> findByArticlelist(Long lastId, Pageable pageable) {
+    public Page<Article> findByArticlelist(Pageable pageable, String sort) {
         JPAQuery<Article> query = jpaQueryFactory.selectFrom(article)
-                .where(articleIdGt(lastId))
-                .orderBy(article.id.asc())
+                .orderBy(orderData(sort))
                 .limit(pageable.getPageSize());
-
 
         List<Article> content = query.fetch();
 
         JPAQuery<Long> countQuery = jpaQueryFactory
                 .select(article.count())
-                .from(article)
-                .where(lastId != null ? article.id.gt(lastId) : null);
+                .from(article);
         long totalCount = countQuery.fetchOne();
 
         return PageableExecutionUtils.getPage(content, pageable, () -> totalCount);
 
     }
+
+
 
     @Override
     public Page<Article> findBymyArticlelist(Member user, Pageable pageable) {
@@ -168,18 +167,18 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     }
 
     @Override
-    public Page<Article> findByTitleOrContentContaining(Long lastId, String query, Pageable pageable) {
+    public Page<Article> findByTitleOrContentContaining(String sort, String query, Pageable pageable, String search) {
 
             JPAQuery<Article> queryResult = jpaQueryFactory.selectFrom(article)
-                    .where(titleOrcontentCt(query),articleIdGt(lastId))
-                    .orderBy(article.id.asc())
+                    .where(titleOrcontentCt(query,search))
+                    .orderBy(orderData(sort))
                     .limit(pageable.getPageSize());
 
             List<Article> content = queryResult.fetch();
             JPAQuery<Long> countQuery = jpaQueryFactory
                     .select(article.count())
                     .from(article)
-                    .where(titleOrcontentCt(query));
+                    .where(titleOrcontentCt(query,search));
 
             long totalCount = countQuery.fetchOne();
 
@@ -187,11 +186,11 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
     }
     @Override
-    public Page<Tag> findByTagContaining(Long lastId, String query, Pageable pageable,Boolean tagsearch) {
+    public Page<Tag> findByTagContaining(String sort, String query, Pageable pageable, Boolean tagsearch) {
             JPAQuery<Tag> queryResult = jpaQueryFactory.selectFrom(tag)
-                    .where(tagcontentCt(query,tagsearch),articleIdGt(lastId))
+                    .where(tagcontentCt(query,tagsearch))
                     .rightJoin(tag.article,article).fetchJoin()
-                    .orderBy(article.id.asc())
+                    .orderBy(orderData(sort))
                     .limit(pageable.getPageSize());
 
             List<Tag> content = queryResult.fetch();
@@ -205,8 +204,33 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
             return PageableExecutionUtils.getPage(content, pageable, () -> totalCount);
 
     }
-    private BooleanExpression titleOrcontentCt(String query){
-        return query != null ? article.title.containsIgnoreCase(query).or(article.content.containsIgnoreCase(query)) : null;
+    private OrderSpecifier<?> orderData(String sort) {
+        if(sort.equals("newest"))
+        {
+            return article.createdDate.desc();
+        }
+        else if(sort.equals("latest")){
+            return article.createdDate.asc();
+        }
+        else if(sort.equals("mostrecent")){
+            return article.viewcount.desc();
+
+        }
+        else {
+            return article.createdDate.asc();
+        }
+    }
+    private BooleanExpression titleOrcontentCt(String query,String search){
+        if(search.equals("title"))
+        {
+            return query != null ? article.title.containsIgnoreCase(query) : null;
+        } else if (search.equals("content")) {
+            return query != null ? (article.content.containsIgnoreCase(query)) : null;
+        } else if (search.equals("titleAndcontent")) {
+            return query != null ? article.title.containsIgnoreCase(query).or(article.content.containsIgnoreCase(query)) : null;
+        } else {
+            return query != null ? article.title.containsIgnoreCase(query).or(article.content.containsIgnoreCase(query)) : null;
+        }
     }
     private BooleanExpression tagcontentCt(String query,Boolean tagsearch){
         return tagsearch ?  tag.content.containsIgnoreCase(query) : null;
