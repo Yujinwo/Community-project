@@ -88,7 +88,7 @@ public class SecurityConfig{
                         authorizeRequests
                                 .requestMatchers("/admin").hasRole("ADMIN")
                                 .requestMatchers("/login","/join").anonymous()
-                                .requestMatchers("/","/article/detail/*","/articles/search","/api/userid/check","/api/usernick/check","/authentication-fail","/authorization-fail").permitAll()
+                                .requestMatchers("/","/article/detail/*","/articles/search","/api/userid/check","/api/usernick/check","/api/session/check","/authentication-fail","/authorization-fail").permitAll()
                                 .anyRequest().hasRole("USER")
                 )
                 .logout((logout) -> logout.logoutSuccessUrl("/login"))
@@ -119,21 +119,6 @@ public class SecurityConfig{
         return http.build();
 
 
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-
-        corsConfiguration.setAllowedOriginPatterns(List.of("*"));
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
-        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-        corsConfiguration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration); // 모든 경로에 대해서 CORS 설정을 적용
-
-        return source;
     }
 
 

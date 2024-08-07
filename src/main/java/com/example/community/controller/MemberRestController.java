@@ -83,14 +83,14 @@ public class MemberRestController {
     }
 
     @GetMapping("/api/session/check")
-    public int ssesionCheck() {
+    public ResponseEntity<Boolean> ssesionCheck() {
         // 인증된 Member Entity 가져오기
         Member member = authenticationUtil.getCurrentMember();
         if(member != null) {
-            return 1;
+            return ResponseEntity.status(HttpStatus.OK).body(true);
         }
         else {
-            return 0;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
         }
 
     }

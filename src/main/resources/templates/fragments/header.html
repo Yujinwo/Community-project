@@ -280,11 +280,10 @@
                let ssesionStatus = 0
                $.ajax({
                         type:'get',
-                        contentType:'application/json',
                         url:'/api/session/check',
                         success:function(data){
                            ssesionStatus = data;
-                           if(ssesionStatus == 1)
+                           if(ssesionStatus)
                                {
                                 subscribeToNotifications();
                                }
