@@ -72,4 +72,12 @@ public class Article extends BaseTime{
         this.viewcount = viewcount + 1;
     }
 
+    public void changeTitleandContent(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
+    public void chagneCommentCount(int i) {
+        this.commentcount = i;
+    }
 }

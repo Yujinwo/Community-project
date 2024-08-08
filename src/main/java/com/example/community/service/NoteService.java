@@ -80,7 +80,7 @@ public class NoteService {
             Long userid = authenticationUtil.getCurrentMember().getId();
             Optional<Member> user = memberRepository.findById(userid);
             if(user.isPresent()) {
-                user.get().setNoteblockd(true);
+                user.get().changeNoteBlockd(true);
                 return userid;
             }
             else {
@@ -98,7 +98,7 @@ public class NoteService {
             Long userid = authenticationUtil.getCurrentMember().getId();
             Optional<Member> user = memberRepository.findById(userid);
             if(user.isPresent()) {
-                user.get().setNoteblockd(false);
+                user.get().changeNoteBlockd(false);
                 return userid;
             }
             else {

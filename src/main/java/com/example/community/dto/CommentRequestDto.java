@@ -4,7 +4,6 @@ package com.example.community.dto;
 import com.example.community.entity.Article;
 import com.example.community.entity.Comment;
 import com.example.community.entity.Member;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -56,7 +55,7 @@ public class CommentRequestDto {
                 .build();
     }
 
-    public void setComment(Article article, Member member) {
+    public void changeComment(Article article, Member member) {
         this.article = article;
         this.member = member;
         this.commentnumber = (long) article.getCommentcount();
@@ -64,6 +63,15 @@ public class CommentRequestDto {
     }
 
 
+    public void changeReplyEntity(Article article, Member member, Comment parentcomment) {
+        this.article = article;
+        this.member = member;
+        this.parent = parentcomment;
+    }
 
-
+    public void changeCommentData(Long commentnumber, long commentorder, int i) {
+        this.commentnumber = commentnumber;
+        this.commentorder = commentorder;
+        this.redepth = i;
+    }
 }

@@ -28,4 +28,7 @@ public class ArticleRequestDto {
         return Article.builder().title(title).content(content).member(member).build();
     }
 
+    public void changeMember(Member member) {
+        this.member = member;
+    }
 }

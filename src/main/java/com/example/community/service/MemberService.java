@@ -99,7 +99,7 @@ public class MemberService {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultdata);
                 }
                 //비밀번호 변경
-                byEmail.get().setUserpw(passwordEncoder.encode(requestDto.getUserpw()));
+                byEmail.get().changeUserPw(passwordEncoder.encode(requestDto.getUserpw()));
                 resultdata.put("result","회원 정보 수정이 완료되었습니다.");
                 return ResponseEntity.status(HttpStatus.OK).body(resultdata);
             }
@@ -114,8 +114,8 @@ public class MemberService {
                 }
                 else {
                     // 닉네임과 비밀번호 변경
-                    byEmail.get().setUsernick(requestDto.getUsernick());
-                    byEmail.get().setUserpw(passwordEncoder.encode(requestDto.getUserpw()));
+                    byEmail.get().changeUserNick(requestDto.getUsernick());
+                    byEmail.get().changeUserPw(passwordEncoder.encode(requestDto.getUserpw()));
                     em.flush();
                     em.clear();
                     CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

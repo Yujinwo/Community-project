@@ -38,6 +38,17 @@ public class Member {
     @Column
     private Boolean noteblockd;
 
+    public void changeNoteBlockd(Boolean noteblockd) {
+        this.noteblockd = noteblockd;
+    }
+    public void changeUserNick(String usernick) {
+        this.usernick = usernick;
+    }
+    public void changeUserPw(String userpw) {
+     this.userpw = userpw;
+
+    }
+
     @Column
     private LocalDateTime temporaryblockdate;
     // Entity -> MemberDto 생성

@@ -37,7 +37,6 @@ public class NotificationRestController {
     }
     @GetMapping(path = "/api/notifications/get")
     public NotificationResultDto getnotifications(Pageable pageable) {
-
         return notificationService.getnotifications(pageable);
     }
 }

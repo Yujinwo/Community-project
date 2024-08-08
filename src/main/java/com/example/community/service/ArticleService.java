@@ -72,7 +72,7 @@ public class ArticleService {
         // 인증된 Member Entity 가져오기
         Member member = authenticationUtil.getCurrentMember();
         // dto에 Member Entity set
-        articleRequestDto.setMember(member);
+        articleRequestDto.changeMember(member);
         // dto -> Article Entity생성 -> 글 저장
         Article savedArticle = articleRepository.save(articleRequestDto.toEntity());
         // 저장된 article Entity가 null일시 예외 상황 발생
@@ -127,18 +127,14 @@ public class ArticleService {
         if (article.getTitle().equals(articleRequestDto.getTitle()) && article.getContent().equals(articleRequestDto.getContent())){
             return null;
         }
-
         // 인증된 유저와 글 작성한 유저 비교 || 요청한 글이 데이터베이스에 없을시
         if(member.getId() != article.getMember().getId() || article == null)
         {
             throw new RuntimeException("회원 정보 불일치 및 게시글 조회에 실패했습니다.");
         }
         // 요청한 제목으로 글 Entity 정보를 수정한다
-        article.setTitle(articleRequestDto.getTitle());
-        // 요청한 내용으로 글 Entity 정보를 수정한다
-        article.setContent(articleRequestDto.getContent());
+        article.changeTitleandContent(articleRequestDto.getTitle(),articleRequestDto.getContent());
         em.flush();
-
         // 수정된 article Entity로 글을 수정한다.
         // Article updatedArticle = articleRepository.save(article);
         // 수정된 article Entity가 null일시 예외 상황 발생
@@ -288,10 +284,10 @@ public class ArticleService {
         // 글 Article Entity 불러오기
         Article article = this.findById(commentRequestDto.getBoardid());
         // 글 댓글 개수를 증가시킨다
-        article.setCommentcount(article.getCommentcount() + 1);
+        article.chagneCommentCount(article.getCommentcount() + 1);
         em.flush();
         // 댓글 dto에 댓글 개수 증가된 Article Entity를 저장한다
-        commentRequestDto.setComment(article, member);
+        commentRequestDto.changeComment(article, member);
         Optional<Comment> comment = Optional.ofNullable(commentRepository.save(commentRequestDto.toEntity()));
         if (!comment.isPresent()) {
             throw new RuntimeException("댓글 작성에 실패했습니다.");
@@ -390,29 +386,20 @@ public class ArticleService {
         // 글 Article Entity 불러오기
         Article article = this.findById(replyRequestDto.getBoardid());
         // 글 댓글 개수를 증가시킨다
-        article.setCommentcount(article.getCommentcount() + 1);
+        article.chagneCommentCount(article.getCommentcount() + 1);
         em.flush();
-        // 댓글 dto에 댓글 개수 증가된 Article Entity를 저장한다
-        replyRequestDto.setArticle(article);
-        // 댓글 dto에 Member Entity 저장한다
-        replyRequestDto.setMember(member);
         // 부모 댓글 Comment Entity를 가져온다.
         Comment parentcomment = commentRepository.findById(replyRequestDto.getParentid()).orElse(null);
-        // 부모 댓글 Comment Entity로 설정한다.
-        replyRequestDto.setParent(parentcomment);
+        // 대댓글 정보를 수정한다
+        replyRequestDto.changeReplyEntity(article,member,parentcomment);
         // 댓글 넘버를 저장한다.
         if(parentcomment.getCommentorder() == 0)
         {
-            replyRequestDto.setCommentnumber(parentcomment.getCommentnumber());
-            replyRequestDto.setCommentorder((long) article.getCommentcount());
+            replyRequestDto.changeCommentData(parentcomment.getCommentnumber(),(long) article.getCommentcount(),parentcomment.getRedepth() + 1);
         }
         else {
-            replyRequestDto.setCommentnumber(parentcomment.getCommentnumber());
-            replyRequestDto.setCommentorder(parentcomment.getCommentorder());
+            replyRequestDto.changeCommentData(parentcomment.getCommentnumber(),parentcomment.getCommentorder(),parentcomment.getRedepth() + 1);
         }
-
-        // 댓글 깊이를 저장한다.
-        replyRequestDto.setRedepth(parentcomment.getRedepth() + 1);
         // 댓글을 저장한다
         Comment comment = commentRepository.save(replyRequestDto.toEntity());
         // 저장한 댓글 Entity가 null 일시 예외 상황 발생
@@ -440,7 +427,6 @@ public class ArticleService {
     }
 
     public Page<MyArticleResponseDto> findMyArticleList(Pageable pageable, Member user) {
-
         Page<MyArticleResponseDto> bymyArticlelist = articleRepository.findBymyArticlelist(user, pageable).map(m-> m.changeMyArticleResponseDto());
         return bymyArticlelist;
 
