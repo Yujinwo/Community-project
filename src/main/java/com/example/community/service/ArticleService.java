@@ -42,26 +42,29 @@ public class ArticleService {
 
     // 글 리스트를 페이지 형태로 불러오기
     @Transactional(readOnly = true)
-    public Page<ArticleindexResponseDto> index(Pageable pageable, String sort) {
+    public ArticleindexResultDto index(Pageable pageable, String sort) {
         // page 위치에 있는 값은 0부터 시작한다.
         int page = pageable.getPageNumber() - 1;
         PageRequest pageRequest = PageRequest.of(page, pageable.getPageSize());
         // 페이지 형태로 글 불러오기
         Page<ArticleindexResponseDto> articleDtos = articleRepository.findByArticlelist(pageRequest,sort).map(article -> ArticleindexResponseDto.builder().article(article).build());
-        return articleDtos;
+        ArticleindexResultDto articleindexResultDto = ArticleindexResultDto.builder().first(articleDtos.isFirst()).last(articleDtos.isLast()).next(articleDtos.hasNext()).number(articleDtos.getNumber()).content(articleDtos.getContent()).previous(articleDtos.hasPrevious()).hasResult(articleDtos.hasContent()).totalPages(articleDtos.getTotalPages()).build();
+        return articleindexResultDto;
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleindexResponseDto> searchArticles(String query, Pageable pageable, Boolean tagsearch, String sort, String search) {
+    public ArticleindexResultDto searchArticles(String query, Pageable pageable, Boolean tagsearch, String sort, String search) {
         int page = pageable.getPageNumber() - 1;
         PageRequest pageRequest = PageRequest.of(page, pageable.getPageSize());
 
         if(tagsearch)
         {
-            return articleRepository.findByTagContaining(sort,query, pageRequest,tagsearch).map(tag -> ArticleindexResponseDto.builder().article(tag.getArticle()).build());
+            Page<ArticleindexResponseDto> articleDtos = articleRepository.findByTagContaining(sort,query, pageRequest,tagsearch).map(tag -> ArticleindexResponseDto.builder().article(tag.getArticle()).build());
+            return ArticleindexResultDto.builder().first(articleDtos.isFirst()).last(articleDtos.isLast()).next(articleDtos.hasNext()).number(articleDtos.getNumber()).content(articleDtos.getContent()).previous(articleDtos.hasPrevious()).hasResult(articleDtos.hasContent()).totalPages(articleDtos.getTotalPages()).build();
         }
         else {
-            return articleRepository.findByTitleOrContentContaining(sort,query, pageRequest,search).map(article -> ArticleindexResponseDto.builder().article(article).build());
+            Page<ArticleindexResponseDto> articleDtos = articleRepository.findByTitleOrContentContaining(sort,query, pageRequest,search).map(article -> ArticleindexResponseDto.builder().article(article).build());
+            return ArticleindexResultDto.builder().first(articleDtos.isFirst()).last(articleDtos.isLast()).next(articleDtos.hasNext()).number(articleDtos.getNumber()).content(articleDtos.getContent()).previous(articleDtos.hasPrevious()).hasResult(articleDtos.hasContent()).totalPages(articleDtos.getTotalPages()).build();
         }
 
     }
@@ -299,7 +302,7 @@ public class ArticleService {
 
     // 댓글 리스트를 페이지 형태로 불러오기
     @Transactional(readOnly = true)
-    public Page<CommentResponseDto> findCommentid(Long id, Pageable pageable) {
+    public CommentResultDto findCommentid(Long id, Pageable pageable) {
         // page 위치에 있는 값은 0부터 시작한다.
         int page = pageable.getPageNumber() - 1;
         // 한페이지에 보여줄 글 개수
@@ -307,7 +310,7 @@ public class ArticleService {
 
         // 페이지 형태로 댓글 불러오기
         Page<CommentResponseDto> comment = commentRepository.findByCommentlist(id,PageRequest.of(page, pageLimit)).map(comments -> comments.toDto());
-        return comment;
+        return CommentResultDto.builder().first(comment.isFirst()).last(comment.isLast()).hasResult(comment.hasContent()).previous(comment.hasPrevious()).next(comment.hasNext()).content(comment.getContent()).number(comment.getNumber()).totalPages(comment.getTotalPages()).build();
     }
 
     // 글 조회수 올리기
@@ -426,20 +429,20 @@ public class ArticleService {
         commentRepository.delete(reply);
     }
 
-    public Page<MyArticleResponseDto> findMyArticleList(Pageable pageable, Member user) {
+    public MyArticleResultDto findMyArticleList(Pageable pageable, Member user) {
         Page<MyArticleResponseDto> bymyArticlelist = articleRepository.findBymyArticlelist(user, pageable).map(m-> m.changeMyArticleResponseDto());
-        return bymyArticlelist;
+        return MyArticleResultDto.builder().first(bymyArticlelist.isFirst()).last(bymyArticlelist.isLast()).hasResult(bymyArticlelist.hasContent()).previous(bymyArticlelist.hasPrevious()).next(bymyArticlelist.hasNext()).content(bymyArticlelist.getContent()).number(bymyArticlelist.getNumber()).totalPages(bymyArticlelist.getTotalPages()).build();
 
     }
 
-    public Page<MyCommentResponseDto> findMyCommentList(Pageable pageable,Member user) {
+    public MyCommentResultDto findMyCommentList(Pageable pageable,Member user) {
         Page<MyCommentResponseDto> bymyCommentlist = articleRepository.findBymyCommentlist(user, pageable).map(m-> m.changeMyCommentResponseDto());
-        return bymyCommentlist;
+        return MyCommentResultDto.builder().first(bymyCommentlist.isFirst()).last(bymyCommentlist.isLast()).hasResult(bymyCommentlist.hasContent()).previous(bymyCommentlist.hasPrevious()).next(bymyCommentlist.hasNext()).content(bymyCommentlist.getContent()).number(bymyCommentlist.getNumber()).totalPages(bymyCommentlist.getTotalPages()).build();
     }
 
-    public Page<MyBookmarkResponseDto> findMyBookmarkList(Pageable pageable) {
+    public MyBookmarkResultDto findMyBookmarkList(Pageable pageable) {
         Page<MyBookmarkResponseDto> bymyBookmarklist = bookmarkRepository.findBymyBookmarklist(authenticationUtil.getCurrentMember(), pageable).map(m-> MyBookmarkResponseDto.builder().id(m.getId()).article_title(m.getArticle().getTitle()).build());
-        return bymyBookmarklist;
+        return MyBookmarkResultDto.builder().first(bymyBookmarklist.isFirst()).last(bymyBookmarklist.isLast()).hasResult(bymyBookmarklist.hasContent()).previous(bymyBookmarklist.hasPrevious()).next(bymyBookmarklist.hasNext()).content(bymyBookmarklist.getContent()).number(bymyBookmarklist.getNumber()).totalPages(bymyBookmarklist.getTotalPages()).build();
     }
 
     @Transactional

@@ -27,7 +27,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         QComment comment = QComment.comment;
         JPAQuery<Comment> comments = jpaQueryFactory.selectFrom(comment)
                 .where(comment.article.id.eq(boardId))
-                .orderBy(comment.createdDate.asc(),comment.commentnumber.asc(),comment.commentorder.asc(),comment.redepth.asc())
+                .orderBy(comment.commentnumber.asc(),comment.redepth.asc(),comment.commentorder.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
@@ -47,6 +47,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         JPAQuery<Comment> comments = jpaQueryFactory.selectFrom(comment)
                 .where(comment.member.id.eq(user.getId()))
                 .join(comment.article,article).fetchJoin()
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
         JPAQuery<Long> countQuery = jpaQueryFactory.select(comment.count())
@@ -101,6 +102,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     public Page<Bookmark> findBymyBookmarklist(Member user, Pageable pageable) {
         JPAQuery<Bookmark> queryResult = jpaQueryFactory.selectFrom(bookmark)
                 .where(bookmark.member.id.eq(user.getId()))
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
         List<Bookmark> content = queryResult.fetch();
         JPAQuery<Long> countQuery = jpaQueryFactory.select(bookmark.count())
@@ -136,6 +138,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     public Page<Article> findByArticlelist(Pageable pageable, String sort) {
         JPAQuery<Article> query = jpaQueryFactory.selectFrom(article)
                 .orderBy(orderData(sort))
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
         List<Article> content = query.fetch();
@@ -155,6 +158,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     public Page<Article> findBymyArticlelist(Member user, Pageable pageable) {
         JPAQuery<Article> queryResult = jpaQueryFactory.selectFrom(article)
                 .where(article.member.id.eq(user.getId()))
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
         List<Article> content = queryResult.fetch();
         JPAQuery<Long> countQuery = jpaQueryFactory.select(article.count())
@@ -172,6 +176,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
             JPAQuery<Article> queryResult = jpaQueryFactory.selectFrom(article)
                     .where(titleOrcontentCt(query,search))
                     .orderBy(orderData(sort))
+                    .offset(pageable.getOffset())
                     .limit(pageable.getPageSize());
 
             List<Article> content = queryResult.fetch();
@@ -191,6 +196,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
                     .where(tagcontentCt(query,tagsearch))
                     .rightJoin(tag.article,article).fetchJoin()
                     .orderBy(orderData(sort))
+                    .offset(pageable.getOffset())
                     .limit(pageable.getPageSize());
 
             List<Tag> content = queryResult.fetch();

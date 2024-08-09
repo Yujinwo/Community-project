@@ -16,5 +16,7 @@ import java.util.List;
 public class NotificationResultDto {
 
     private Long count;
-    private Page<NotificationResponseDto> Result;
+    private List<NotificationResponseDto> content;
+    private Boolean last;
+    private int number;
 }

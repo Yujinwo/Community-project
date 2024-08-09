@@ -1,8 +1,6 @@
 package com.example.community.controller;
 
-import com.example.community.dto.ArticleResponseDto;
-import com.example.community.dto.ArticleindexResponseDto;
-import com.example.community.dto.CommentResponseDto;
+import com.example.community.dto.*;
 import com.example.community.entity.Article;
 import com.example.community.entity.Bookmark;
 import com.example.community.repository.BookmarkRepository;
@@ -38,12 +36,12 @@ public class ArticleController {
     @GetMapping("/")
     public String page(@RequestParam(value = "sort",defaultValue = "newest",required = true) String sort ,@PageableDefault(page = 1) Pageable pageable, Model model) {
 
-        Page<ArticleindexResponseDto> page = articleService.index(pageable,sort);
-        int startPage = Math.max(1, page.getPageable().getPageNumber() - 3);
-        int endPage = Math.min(page.getPageable().getPageNumber()+4, page.getTotalPages());
-        model.addAttribute("hasResults", page.hasContent());
+        ArticleindexResultDto page = articleService.index(pageable,sort);
+        int startPage = Math.max(1, page.getNumber() - 3);
+        int endPage = Math.min(page.getNumber()+4, page.getTotalPages());
         model.addAttribute("sort",sort);
-        model.addAttribute("article",page);
+        model.addAttribute("pageable",page);
+        model.addAttribute("article",page.getContent());
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         return "index";
@@ -52,14 +50,14 @@ public class ArticleController {
 
     @GetMapping("/articles/search")
     public String searchArticles(@RequestParam(value = "search",defaultValue = "newest",required = true) String search,@RequestParam(value = "sort",defaultValue = "newest",required = true) String sort,@RequestParam("query") String query, @RequestParam(value = "tagsearch",required = false,defaultValue = "false") Boolean tagsearch,Model model, @PageableDefault(page = 1)  Pageable pageable) {
-            Page<ArticleindexResponseDto> page = articleService.searchArticles(query, pageable,tagsearch,sort,search);
-            int startPage = Math.max(1, page.getPageable().getPageNumber() - 3);
-            int endPage = Math.min(page.getPageable().getPageNumber()+4, page.getTotalPages());
+            ArticleindexResultDto page = articleService.searchArticles(query, pageable,tagsearch,sort,search);
+            int startPage = Math.max(1, page.getNumber() - 3);
+            int endPage = Math.min(page.getNumber()+4, page.getTotalPages());
             model.addAttribute("sort",sort);
-            model.addAttribute("article", page);
+            model.addAttribute("pageable",page);
+            model.addAttribute("article",page.getContent());
+            model.addAttribute("search",search);
             model.addAttribute("query", query);
-            model.addAttribute("sort",search);
-            model.addAttribute("hasResults", page.hasContent());
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
 
@@ -80,7 +78,7 @@ public class ArticleController {
         ArticleResponseDto articleResponseDto = ArticleResponseDto.builder().article(article).build();
 
         // 글 댓글 불러오기
-        Page<CommentResponseDto> comments = articleService.findCommentid(id,pageable);
+        CommentResultDto comments = articleService.findCommentid(id,pageable);
         if(authenticationUtil.getCurrentMember() != null)
         {
             // 즐겨찾기 현황 체크
@@ -88,16 +86,13 @@ public class ArticleController {
             model.addAttribute("bookmark_state",bookmark_state);
         }
 
-        // 페이지 최대 개수 설정
-        int blockLimit = 3;
-        // 시작 페이지
-        int startPage = Math.max(1, comments.getPageable().getPageNumber() - blockLimit);
-        // 마지막 페이지
-        int endPage = Math.min(comments.getPageable().getPageNumber()+4, comments.getTotalPages());
+        int startPage = Math.max(1, comments.getNumber() - 3);
+        int endPage = Math.min(comments.getNumber()+4, comments.getTotalPages());
 
         // 뷰에 데이터 전달
         model.addAttribute("article",articleResponseDto);
-        model.addAttribute("comment",comments);
+        model.addAttribute("pageable",comments);
+        model.addAttribute("comment",comments.getContent());
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
 

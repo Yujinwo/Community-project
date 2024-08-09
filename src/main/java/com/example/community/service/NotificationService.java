@@ -118,7 +118,7 @@ public class NotificationService {
         if(member != null)
         {
             Page<NotificationResponseDto> notificationList = notificationRepository.findByNoticication(member,pageable).map(n -> n.changeNotificationDto());
-            return NotificationResultDto.builder().count(notificationList.getTotalElements()).Result(notificationList).build();
+                return NotificationResultDto.builder().count(notificationList.getTotalElements()).last(notificationList.isLast()).number(notificationList.getNumber()).content(notificationList.getContent()).build();
         }
         return new NotificationResultDto();
 

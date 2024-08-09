@@ -37,16 +37,13 @@ public class MypageController {
         {
             Member optionalArticleUser = memberRepository.findById(userid).orElse(authenticationUtil.getCurrentMember());
             // 글 댓글 불러오기
-            Page<MyArticleResponseDto> articles = articleService.findMyArticleList(pageable,optionalArticleUser);
-            // 페이지 최대 개수 설정
-            int blockLimit = 3;
-            // 시작 페이지
-            int startPage = Math.max(1, articles.getPageable().getPageNumber() - blockLimit);
-            // 마지막 페이지
-            int endPage = Math.min(articles.getPageable().getPageNumber()+4, articles.getTotalPages());
+            MyArticleResultDto articles = articleService.findMyArticleList(pageable,optionalArticleUser);
+            int startPage = Math.max(1, articles.getNumber() - 3);
+            int endPage = Math.min(articles.getNumber()+4, articles.getTotalPages());
 
             // 뷰에 데이터 전달
-            model.addAttribute("article",articles);
+            model.addAttribute("article",articles.getContent());
+            model.addAttribute("pageable",articles);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
             return "mypagearticle";
@@ -54,32 +51,26 @@ public class MypageController {
         else if(type.equals("comment_list")) {
             Member optionalCommentUser = memberRepository.findById(userid).orElse(authenticationUtil.getCurrentMember());
             // 댓글 댓글 불러오기
-            Page<MyCommentResponseDto> comments = articleService.findMyCommentList(pageable,optionalCommentUser);
-            // 페이지 최대 개수 설정
-            int blockLimit = 3;
-            // 시작 페이지
-            int startPage = Math.max(1, comments.getPageable().getPageNumber() - blockLimit);
-            // 마지막 페이지
-            int endPage = Math.min(comments.getPageable().getPageNumber()+4, comments.getTotalPages());
+            MyCommentResultDto comments = articleService.findMyCommentList(pageable,optionalCommentUser);
+            int startPage = Math.max(1, comments.getNumber() - 3);
+            int endPage = Math.min(comments.getNumber()+4, comments.getTotalPages());
 
             // 뷰에 데이터 전달
-            model.addAttribute("comment",comments);
+            model.addAttribute("comment",comments.getContent());
+            model.addAttribute("pageable",comments);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
             return "mypagecomment";
         }
         else if(type.equals("bookmark_list")){
             // 글 댓글 불러오기
-            Page<MyBookmarkResponseDto> bookmarks = articleService.findMyBookmarkList(pageable);
-            // 페이지 최대 개수 설정
-            int blockLimit = 3;
-            // 시작 페이지
-            int startPage = Math.max(1, bookmarks.getPageable().getPageNumber() - blockLimit);
-            // 마지막 페이지
-            int endPage = Math.min(bookmarks.getPageable().getPageNumber()+4, bookmarks.getTotalPages());
+            MyBookmarkResultDto bookmarks = articleService.findMyBookmarkList(pageable);
+            int startPage = Math.max(1, bookmarks.getNumber() - 3);
+            int endPage = Math.min(bookmarks.getNumber()+4, bookmarks.getTotalPages());
 
             // 뷰에 데이터 전달
-            model.addAttribute("bookmark",bookmarks);
+            model.addAttribute("bookmark",bookmarks.getContent());
+            model.addAttribute("pageable",bookmarks);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
             return "mypagebookmark";

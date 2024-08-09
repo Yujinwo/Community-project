@@ -1,6 +1,9 @@
 package com.example.community.service;
 
 
+import com.example.community.dto.MyBookmarkResultDto;
+import com.example.community.dto.NoteResponseDto;
+import com.example.community.dto.NoteResultDto;
 import com.example.community.dto.NoteSaveRequestDto;
 import com.example.community.entity.Member;
 import com.example.community.entity.Note;
@@ -41,12 +44,12 @@ public class NoteService {
             }
     }
     @Transactional(readOnly = true)
-    public Page<Note> findNotes(Pageable pageable){
+    public NoteResultDto findNotes(Pageable pageable){
         Member member = authenticationUtil.getCurrentMember();
         if(member != null)
         {
-            Page<Note> notelists = noteRespository.findByNote(member,pageable);
-            return notelists;
+            Page<NoteResponseDto> notelists = noteRespository.findByNote(member,pageable).map(Note::changeNoteDto);
+            return NoteResultDto.builder().first(notelists.isFirst()).last(notelists.isLast()).hasResult(notelists.hasContent()).previous(notelists.hasPrevious()).next(notelists.hasNext()).content(notelists.getContent()).number(notelists.getNumber()).totalPages(notelists.getTotalPages()).build();
         }
         else {
             return null;

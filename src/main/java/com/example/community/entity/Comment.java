@@ -55,7 +55,6 @@ public class Comment extends BaseTime{
     // Entity -> CommentResponseDto 생성
     public CommentResponseDto toDto() {
         return CommentResponseDto.builder().id(id).content(content).member(member).article(article).createdDate(getCreatedDate()).modifiedDate(getModifiedDate()).child(child).parent(parent).commentnumber(commentnumber).redepth(redepth).deleted(deleted).build();
-
     }
 
     public MyCommentResponseDto changeMyCommentResponseDto() {

@@ -2,6 +2,7 @@ package com.example.community.controller;
 
 import com.example.community.dto.MemberDto;
 import com.example.community.dto.NoteResponseDto;
+import com.example.community.dto.NoteResultDto;
 import com.example.community.entity.Member;
 import com.example.community.entity.Note;
 import com.example.community.repository.MemberRepository;
@@ -52,18 +53,13 @@ public class NoteController {
         if(byId.isPresent()) {
            model.addAttribute("member",byId.get());
         }
-        Page<NoteResponseDto> notelists = noteService.findNotes(pageable).map(Note::changeNoteDto);
-        // 페이지 최대 개수 설정
-        int blockLimit = 3;
-        // 시작 페이지
-        int startPage = Math.max(1, notelists.getPageable().getPageNumber() - blockLimit);
-        // 마지막 페이지
-        int endPage = Math.min(notelists.getPageable().getPageNumber()+4, notelists.getTotalPages());
-        model.addAttribute("notelists",notelists);
+        NoteResultDto notelists = noteService.findNotes(pageable);
+        int startPage = Math.max(1, notelists.getNumber() - 3);
+        int endPage = Math.min(notelists.getNumber()+4, notelists.getTotalPages());
+        model.addAttribute("notelists",notelists.getContent());
+        model.addAttribute("pageable",notelists);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-
-
         return "note";
     }
 }

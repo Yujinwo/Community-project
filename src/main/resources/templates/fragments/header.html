@@ -169,10 +169,10 @@
                                    pageNumber = 0;
                                }
                                else {
-                                   pageNumber = data.result.pageable.pageNumber;
-                                   pageLast = data.result.last;
+                                   pageNumber = data.number;
+                                   pageLast = data.last;
                                    $noFeedList.hide();
-                                   data.result.content.forEach(notification => {
+                                   data.content.forEach(notification => {
                                        const $li = $('<li>',{ class:'notification-item' });
                                        const $a = $('<a>', { href: '/article/detail/' + notification.articleId });
 
