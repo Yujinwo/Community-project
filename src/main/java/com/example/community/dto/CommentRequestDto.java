@@ -62,7 +62,6 @@ public class CommentRequestDto {
         this.commentorder = 0L;
     }
 
-
     public void changeReplyEntity(Article article, Member member, Comment parentcomment) {
         this.article = article;
         this.member = member;

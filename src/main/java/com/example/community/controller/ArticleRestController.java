@@ -1,6 +1,7 @@
 package com.example.community.controller;
 
 import com.example.community.dto.ArticleRequestDto;
+import com.example.community.dto.BookmarkRequestDto;
 import com.example.community.dto.CommentRequestDto;
 import com.example.community.entity.Article;
 import com.example.community.entity.Notification;
@@ -64,18 +65,18 @@ public class ArticleRestController {
 
 
     // 즐겨찾기 기능
-    @GetMapping("/api/article/bookmark")
-    public ResponseEntity<Map<String,String>> bookmark(@RequestParam(name = "id",required = true) Long id,@RequestParam(name = "type",required = true) String type)
+    @PostMapping("/api/article/bookmark")
+    public ResponseEntity<Map<String,String>> bookmark(@RequestBody BookmarkRequestDto bookmarkRequestDto)
     {
 
-        if(id == null || type.isEmpty())
+        if(bookmarkRequestDto.getId() == null || bookmarkRequestDto.getType().isEmpty())
         {
             Map<String,String> responseMap = new HashMap<>();
             responseMap.put("message","비정상적인 데이터입니다.");
              return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
         }
         else {
-            String responseJson = articleService.setBookmark(id,type);
+            String responseJson = articleService.setBookmark(bookmarkRequestDto.getId(),bookmarkRequestDto.getType());
             Map<String,String> responseMap = new HashMap<>();
             responseMap.put("message" , responseJson);
             if(responseJson.equals("올바른 데이터 접근이 아닙니다."))

@@ -172,11 +172,13 @@
                     if($bookmark.hasClass("active")) {
 
                              var obj = {};
-                             obj.id = articleId
+                             obj.id = articleId;
+                             obj.type = "create";
                              $.ajax({
-                                　　type:'get'
+                                　　type:'post'
                                 　　, contentType:'application/json'
-                                　　, url: '/api/article/bookmark?id=' + obj.id +'&type=create'
+                                   , data:JSON.stringify(obj)
+                                　　, url: '/api/article/bookmark'
                                 　　, success: function(data) {
                                 　　}
                                    , error:function(e) {
@@ -187,11 +189,13 @@
                     else {
 
                              var obj = {};
-                             obj.id = articleId
+                             obj.id = articleId;
+                             obj.type = "delete";
                              $.ajax({
-                                　　type:'get'
+                                　　type:'post'
                                 　　, contentType:'application/json'
-                                　　, url: '/api/article/bookmark?id=' + obj.id +'&type=delete'
+                                   , data:JSON.stringify(obj)
+                                　　, url: '/api/article/bookmark'
                                 　　, success: function(data) {
                                 　　}
                                    , error:function(e) {
