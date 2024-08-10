@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -21,4 +22,8 @@ public class CommentResultDto {
     private Boolean previous;
     private Boolean next;
     private int number;
+
+    public static CommentResultDto createCommentResultDto(Page<CommentResponseDto> comment) {
+        return CommentResultDto.builder().first(comment.isFirst()).last(comment.isLast()).hasResult(comment.hasContent()).previous(comment.hasPrevious()).next(comment.hasNext()).content(comment.getContent()).number(comment.getNumber()).totalPages(comment.getTotalPages()).build();
+    }
 }

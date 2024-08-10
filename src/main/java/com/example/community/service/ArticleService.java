@@ -39,7 +39,6 @@ public class ArticleService {
     private final AuthenticationUtil authenticationUtil;
     private final TagRepository tagRepository;
 
-
     // 글 리스트를 페이지 형태로 불러오기
     @Transactional(readOnly = true)
     public ArticleindexResultDto index(Pageable pageable, String sort) {
@@ -47,9 +46,8 @@ public class ArticleService {
         int page = pageable.getPageNumber() - 1;
         PageRequest pageRequest = PageRequest.of(page, pageable.getPageSize());
         // 페이지 형태로 글 불러오기
-        Page<ArticleindexResponseDto> articleDtos = articleRepository.findByArticlelist(pageRequest,sort).map(article -> ArticleindexResponseDto.builder().article(article).build());
-        ArticleindexResultDto articleindexResultDto = ArticleindexResultDto.builder().first(articleDtos.isFirst()).last(articleDtos.isLast()).next(articleDtos.hasNext()).number(articleDtos.getNumber()).content(articleDtos.getContent()).previous(articleDtos.hasPrevious()).hasResult(articleDtos.hasContent()).totalPages(articleDtos.getTotalPages()).build();
-        return articleindexResultDto;
+        Page<ArticleindexResponseDto> articleDtos = articleRepository.findByArticlelist(pageRequest, sort).map(article -> ArticleindexResponseDto.builder().article(article).build());
+        return ArticleindexResultDto.createArticleindexResultDto(articleDtos);
     }
 
     @Transactional(readOnly = true)
@@ -60,11 +58,11 @@ public class ArticleService {
         if(tagsearch)
         {
             Page<ArticleindexResponseDto> articleDtos = articleRepository.findByTagContaining(sort,query, pageRequest,tagsearch).map(tag -> ArticleindexResponseDto.builder().article(tag.getArticle()).build());
-            return ArticleindexResultDto.builder().first(articleDtos.isFirst()).last(articleDtos.isLast()).next(articleDtos.hasNext()).number(articleDtos.getNumber()).content(articleDtos.getContent()).previous(articleDtos.hasPrevious()).hasResult(articleDtos.hasContent()).totalPages(articleDtos.getTotalPages()).build();
+            return ArticleindexResultDto.createArticleindexResultDto(articleDtos);
         }
         else {
             Page<ArticleindexResponseDto> articleDtos = articleRepository.findByTitleOrContentContaining(sort,query, pageRequest,search).map(article -> ArticleindexResponseDto.builder().article(article).build());
-            return ArticleindexResultDto.builder().first(articleDtos.isFirst()).last(articleDtos.isLast()).next(articleDtos.hasNext()).number(articleDtos.getNumber()).content(articleDtos.getContent()).previous(articleDtos.hasPrevious()).hasResult(articleDtos.hasContent()).totalPages(articleDtos.getTotalPages()).build();
+            return ArticleindexResultDto.createArticleindexResultDto(articleDtos);
         }
 
     }
@@ -74,10 +72,13 @@ public class ArticleService {
     public void write(ArticleRequestDto articleRequestDto, List<MultipartFile> files) {
         // 인증된 Member Entity 가져오기
         Member member = authenticationUtil.getCurrentMember();
+
         // dto에 Member Entity set
-        articleRequestDto.changeMember(member);
+        ArticleSaveDto articleSaveDto = new ArticleSaveDto();
+        articleSaveDto.changeSaveArticleData(articleRequestDto.getTitle(),articleRequestDto.getContent(),member);
+
         // dto -> Article Entity생성 -> 글 저장
-        Article savedArticle = articleRepository.save(articleRequestDto.toEntity());
+        Article savedArticle = articleRepository.save(articleSaveDto.createArticleEntity());
         // 저장된 article Entity가 null일시 예외 상황 발생
         if (savedArticle == null) {
             throw new RuntimeException("게시글 저장에 실패했습니다.");
@@ -290,8 +291,9 @@ public class ArticleService {
         article.chagneCommentCount(article.getCommentcount() + 1);
         em.flush();
         // 댓글 dto에 댓글 개수 증가된 Article Entity를 저장한다
-        commentRequestDto.changeComment(article, member);
-        Optional<Comment> comment = Optional.ofNullable(commentRepository.save(commentRequestDto.toEntity()));
+        CommentSaveDto commentSaveDto = new CommentSaveDto();
+        commentSaveDto.changeCommentSaveData(commentRequestDto.getContent(),article, member);
+        Optional<Comment> comment = Optional.ofNullable(commentRepository.save(commentSaveDto.createCommentEntity()));
         if (!comment.isPresent()) {
             throw new RuntimeException("댓글 작성에 실패했습니다.");
         }
@@ -310,7 +312,7 @@ public class ArticleService {
 
         // 페이지 형태로 댓글 불러오기
         Page<CommentResponseDto> comment = commentRepository.findByCommentlist(id,PageRequest.of(page, pageLimit)).map(comments -> comments.toDto());
-        return CommentResultDto.builder().first(comment.isFirst()).last(comment.isLast()).hasResult(comment.hasContent()).previous(comment.hasPrevious()).next(comment.hasNext()).content(comment.getContent()).number(comment.getNumber()).totalPages(comment.getTotalPages()).build();
+        return CommentResultDto.createCommentResultDto(comment);
     }
 
     // 글 조회수 올리기
@@ -352,11 +354,11 @@ public class ArticleService {
     }
     // 댓글 삭제
     @Transactional
-    public void commentdelete(CommentRequestDto commentRequestDto) {
+    public void commentdelete(Long id) {
         // 인증된 Member Entity 가져오기
         Member member = authenticationUtil.getCurrentMember();
         // 댓글 Comment Entity 불러오기
-        Comment comment = commentRepository.findById(commentRequestDto.getId()).orElse(null);
+        Comment comment = commentRepository.findById(id).orElse(null);
         // 인증된 유저와 댓글 작성한 유저 비교 || 요청한 댓글이 데이터베이스에 없을시
         if(member.getId() != comment.getMember().getId() || comment == null)
         {
@@ -364,7 +366,7 @@ public class ArticleService {
         }
 
         // 글 댓글 개수를 감소시킨다
-        Article article = this.findById(comment.getArticle().getId());
+        Article article = comment.getArticle();
         article.setCommentcount(article.getCommentcount() - 1);
 
         // 대댓글이 없을 시 댓글을 삭제한다.
@@ -394,55 +396,39 @@ public class ArticleService {
         // 부모 댓글 Comment Entity를 가져온다.
         Comment parentcomment = commentRepository.findById(replyRequestDto.getParentid()).orElse(null);
         // 대댓글 정보를 수정한다
-        replyRequestDto.changeReplyEntity(article,member,parentcomment);
+        CommentSaveDto commentSaveDto = new CommentSaveDto();
+        commentSaveDto.changeReplySaveData(replyRequestDto.getContent(),article,member,parentcomment);
         // 댓글 넘버를 저장한다.
         if(parentcomment.getCommentorder() == 0)
         {
-            replyRequestDto.changeCommentData(parentcomment.getCommentnumber(),(long) article.getCommentcount(),parentcomment.getRedepth() + 1);
+            commentSaveDto.changeReplySaveOrderData(parentcomment.getCommentnumber(),(long) article.getCommentcount(),parentcomment.getRedepth() + 1);
         }
         else {
-            replyRequestDto.changeCommentData(parentcomment.getCommentnumber(),parentcomment.getCommentorder(),parentcomment.getRedepth() + 1);
+            commentSaveDto.changeReplySaveOrderData(parentcomment.getCommentnumber(),parentcomment.getCommentorder(),parentcomment.getRedepth() + 1);
         }
         // 댓글을 저장한다
-        Comment comment = commentRepository.save(replyRequestDto.toEntity());
+        Comment comment = commentRepository.save(commentSaveDto.createCommentEntity());
         // 저장한 댓글 Entity가 null 일시 예외 상황 발생
         if (comment == null) {
             throw new RuntimeException("댓글 작성에 실패했습니다.");
         }
     }
 
-    @Transactional
-    public void  replydelete(CommentRequestDto replyRequestDto) {
-        // 인증된 Member Entity 가져오기
-        Member member = authenticationUtil.getCurrentMember();
-        // 대댓글 Reply Entity 불러오기
-        Comment reply = commentRepository.findById(replyRequestDto.getId()).orElse(null);
-        // 인증된 유저와 댓글 작성한 유저 비교 || 요청한 대댓글이 데이터베이스에 없을시
-        if(member.getId() != reply.getMember().getId() || reply == null)
-        {
-            throw new RuntimeException("회원 정보 불일치 및 댓글 조회에 실패했습니다.");
-        }
-        // 글 댓글 개수를 감소시킨다
-        Article article = this.findById(reply.getArticle().getId());
-        article.setCommentcount(article.getCommentcount() - 1);
-        // 대댓글을 삭제한다
-        commentRepository.delete(reply);
-    }
-
+    @Transactional(readOnly = true)
     public MyArticleResultDto findMyArticleList(Pageable pageable, Member user) {
         Page<MyArticleResponseDto> bymyArticlelist = articleRepository.findBymyArticlelist(user, pageable).map(m-> m.changeMyArticleResponseDto());
-        return MyArticleResultDto.builder().first(bymyArticlelist.isFirst()).last(bymyArticlelist.isLast()).hasResult(bymyArticlelist.hasContent()).previous(bymyArticlelist.hasPrevious()).next(bymyArticlelist.hasNext()).content(bymyArticlelist.getContent()).number(bymyArticlelist.getNumber()).totalPages(bymyArticlelist.getTotalPages()).build();
+        return MyArticleResultDto.createMyArticleResultDto(bymyArticlelist);
 
     }
-
+    @Transactional(readOnly = true)
     public MyCommentResultDto findMyCommentList(Pageable pageable,Member user) {
         Page<MyCommentResponseDto> bymyCommentlist = articleRepository.findBymyCommentlist(user, pageable).map(m-> m.changeMyCommentResponseDto());
-        return MyCommentResultDto.builder().first(bymyCommentlist.isFirst()).last(bymyCommentlist.isLast()).hasResult(bymyCommentlist.hasContent()).previous(bymyCommentlist.hasPrevious()).next(bymyCommentlist.hasNext()).content(bymyCommentlist.getContent()).number(bymyCommentlist.getNumber()).totalPages(bymyCommentlist.getTotalPages()).build();
+        return MyCommentResultDto.createMyCommentResultDto(bymyCommentlist);
     }
-
+    @Transactional(readOnly = true)
     public MyBookmarkResultDto findMyBookmarkList(Pageable pageable) {
         Page<MyBookmarkResponseDto> bymyBookmarklist = bookmarkRepository.findBymyBookmarklist(authenticationUtil.getCurrentMember(), pageable).map(m-> MyBookmarkResponseDto.builder().id(m.getId()).article_title(m.getArticle().getTitle()).build());
-        return MyBookmarkResultDto.builder().first(bymyBookmarklist.isFirst()).last(bymyBookmarklist.isLast()).hasResult(bymyBookmarklist.hasContent()).previous(bymyBookmarklist.hasPrevious()).next(bymyBookmarklist.hasNext()).content(bymyBookmarklist.getContent()).number(bymyBookmarklist.getNumber()).totalPages(bymyBookmarklist.getTotalPages()).build();
+        return MyBookmarkResultDto.createMyBookmarkResultDto(bymyBookmarklist);
     }
 
     @Transactional
@@ -455,14 +441,18 @@ public class ArticleService {
             return "즐겨 찾기 완료했습니다.";
         }
         else if (articleOptional.isPresent() && byId.isPresent() && type.equals("delete")) {
-            bookmarkRepository.deleteById(articleOptional.get().getId());
+            Optional<Bookmark> bookmarkOptional = bookmarkRepository.findByarticle(articleOptional.get());
+                    if(bookmarkOptional.isPresent())
+                    {
+                        bookmarkRepository.delete(bookmarkOptional.get());
+                    }
             return "즐겨 찾기 삭제 완료했습니다.";
         }
         else {
             return "올바른 데이터 접근이 아닙니다.";
         }
     }
-
+    @Transactional(readOnly = true)
     public Boolean checkBookmark(Long articleId) {
         return bookmarkRepository.findByMemberAndArticle(authenticationUtil.getCurrentMember().getId(),articleId).isPresent();
     }

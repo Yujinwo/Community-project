@@ -228,13 +228,10 @@
                  }
                  // 예 버튼을 누를시 글 삭제
                  function articleDeleteYes(articleId) {
-                     var obj = {};
-                     obj.id = articleId
                      $.ajax({
                         　　type:'delete'
                         　　, contentType:'application/json'
-                        　　, data: JSON.stringify(obj)
-                        　　, url: '/api/article/delete/' + obj.id
+                        　　, url: '/api/article/delete/' + articleId
                         　　, success: function(data) {
                                 modal.hide();
                                  location.href='/';
@@ -271,17 +268,12 @@
                 }
                 // 댓글 삭제
                 function deleteComment(commentId) {
-
-                   var obj = {};
-                   obj.id = commentId;
-
                    $.ajax({
                         　　type:'delete'
                         　　, contentType:'application/json'
-                        　　, data: JSON.stringify(obj)
-                        　　, url: '/api/comment/delete'
+                        　　, url: '/api/comment/delete/' + commentId
                         　　, success: function(data) {
-                                 window.location.href = '/article/detail/' + [[${article.id}]];
+                                 window.location.href = '/article/detail/' + articleId;
                         　　}
                            , error:function(e) {
                                  console.log(e);
@@ -306,14 +298,13 @@
                      obj.boardid = articleId
                      obj.parentid = parentid;
 
-
                      $.ajax({
                             　　type:'post'
                             　　, contentType:'application/json'
                             　　, data: JSON.stringify(obj)
                             　　, url: '/api/reply/write'
                             　　, success: function(data) {
-                                    window.location.href = '/article/detail/' + [[${article.id}]];
+                                    window.location.href = '/article/detail/' + articleId;
                             　　}
                                , error:function(e) {
                                  var jsonResponse = JSON.parse(e.responseText);

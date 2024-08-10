@@ -49,7 +49,7 @@ public class NoteService {
         if(member != null)
         {
             Page<NoteResponseDto> notelists = noteRespository.findByNote(member,pageable).map(Note::changeNoteDto);
-            return NoteResultDto.builder().first(notelists.isFirst()).last(notelists.isLast()).hasResult(notelists.hasContent()).previous(notelists.hasPrevious()).next(notelists.hasNext()).content(notelists.getContent()).number(notelists.getNumber()).totalPages(notelists.getTotalPages()).build();
+            return NoteResultDto.createNoteResultDto(notelists);
         }
         else {
             return null;

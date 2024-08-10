@@ -14,9 +14,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotificationResultDto {
-
-    private Long count;
     private List<NotificationResponseDto> content;
+    private Long count;
     private Boolean last;
     private int number;
+    public static NotificationResultDto createNotificationResultDto(Page<NotificationResponseDto> notificationList) {
+        return NotificationResultDto.builder().count(notificationList.getTotalElements()).last(notificationList.isLast()).number(notificationList.getNumber()).content(notificationList.getContent()).build();
+    }
 }

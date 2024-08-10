@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -23,5 +24,8 @@ public class NoteResultDto {
     private Boolean previous;
     private Boolean next;
     private int number;
+    public static NoteResultDto createNoteResultDto(Page<NoteResponseDto> notelists) {
+        return NoteResultDto.builder().first(notelists.isFirst()).last(notelists.isLast()).hasResult(notelists.hasContent()).previous(notelists.hasPrevious()).next(notelists.hasNext()).content(notelists.getContent()).number(notelists.getNumber()).totalPages(notelists.getTotalPages()).build();
+    }
 
 }

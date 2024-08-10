@@ -119,10 +119,10 @@ public class ArticleRestController {
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
     // 댓글 삭제 기능
-    @DeleteMapping("/api/comment/delete")
-    public ResponseEntity<Map<String,String>> commentdelete(@Valid @RequestBody CommentRequestDto commentRequestDto) {
+    @DeleteMapping("/api/comment/delete/{id}")
+    public ResponseEntity<Map<String,String>> commentdelete(@PathVariable Long id) {
         // 댓글 삭제 서비스 메서드에 요청 Dto 전달
-        articleService.commentdelete(commentRequestDto);
+        articleService.commentdelete(id);
         // json 메세지 생성
         Map<String,String> responseJson = new HashMap<>();
         responseJson.put("message" , "댓글 삭제 완료했습니다");
