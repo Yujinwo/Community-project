@@ -415,14 +415,14 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public MyArticleResultDto findMyArticleList(Pageable pageable, Member user) {
-        Page<MyArticleResponseDto> bymyArticlelist = articleRepository.findBymyArticlelist(user, pageable).map(m-> m.changeMyArticleResponseDto());
+    public MyArticleResultDto findMyArticleList(Pageable pageable) {
+        Page<MyArticleResponseDto> bymyArticlelist = articleRepository.findBymyArticlelist(authenticationUtil.getCurrentMember(), pageable).map(m-> m.changeMyArticleResponseDto());
         return MyArticleResultDto.createMyArticleResultDto(bymyArticlelist);
 
     }
     @Transactional(readOnly = true)
-    public MyCommentResultDto findMyCommentList(Pageable pageable,Member user) {
-        Page<MyCommentResponseDto> bymyCommentlist = articleRepository.findBymyCommentlist(user, pageable).map(m-> m.changeMyCommentResponseDto());
+    public MyCommentResultDto findMyCommentList(Pageable pageable) {
+        Page<MyCommentResponseDto> bymyCommentlist = articleRepository.findBymyCommentlist(authenticationUtil.getCurrentMember(), pageable).map(m-> m.changeMyCommentResponseDto());
         return MyCommentResultDto.createMyCommentResultDto(bymyCommentlist);
     }
     @Transactional(readOnly = true)

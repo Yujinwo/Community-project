@@ -30,14 +30,12 @@ public class MypageController {
     @GetMapping("/mypage")
     public String mypage(@RequestParam(name = "userid",defaultValue = "0") Long userid,@RequestParam(name = "type",required = true,defaultValue = "article_list") String type,Model model,Pageable pageable) {
 
-        Member optionalUser = memberRepository.findById(userid).orElse(authenticationUtil.getCurrentMember());
-        model.addAttribute("user",optionalUser);
+        model.addAttribute("user",authenticationUtil.getCurrentMember());
 
         if(type.equals("article_list"))
         {
-            Member optionalArticleUser = memberRepository.findById(userid).orElse(authenticationUtil.getCurrentMember());
             // 글 댓글 불러오기
-            MyArticleResultDto articles = articleService.findMyArticleList(pageable,optionalArticleUser);
+            MyArticleResultDto articles = articleService.findMyArticleList(pageable);
             int startPage = Math.max(1, articles.getNumber() - 3);
             int endPage = Math.min(articles.getNumber()+4, articles.getTotalPages());
 
@@ -49,9 +47,8 @@ public class MypageController {
             return "mypagearticle";
         }
         else if(type.equals("comment_list")) {
-            Member optionalCommentUser = memberRepository.findById(userid).orElse(authenticationUtil.getCurrentMember());
             // 댓글 댓글 불러오기
-            MyCommentResultDto comments = articleService.findMyCommentList(pageable,optionalCommentUser);
+            MyCommentResultDto comments = articleService.findMyCommentList(pageable);
             int startPage = Math.max(1, comments.getNumber() - 3);
             int endPage = Math.min(comments.getNumber()+4, comments.getTotalPages());
 

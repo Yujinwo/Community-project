@@ -49,14 +49,11 @@ public class NoteController {
 
     @GetMapping("/note")
     public String findNoteList(Pageable pageable, Model model) {
-        Optional<Member> byId = memberRepository.findById(authenticationUtil.getCurrentMember().getId());
-        if(byId.isPresent()) {
-           model.addAttribute("member",byId.get());
-        }
         NoteResultDto notelists = noteService.findNotes(pageable);
         int startPage = Math.max(1, notelists.getNumber() - 3);
         int endPage = Math.min(notelists.getNumber()+4, notelists.getTotalPages());
         model.addAttribute("notelists",notelists.getContent());
+        model.addAttribute("member",authenticationUtil.getCurrentMember());
         model.addAttribute("pageable",notelists);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);

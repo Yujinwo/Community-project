@@ -62,7 +62,7 @@ public class ArticleResponseDto {
         this.viewcount = article.getViewcount();
         // 이미지 파일이 Null 아닐 시 url 리스트 생성
         List<BoardImage> boardImages = article.getBoardImages();
-        if (!boardImages.isEmpty()) {
+        if (boardImages.size() != 0) {
             this.imageUrls = boardImages.stream()
                     .map(BoardImage::getUrl)
                     .collect(Collectors.toList());
@@ -70,7 +70,7 @@ public class ArticleResponseDto {
             this.imageUrls = Collections.emptyList();
         }
         List<Tag> tags = article.getTags();
-        if(!tags.isEmpty()) {
+        if(tags.size() != 0) {
             this.tagConents = tags.stream().map(tag -> tag.getContent()).collect(Collectors.toList());
         }
         else {
