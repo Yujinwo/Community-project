@@ -72,6 +72,7 @@ public class SecurityConfig{
                 // csrf 토큰 비활성화
                 .csrf((csrfConfig) ->
                         csrfConfig.disable()
+
                 )
                 .exceptionHandling((exceptionConfig) ->
                         exceptionConfig.authenticationEntryPoint(myAuthenticationEntryPoint).accessDeniedHandler(myAccessDeniedHandler)
@@ -91,7 +92,13 @@ public class SecurityConfig{
                                 .requestMatchers("/","/article/detail/*","/articles/search","/api/userid/check","/api/usernick/check","/api/session/check","/authentication-fail","/authorization-fail").permitAll()
                                 .anyRequest().hasRole("USER")
                 )
-                .logout((logout) -> logout.logoutSuccessUrl("/login"))
+                .logout((logout) ->
+                        logout.logoutSuccessUrl("/login")
+                                .invalidateHttpSession(false)
+
+
+
+                )
                 // form 로그인 설정
                 .formLogin((formLogin) ->
                         formLogin.loginPage("/login")

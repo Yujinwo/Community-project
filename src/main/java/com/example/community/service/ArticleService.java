@@ -427,7 +427,7 @@ public class ArticleService {
     }
     @Transactional(readOnly = true)
     public MyBookmarkResultDto findMyBookmarkList(Pageable pageable) {
-        Page<MyBookmarkResponseDto> bymyBookmarklist = bookmarkRepository.findBymyBookmarklist(authenticationUtil.getCurrentMember(), pageable).map(m-> MyBookmarkResponseDto.builder().id(m.getId()).article_title(m.getArticle().getTitle()).build());
+        Page<MyBookmarkResponseDto> bymyBookmarklist = bookmarkRepository.findBymyBookmarklist(authenticationUtil.getCurrentMember(), pageable).map(m-> MyBookmarkResponseDto.builder().bookmark_id(m.getId()).article_id(m.getArticle().getId()).article_title(m.getArticle().getTitle()).build());
         return MyBookmarkResultDto.createMyBookmarkResultDto(bymyBookmarklist);
     }
 

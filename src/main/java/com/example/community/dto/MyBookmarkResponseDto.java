@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 public class MyBookmarkResponseDto {
-    private Long id;
+    private Long bookmark_id;
+    private Long article_id;
     private String article_title;
 }

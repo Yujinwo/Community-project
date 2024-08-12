@@ -36,17 +36,30 @@
              <ul th:each="item : ${bookmark}">
                  <li style="  margin:0 auto;
                         width:700px;
-                        padding: 20px;
+                        height:50px;
                         border:1px solid #e3e3e3;
                         border-radius:10px;
-                        margin-top:15px;">
-                     <div style="display:flex;">
-                         <span style="border-radius:2px; border:1px solid blue" th:text="${item.id}">
+                        margin-top:15px;
+                        margin-bottom:15px;">
+                     <div style="display:flex; height:100%; align-items: center;">
+                         <div style="
+                        border-right: 1px solid black;
+                        width: 50px;
+                        margin: 0 auto;
+                        height: 100%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }">
+                                <span style="border-radius:20px; border:1px solid blue" th:text="${item.bookmark_id}"/>
+                         </div>
+
+
                          </span>
                          <div style="
                          margin:0 auto;
                          width:600px" >
-                             <a th:href="@{/article/detail/{id}(id=${item.id})}" th:text="${item.article_title}">
+                             <a th:href="@{/article/detail/{id}(id=${item.article_id})}" th:text="${item.article_title}">
                              </a>
                          </div>
                      </div>
