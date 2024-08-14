@@ -69,21 +69,6 @@ public class MemberService {
 
 
     }
-    @Transactional(readOnly = true)
-    // 회원 조회
-    public Member findByEmail(String email) {
-        // 이메일을 이용해서 회원을 조회한다
-        Optional<Member> member = memberRepository.findByEmail(email);
-        // 회원이 존재할 경우
-        if(member.isPresent()){
-            // Member Entity를 return 한다
-            return member.get();
-        }
-        else{
-            return null;
-        }
-
-    }
     @Transactional
     public ResponseEntity<Map<String, String>> updateUser(updateMemberDto requestDto) {
         Member user = authenticationUtil.getCurrentMember();
