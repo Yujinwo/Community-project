@@ -239,7 +239,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         }
     }
     private BooleanExpression tagcontentCt(String query,Boolean tagsearch){
-        return tagsearch ?  tag.content.containsIgnoreCase(query) : null;
+        return tagsearch ?  tag.content.eq(query) : null;
     }
     private BooleanExpression articleIdGt(Long lastId) {
         return lastId != null ? article.id.gt(lastId) : null;
