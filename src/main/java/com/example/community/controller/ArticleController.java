@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.awt.print.Book;
 
 @Controller
-@Slf4j
 @RequiredArgsConstructor
 public class ArticleController {
 
@@ -44,7 +43,7 @@ public class ArticleController {
         model.addAttribute("article",page.getContent());
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-        return "index";
+        return "home";
     }
 
 
@@ -61,12 +60,12 @@ public class ArticleController {
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
 
-        return "searchindex";
+        return "article_search";
     }
     // 글 작성 페이지
     @GetMapping("/article/write")
     public String write() {
-        return "write";
+        return "article_write";
     }
 
 
@@ -96,7 +95,7 @@ public class ArticleController {
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
 
-        return "detail";
+        return "article_detail";
     }
 
 
@@ -110,6 +109,6 @@ public class ArticleController {
         ArticleResponseDto articleResponseDto = ArticleResponseDto.builder().article(article).build();
         // 뷰에 데이터 전달
         model.addAttribute("article",articleResponseDto);
-        return "update";
+        return "article_update";
     }
 }

@@ -22,7 +22,6 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class NoteService {
 
     private final AuthenticationUtil authenticationUtil;
@@ -35,7 +34,7 @@ public class NoteService {
             Member member = authenticationUtil.getCurrentMember();
             if(member != null)
             {
-                Note saveNote = Note.builder().receiver(byemail).writer(member).message(message).read(false).build();
+                Note saveNote = Note.builder().receiver(byemail).writer(member).message(message).build();
                 Note SavedNote = noteRespository.save(saveNote);
                 return SavedNote;
             }

@@ -1,10 +1,13 @@
 package com.example.community.dto;
 
 
+
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+
+@Getter
 @NoArgsConstructor
 public class updateMemberDto {
     private String usernick;

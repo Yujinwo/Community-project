@@ -1,18 +1,15 @@
 package com.example.community.dto;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-@Data
-@AllArgsConstructor
+@Getter
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class MyBookmarkResultDto {
     private List<MyBookmarkResponseDto> content;
     private int totalPages;

@@ -34,7 +34,7 @@ public class MemberController {
         // 로그인 실패 시 에러 메세지를 뷰에 전달
     model.addAttribute("error",error);
     model.addAttribute("exception",exception);
-    return "login";
+    return "user_login";
     }
 
     @GetMapping("/authentication-fail")
@@ -63,7 +63,7 @@ public class MemberController {
     // 회원가입 페이지
     @GetMapping("/join")
     public String join() {
-        return "join";
+        return "user_join";
 
     }
 

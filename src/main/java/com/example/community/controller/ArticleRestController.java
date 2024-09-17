@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@Slf4j
 public class ArticleRestController {
 
     private final ArticleService articleService;
@@ -57,6 +56,7 @@ public class ArticleRestController {
     {
         // 글 삭제 서비스 메서드에 요청 Dto 전달
         articleService.delete(id);
+
         // json 메세지 생성
         Map<String,String> responseJson = new HashMap<>();
         responseJson.put("message" , "글 삭제 완료했습니다");
@@ -65,7 +65,7 @@ public class ArticleRestController {
 
 
     // 즐겨찾기 기능
-    @PostMapping("/api/article/bookmark")
+    @PostMapping("/api/bookmark/update")
     public ResponseEntity<Map<String,String>> bookmark(@RequestBody BookmarkRequestDto bookmarkRequestDto)
     {
 

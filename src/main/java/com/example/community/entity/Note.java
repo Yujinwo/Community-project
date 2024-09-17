@@ -15,7 +15,8 @@ import java.time.format.DateTimeFormatter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class Note extends BaseTime {
 
     @Id @GeneratedValue
@@ -31,7 +32,6 @@ public class Note extends BaseTime {
     private Member writer;
 
     private String message;
-    private boolean read;
 
     public NoteResponseDto changeNoteDto() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");

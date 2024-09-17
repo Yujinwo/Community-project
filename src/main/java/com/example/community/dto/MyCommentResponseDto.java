@@ -1,10 +1,11 @@
 package com.example.community.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MyCommentResponseDto {
    private Long article_id;
    private String article_title;

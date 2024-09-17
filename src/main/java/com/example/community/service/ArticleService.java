@@ -24,7 +24,6 @@ import java.util.Optional;
 
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class ArticleService {
 
@@ -139,12 +138,6 @@ public class ArticleService {
         // 요청한 제목으로 글 Entity 정보를 수정한다
         article.changeTitleandContent(articleRequestDto.getTitle(),articleRequestDto.getContent());
         em.flush();
-        // 수정된 article Entity로 글을 수정한다.
-        // Article updatedArticle = articleRepository.save(article);
-        // 수정된 article Entity가 null일시 예외 상황 발생
-//        if (updatedArticle == null) {
-//            throw new RuntimeException("게시글 수정에 실패했습니다.");
-//        }
         // 글 이미지가 없었는데 첨부가 되었으면
         if (articleRequestDto.getImageUrls().isEmpty() && files != null){
             // 이미지가 첨부 되었으면
@@ -230,7 +223,7 @@ public class ArticleService {
             }
         }
         // 태그 리스트가 없을 시 저장했던 태그 모두 삭제
-        if(articleRequestDto.getTags().isEmpty()) {
+        if(articleRequestDto.getTags().isEmpty() ) {
             Iterable<Long> iterable = new ArrayList<>();
 
             Optional<Article> articleOptional = articleRepository.findById(articleRequestDto.getId());

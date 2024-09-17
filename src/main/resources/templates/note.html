@@ -61,7 +61,7 @@
                     white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;">
-                     <a href="javascript:;" th:onclick="'receivemessage(' + ${item.id} + ')'" th:text="${item.message}" >  </a>
+                     <a href="javascript:;" th:onclick="'receivenote(' + ${item.id} + ')'" th:text="${item.message}" >  </a>
                     </td>
                     <td th:text="${item.createdDate}"></td>
 
@@ -107,7 +107,7 @@
                                         　　, data: JSON.stringify({
                                                 block_type : 'temporary'
                                             })
-                                        　　, url: '/api/NoteBlock/update'
+                                        　　, url: '/api/noteblock/update'
                                         　　, success: function(data) {
                                               alert(data);
                                         　　}
@@ -126,7 +126,7 @@
                                         　　, data: JSON.stringify({
                                                 block_type : 'permanent'
                                             })
-                                        　　, url: '/api/NoteBlock/update'
+                                        　　, url: '/api/noteblock/update'
                                         　　, success: function(data) {
                                             alert(data);
                                         　　}
@@ -144,7 +144,7 @@
                                         　　, data: JSON.stringify({
                                                 block_type : 'remove_permanent'
                                             })
-                                        　　, url: '/api/NoteBlock/update'
+                                        　　, url: '/api/noteblock/update'
                                         　　, success: function(data) {
                                             alert(data);
                                         　　}
@@ -164,8 +164,8 @@
         });
 
 
-        function receivemessage(id) {
-             window.open('/receivemessage/' + id, '쪽지', 'width=400,height=420');
+        function receivenote(id) {
+             window.open('/receivenote/' + id, '쪽지', 'width=400,height=420');
         }
 
 

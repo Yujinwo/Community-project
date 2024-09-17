@@ -11,9 +11,10 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
-@AllArgsConstructor
+@Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CommentResponseDto {
     @NotNull
     private Long id;

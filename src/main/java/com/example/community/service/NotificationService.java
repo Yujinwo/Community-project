@@ -88,7 +88,7 @@ public class NotificationService {
                                         .writer(writer)
                                         .article(article)
                                         .message(message)
-                                        .read(read).build();
+                                        .build();
         Notification savedNotification = notificationRepository.save(notification);
         return savedNotification;
 

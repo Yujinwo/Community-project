@@ -9,10 +9,10 @@ import lombok.*;
 
 import java.util.List;
 
-@Data
-@AllArgsConstructor
+@Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
+@AllArgsConstructor
 public class CommentRequestDto {
 
     @Size(min = 1,max = 280,message = "댓글은 1~280자 이내로 작성해주세요")

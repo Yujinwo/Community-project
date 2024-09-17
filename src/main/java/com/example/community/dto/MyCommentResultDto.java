@@ -1,13 +1,14 @@
 package com.example.community.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-@Data
+@Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MyCommentResultDto {
    private List<MyCommentResponseDto> content;
    private int totalPages;

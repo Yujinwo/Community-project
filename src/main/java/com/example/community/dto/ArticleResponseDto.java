@@ -12,9 +12,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
+
+@Getter
 @NoArgsConstructor
-@Slf4j
 public class ArticleResponseDto {
 
     @NotNull
@@ -78,13 +78,6 @@ public class ArticleResponseDto {
         }
         this.comments = article.getComments();
         this.commentcount = article.getCommentcount();
-    }
-
-    public ArticleResponseDto toDto(Article article) {
-
-        return ArticleResponseDto.builder()
-                .article(article)
-                .build();
     }
 
 

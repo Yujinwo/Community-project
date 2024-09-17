@@ -7,6 +7,7 @@ import com.example.community.dto.NoteResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
+import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -15,7 +16,8 @@ import java.util.List;
 @Table(name = "article",indexes = {
         @Index(name = "idx_title_content", columnList = "title, content")
 })
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(callSuper=true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -48,6 +50,9 @@ public class Article extends BaseTime{
     @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE)
     @OrderBy("id asc")
     private List<Comment> comments;
+
+    @OneToMany(mappedBy = "article",orphanRemoval = true,cascade = CascadeType.REMOVE)
+    private List<Bookmark> bookmarks;
 
     @BatchSize(size = 10)
     @OneToMany(mappedBy = "article",orphanRemoval = true,cascade = CascadeType.ALL)

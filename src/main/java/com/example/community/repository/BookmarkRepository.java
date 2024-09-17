@@ -19,4 +19,5 @@ public interface BookmarkRepository extends JpaRepository<Bookmark,Long>, UserRe
     Optional<Bookmark> findByMemberAndArticle(@Param("memberId") Long memberId, @Param("articleId") Long articleId);
 
     Optional<Bookmark> findByarticle(Article article);
+
 }

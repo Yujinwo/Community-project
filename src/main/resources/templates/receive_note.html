@@ -1,4 +1,4 @@
-<!-- sendmessage.html -->
+<!-- send_note.html -->
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
@@ -17,36 +17,31 @@
 </head>
 <body>
 <div id="message-container">
-    <h3 style="position:relative; text-align:center; border-bottom:1px solid black">쪽지 보내기</h3>
+    <h3 style="position:relative; text-align:center; border-bottom:1px solid black">쪽지</h3>
     <form id="message-form">
         <div style="padding:0 35px;">
-            <label for="recipient" class="form-label">받는 사람</label>
-            <input  th:value="${email}" class="form-control" type="text" id="recipient" name="recipient" required style="width:242px;
+            <label for="recipient" class="form-label">보낸 사람</label>
+            <input  th:value="${note.writer.email}" class="form-control" type="text" id="recipient" name="recipient" required readonly style="width:242px;
             border-color: #3889bf;
             border: 1px solid #b8b8b8;
              border-radius: 3px;"><br><br>
             <label for="message" class="form-label" >메시지</label><br>
-            <textarea  class="form-control" id="message" name="message" required style="width:320px; height:160px;
+            <textarea  th:text="${note.message}" class="form-control" id="message" name="message" required readonly style="width:320px; height:160px;
             border-color: #3889bf;
             border: 1px solid #b8b8b8;
             margin-top:10px;
              border-radius: 3px;"></textarea><br><br>
         </div>
-        <button type="submit" id="sendbutton" style="position:relative; left:160px; bottom:20px; width:70px;
-        color: #fff;
-        background-color: #4aa6e3;
-        border-color: #3889bf;
-        border: 1px solid #b8b8b8;
-        border-radius: 3px;">보내기</button>
     </form>
+
 </div>
 
 <script th:inline="javascript">
-   $('#message-form').submit(function(event) {
-                              event.preventDefault();
-                              const recipient = $('#recipient').val();
-                              const message = $('#message').val();
-                              $.ajax({
+      $('#message-form').submit(function(event) {
+      event.preventDefault();
+      const recipient = $('#recipient').value;
+      const message = $('#message').value;
+      $.ajax({
                                 　　type:'post'
                                 　　, contentType:'application/json'
                                 　　, data: JSON.stringify({

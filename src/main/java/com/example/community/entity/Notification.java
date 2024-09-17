@@ -31,8 +31,6 @@ public class Notification extends BaseTime {
 
     private String message;
 
-    private boolean read;
-
     public NotificationResponseDto changeNotificationDto() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String createdFormatDate = createdDate.format(formatter);

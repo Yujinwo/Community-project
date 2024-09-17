@@ -1,15 +1,12 @@
 package com.example.community.dto;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
-@AllArgsConstructor
+@Getter
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class MyBookmarkResponseDto {
     private Long bookmark_id;
     private Long article_id;

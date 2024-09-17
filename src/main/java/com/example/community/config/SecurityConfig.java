@@ -35,7 +35,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
-@Slf4j
 @EnableWebSecurity
 @RequiredArgsConstructor
 @Component

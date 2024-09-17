@@ -44,7 +44,7 @@ public class MypageController {
             model.addAttribute("pageable",articles);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
-            return "mypagearticle";
+            return "mypage_article";
         }
         else if(type.equals("comment_list")) {
             // 댓글 댓글 불러오기
@@ -57,7 +57,7 @@ public class MypageController {
             model.addAttribute("pageable",comments);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
-            return "mypagecomment";
+            return "mypage_comment";
         }
         else if(type.equals("bookmark_list")){
             // 글 댓글 불러오기
@@ -70,13 +70,13 @@ public class MypageController {
             model.addAttribute("pageable",bookmarks);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
-            return "mypagebookmark";
+            return "mypage_bookmark";
         }
         else if(type.equals("edit_profile")){
-            return "mypageedit";
+            return "mypage_edit";
         }
         else {
-            return "mypagearticle";
+            return "mypage_article";
         }
     }
 

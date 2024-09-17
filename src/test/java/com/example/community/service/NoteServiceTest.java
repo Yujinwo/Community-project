@@ -43,7 +43,7 @@ class NoteServiceTest {
         memberRepository.save(writer);
         memberRepository.save(receiver);
 
-        Note saveNote = Note.builder().receiver(receiver).writer(writer).message("안녕하세요").read(false).build();
+        Note saveNote = Note.builder().receiver(receiver).writer(writer).message("안녕하세요").build();
         //when
         Note SavedNote = noteRespository.save(saveNote);
 
@@ -59,7 +59,7 @@ class NoteServiceTest {
         Member receiver = Member.builder().email("dbwlsdn0124").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("받는자").role(Role.USER).noteblockd(false).build();
         memberRepository.save(writer);
         memberRepository.save(receiver);
-        Note saveNote = Note.builder().receiver(receiver).writer(writer).message("안녕하세요").read(false).build();
+        Note saveNote = Note.builder().receiver(receiver).writer(writer).message("안녕하세요").build();
         Note SavedNote = noteRespository.save(saveNote);
         em.flush();
         em.clear();

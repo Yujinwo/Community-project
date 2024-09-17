@@ -13,9 +13,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
+@Getter
 @NoArgsConstructor
-@Slf4j
 public class ArticleindexResponseDto {
 
     @NotNull

@@ -184,7 +184,7 @@
                                 　　type:'post'
                                 　　, contentType:'application/json'
                                    , data:JSON.stringify(obj)
-                                　　, url: '/api/article/bookmark'
+                                　　, url: '/api/bookmark/update'
                                 　　, success: function(data) {
                                 　　}
                                    , error:function(e) {
@@ -201,7 +201,7 @@
                                 　　type:'post'
                                 　　, contentType:'application/json'
                                    , data:JSON.stringify(obj)
-                                　　, url: '/api/article/bookmark'
+                                　　, url: '/api/bookmark/update'
                                 　　, success: function(data) {
                                 　　}
                                    , error:function(e) {
@@ -224,7 +224,7 @@
                        }
                      });
                              $('#open-message-btn').click(function() {
-                          window.open('/message?id=' + [[${article.member.email}]], '쪽지 보내기', 'width=400,height=420');
+                          window.open('/sendnote?id=' + [[${article.member.email}]], '쪽지 보내기', 'width=400,height=420');
                      });
                    });
 

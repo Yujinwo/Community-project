@@ -10,7 +10,8 @@ import org.hibernate.annotations.BatchSize;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

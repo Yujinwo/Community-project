@@ -24,7 +24,6 @@ import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
-@Slf4j
 public class NoteController {
 
     private final NoteService noteService;
@@ -32,19 +31,19 @@ public class NoteController {
     private final MemberRepository memberRepository;
     private final AuthenticationUtil authenticationUtil;
 
-    @GetMapping("/message")
+    @GetMapping("/sendnote")
     public String sendMessageWindow(@RequestParam("id") String email, Model model) {
         model.addAttribute("email",email);
-        return "sendmessage";
+        return "send_note";
     }
-    @GetMapping("/receivemessage/{id}")
+    @GetMapping("/receivenote/{id}")
     public String receiveMessageWindow(@PathVariable("id") Long id, String email, Model model) {
         Optional<Note> savednote = noteRespository.findById(id);
 
         if(savednote.isPresent()){
             model.addAttribute("note",savednote.get());
         }
-        return "receivemessage";
+        return "receive_note";
     }
 
     @GetMapping("/note")
