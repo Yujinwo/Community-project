@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:inline="http://www.w3.org/1999/xhtml" layout:decorate="layout/default_layout">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <th:block layout:fragment="content">
     <!-- 수정 form -->
     <div class="form_middle">
@@ -39,6 +41,8 @@
 
     <script th:inline="javascript">
         var tags = [[${article.tagConents}]];
+        const token = $("meta[name='_csrf']").attr("content")
+        const header = $("meta[name='_csrf_header']").attr("content");
         tags.forEach(tag => setTag(tag));
 
         function setTag(tag) {
@@ -195,6 +199,9 @@
                          location.href='/article/detail/' + obj.id;
                      }
              　 　}
+                  , beforeSend : function(xhr) {
+                                      xhr.setRequestHeader(header, token);
+                  }
                   , error:function(e) {
 
                      // 제목 에러 메시지 설정

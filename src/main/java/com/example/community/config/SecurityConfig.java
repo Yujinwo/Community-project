@@ -26,6 +26,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
@@ -62,17 +64,18 @@ public class SecurityConfig{
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationConfiguration authConfig) throws Exception{
-        // RequestParame 매개변수 설정 Null
+        // 요청을 세션에 저장
         HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+        // 특정 요청 파라미터 조건 Null
         requestCache.setMatchingRequestParameterName(null);
 
         http
 
                 // csrf 토큰 비활성화
                 .csrf((csrfConfig) ->
-                        csrfConfig.disable()
-
+                        csrfConfig.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 )
+
                 .exceptionHandling((exceptionConfig) ->
                         exceptionConfig.authenticationEntryPoint(myAuthenticationEntryPoint).accessDeniedHandler(myAccessDeniedHandler)
                 )
@@ -92,10 +95,9 @@ public class SecurityConfig{
                                 .anyRequest().hasRole("USER")
                 )
                 .logout((logout) ->
-                        logout.logoutSuccessUrl("/login")
+                          logout.logoutUrl("/logout")
+                                .logoutSuccessUrl("/login")
                                 .invalidateHttpSession(false)
-
-
 
                 )
                 // form 로그인 설정
@@ -119,7 +121,10 @@ public class SecurityConfig{
                         )
                                 .loginPage("/login")
 
-                );
+                )
+                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
+
+
 
 
         return http.build();

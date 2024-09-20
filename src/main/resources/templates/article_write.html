@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/default_layout">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <th:block layout:fragment="content">
     <!-- 작성 form -->
     <div class="form_middle">
@@ -27,6 +29,8 @@
     </div>
   <script th:inline="javascript">
       $(document).ready(function() {
+        const token = $("meta[name='_csrf']").attr("content")
+        const header = $("meta[name='_csrf_header']").attr("content");
 
                const $tagInput = $("#tag-input");
                const $tagList = $("#tag-list");
@@ -127,6 +131,9 @@
                 　 　, success: function(data) {
                         location.href='/';
                 　 　}
+                    , beforeSend : function(xhr) {
+                                xhr.setRequestHeader(header, token);
+                    }
                     , error:function(e) {
                         // 제목 에러 메시지 설정
                         var jsonResponse = JSON.parse(e.responseText);

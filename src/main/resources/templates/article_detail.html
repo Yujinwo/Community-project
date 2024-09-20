@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.w3.org/1999/xhtml" layout:decorate="layout/default_layout">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <th:block layout:fragment="content">
     <!-- 삭제 확인 창-->
     <div class="modal">
@@ -170,6 +172,8 @@
     <script th:inline="javascript">
                  const modal = $(document).find('.modal');
                  const articleId = [[${article.id}]];
+                 const token = $("meta[name='_csrf']").attr("content")
+                 const header = $("meta[name='_csrf_header']").attr("content");
 
                    $(document).ready(function() {
 
@@ -187,6 +191,9 @@
                                 　　, url: '/api/bookmark/update'
                                 　　, success: function(data) {
                                 　　}
+                                   , beforeSend : function(xhr) {
+                                      xhr.setRequestHeader(header, token);
+                                   }
                                    , error:function(e) {
                                         console.log(e);
                                 　　}
@@ -204,6 +211,9 @@
                                 　　, url: '/api/bookmark/update'
                                 　　, success: function(data) {
                                 　　}
+                                    , beforeSend : function(xhr) {
+                                      xhr.setRequestHeader(header, token);
+                                   }
                                    , error:function(e) {
                                         console.log(e);
                                 　　}
@@ -242,6 +252,9 @@
                                 modal.hide();
                                  location.href='/';
                         　　}
+                           , beforeSend : function(xhr) {
+                                      xhr.setRequestHeader(header, token);
+                           }
                            , error:function(e) {
                                 console.log(e);
                         　　}
@@ -264,6 +277,9 @@
                                 　　, success: function(data) {
                                         window.location.href = '/article/detail/' + articleId;
                                 　　}
+                                   , beforeSend : function(xhr) {
+                                      xhr.setRequestHeader(header, token);
+                                   }
                                    , error:function(e) {
                                         var jsonResponse = JSON.parse(e.responseText);
                                         if (jsonResponse.hasOwnProperty('content')) {
@@ -281,6 +297,9 @@
                         　　, success: function(data) {
                                  window.location.href = '/article/detail/' + articleId;
                         　　}
+                           , beforeSend : function(xhr) {
+                                      xhr.setRequestHeader(header, token);
+                           }
                            , error:function(e) {
                                  console.log(e);
                         　　}
@@ -312,6 +331,9 @@
                             　　, success: function(data) {
                                     window.location.href = '/article/detail/' + articleId;
                             　　}
+                                , beforeSend : function(xhr) {
+                                      xhr.setRequestHeader(header, token);
+                                }
                                , error:function(e) {
                                  var jsonResponse = JSON.parse(e.responseText);
                                  if (jsonResponse.hasOwnProperty('content')) {

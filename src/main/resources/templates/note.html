@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns="http://www.w3.org/1999/html" layout:decorate="layout/default_layout">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <th:block layout:fragment="content">
 
     <div style="
@@ -94,6 +96,8 @@
     <script th:inline="javascript">
 
         $(document).ready(function() {
+            const token = $("meta[name='_csrf']").attr("content")
+            const header = $("meta[name='_csrf_header']").attr("content");
 
             $("#note_block_button").click(function() {
                      $("#Note_blockpage").show();
@@ -111,6 +115,9 @@
                                         　　, success: function(data) {
                                               alert(data);
                                         　　}
+                                            , beforeSend : function(xhr) {
+                                                xhr.setRequestHeader(header, token);
+                                            }
                                            , error:function(e) {
                                             alert(e.responseText);
                                         　　}
@@ -130,6 +137,9 @@
                                         　　, success: function(data) {
                                             alert(data);
                                         　　}
+                                            , beforeSend : function(xhr) {
+                                                xhr.setRequestHeader(header, token);
+                                            }
                                            , error:function(e) {
                                             alert(e.responseText);
                                         　　}
@@ -148,6 +158,9 @@
                                         　　, success: function(data) {
                                             alert(data);
                                         　　}
+                                            , beforeSend : function(xhr) {
+                                                xhr.setRequestHeader(header, token);
+                                            }
                                            , error:function(e) {
                                             alert(e.responseText);
                                         　　}

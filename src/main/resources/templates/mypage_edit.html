@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns="http://www.w3.org/1999/html" layout:decorate="layout/default_layout">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <th:block layout:fragment="content">
      <div style="
                     margin:0 auto;
@@ -54,6 +56,8 @@
     <script inline="javascript">
         var nickcheckstate = "false";
         $(document).ready(function() {
+            const token = $("meta[name='_csrf']").attr("content")
+            const header = $("meta[name='_csrf_header']").attr("content");
             $('#nickcheck_button').click(function() {
             var checkdata = {
                       Usernick : $('#Usernick').val()
@@ -66,6 +70,9 @@
                          success:function(data){
                              alert(data);
                              nickcheckstate = "true";
+                         },
+                         beforeSend : function(xhr) {
+                                      xhr.setRequestHeader(header, token);
                          },
                          error: function(e) {
                              alert(e.responseText);
@@ -99,6 +106,9 @@
                          success:function(data){
                             alert(data.result);
                            window.location.href = '/';
+                         },
+                         beforeSend : function(xhr) {
+                                      xhr.setRequestHeader(header, token);
                          },
                          error: function(e) {
                              alert(e.responseJSON.result);

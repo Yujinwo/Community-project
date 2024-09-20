@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns="http://www.w3.org/1999/html" layout:decorate="layout/default_layout">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <th:block layout:fragment="content">
 
     <!-- 회원가입 form -->
@@ -33,6 +35,8 @@
     <script th:inline="javascript">
         var idcheckdstate = "false";
         var nickcheckdstate = "false";
+        const token = $("meta[name='_csrf']").attr("content")
+        const header = $("meta[name='_csrf_header']").attr("content");
         // ID 중복체크
         function idcheck() {
                 var checkdata = {
@@ -46,6 +50,9 @@
                          success:function(data){
                              alert(data);
                              idcheckdstate = "true";
+                         },
+                         beforeSend : function(xhr) {
+                                      xhr.setRequestHeader(header, token);
                          },
                          error: function(e) {
                              alert(e.responseText);
@@ -66,6 +73,9 @@
                          success:function(data){
                              alert(data);
                              nickcheckdstate = "true";
+                         },
+                         beforeSend : function(xhr) {
+                                      xhr.setRequestHeader(header, token);
                          },
                          error: function(e) {
                              alert(e.responseText);
@@ -102,6 +112,9 @@
                                 alert(data.result);
                                 location.href = '/login';
                             }
+                         },
+                         beforeSend : function(xhr) {
+                                      xhr.setRequestHeader(header, token);
                          },
                          error: function(e) {
                             // 이메일 에러 메시지 설정
