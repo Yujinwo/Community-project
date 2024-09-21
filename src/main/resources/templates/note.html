@@ -94,92 +94,92 @@
         </div>
     </div>
     <script th:inline="javascript">
-
+        const token = $("meta[name='_csrf']").attr("content")
+        const header = $("meta[name='_csrf_header']").attr("content");
         $(document).ready(function() {
-            const token = $("meta[name='_csrf']").attr("content")
-            const header = $("meta[name='_csrf_header']").attr("content");
 
-            $("#note_block_button").click(function() {
-                     $("#Note_blockpage").show();
+
+                $("#note_block_button").click(function() {
+                         $("#Note_blockpage").show();
+                });
+
+
+                $("#Temporary_Block").click(function() {
+                                               $.ajax({
+                                            　　type:'post'
+                                            　　, contentType:'application/json'
+                                            　　, data: JSON.stringify({
+                                                    block_type : 'temporary'
+                                                })
+                                            　　, url: '/api/noteblock/update'
+                                            　　, success: function(data) {
+                                                  alert(data);
+                                            　　}
+                                                , beforeSend : function(xhr) {
+                                                    xhr.setRequestHeader(header, token);
+                                                }
+                                               , error:function(e) {
+                                                alert(e.responseText);
+                                            　　}
+                                               });
+
+
+                  });
+                 if($("#Permanent_Block") != null) {
+                     $("#Permanent_Block").click(function() {
+                                             $.ajax({
+                                            　　type:'post'
+                                            　　, contentType:'application/json'
+                                            　　, data: JSON.stringify({
+                                                    block_type : 'permanent'
+                                                })
+                                            　　, url: '/api/noteblock/update'
+                                            　　, success: function(data) {
+                                                alert(data);
+                                            　　}
+                                                , beforeSend : function(xhr) {
+                                                    xhr.setRequestHeader(header, token);
+                                                }
+                                               , error:function(e) {
+                                                alert(e.responseText);
+                                            　　}
+                                               });
+                     });
+                  }
+                 if($("#Remove_Permanent_Block") != null) {
+                     $("#Remove_Permanent_Block").click(function() {
+                                             $.ajax({
+                                            　　type:'post'
+                                            　　, contentType:'application/json'
+                                            　　, data: JSON.stringify({
+                                                    block_type : 'remove_permanent'
+                                                })
+                                            　　, url: '/api/noteblock/update'
+                                            　　, success: function(data) {
+                                                alert(data);
+                                            　　}
+                                                , beforeSend : function(xhr) {
+                                                    xhr.setRequestHeader(header, token);
+                                                }
+                                               , error:function(e) {
+                                                alert(e.responseText);
+                                            　　}
+                                               });
+
+                     });
+                  }
+
+                  $(document).click(function(event) {
+                   if(!$("#Note_blockpage").has(event.target).length && !$("#note_block_button").is(event.target) ) {
+                      $("#Note_blockpage").hide();
+                   }
+               });
             });
 
 
-            $("#Temporary_Block").click(function() {
-                                           $.ajax({
-                                        　　type:'post'
-                                        　　, contentType:'application/json'
-                                        　　, data: JSON.stringify({
-                                                block_type : 'temporary'
-                                            })
-                                        　　, url: '/api/noteblock/update'
-                                        　　, success: function(data) {
-                                              alert(data);
-                                        　　}
-                                            , beforeSend : function(xhr) {
-                                                xhr.setRequestHeader(header, token);
-                                            }
-                                           , error:function(e) {
-                                            alert(e.responseText);
-                                        　　}
-                                           });
-
-
-              });
-             if($("#Permanent_Block") != null) {
-                 $("#Permanent_Block").click(function() {
-                                         $.ajax({
-                                        　　type:'post'
-                                        　　, contentType:'application/json'
-                                        　　, data: JSON.stringify({
-                                                block_type : 'permanent'
-                                            })
-                                        　　, url: '/api/noteblock/update'
-                                        　　, success: function(data) {
-                                            alert(data);
-                                        　　}
-                                            , beforeSend : function(xhr) {
-                                                xhr.setRequestHeader(header, token);
-                                            }
-                                           , error:function(e) {
-                                            alert(e.responseText);
-                                        　　}
-                                           });
-                 });
-              }
-             if($("#Remove_Permanent_Block") != null) {
-                 $("#Remove_Permanent_Block").click(function() {
-                                         $.ajax({
-                                        　　type:'post'
-                                        　　, contentType:'application/json'
-                                        　　, data: JSON.stringify({
-                                                block_type : 'remove_permanent'
-                                            })
-                                        　　, url: '/api/noteblock/update'
-                                        　　, success: function(data) {
-                                            alert(data);
-                                        　　}
-                                            , beforeSend : function(xhr) {
-                                                xhr.setRequestHeader(header, token);
-                                            }
-                                           , error:function(e) {
-                                            alert(e.responseText);
-                                        　　}
-                                           });
-
-                 });
-              }
-
-              $(document).click(function(event) {
-               if(!$("#Note_blockpage").has(event.target).length && !$("#note_block_button").is(event.target) ) {
-                  $("#Note_blockpage").hide();
-               }
-           });
-        });
-
-
-        function receivenote(id) {
-             window.open('/receivenote/' + id, '쪽지', 'width=400,height=420');
-        }
+            function receivenote(id) {
+                 window.open('/receivenote/' + id, '쪽지', 'width=400,height=420');
+            }
 
 
     </script>

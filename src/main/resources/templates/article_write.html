@@ -28,131 +28,132 @@
         </div>
     </div>
   <script th:inline="javascript">
+      const token = $("meta[name='_csrf']").attr("content")
+      const header = $("meta[name='_csrf_header']").attr("content");
       $(document).ready(function() {
-        const token = $("meta[name='_csrf']").attr("content")
-        const header = $("meta[name='_csrf_header']").attr("content");
 
-               const $tagInput = $("#tag-input");
-               const $tagList = $("#tag-list");
-               const maxTags = 10;
 
-               $tagInput.keypress(function(event) {
-                 if (event.key === 'Enter') {
-                   let duplicate = 0;
-                   event.preventDefault();
-                   const tagValue = $tagInput.val().trim();
-                   const tagCount = $tagList.children('li').length;
-                   if (tagCount < maxTags) {
-                         const $existingTags = $tagList.find('.tag-text');
-                         $existingTags.each(function() {
-                             if($(this).text() === "#" + tagValue){
-                                alert('같은 이름을 가진 태그가 존재합니다.');
-                                duplicate = 1;
-                                $tagInput.val('');
-                                return false;
-                             }
-                         });
-                         if(duplicate == 0){
-                           addTag(tagValue);
-                           $tagInput.val('');
-                         }
+             const $tagInput = $("#tag-input");
+             const $tagList = $("#tag-list");
+             const maxTags = 10;
 
-                   }
-                   else {
-                     alert('최대 허용 태그는 10개 입니다.');
-                   }
+             $tagInput.keypress(function(event) {
+               if (event.key === 'Enter') {
+                 let duplicate = 0;
+                 event.preventDefault();
+                 const tagValue = $tagInput.val().trim();
+                 const tagCount = $tagList.children('li').length;
+                 if (tagCount < maxTags) {
+                       const $existingTags = $tagList.find('.tag-text');
+                       $existingTags.each(function() {
+                           if($(this).text() === "#" + tagValue){
+                              alert('같은 이름을 가진 태그가 존재합니다.');
+                              duplicate = 1;
+                              $tagInput.val('');
+                              return false;
+                           }
+                       });
+                       if(duplicate == 0){
+                         addTag(tagValue);
+                         $tagInput.val('');
+                       }
+
                  }
-               });
-
-               function addTag(tag) {
-                 if (tag.trim() === '') return;
-                 const sanitizedValue = tag.replace(/[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]/g, '');
-                 if(sanitizedValue != tag) {
-                     alert('특수문자는 허용 되지 않습니다.');
-                     return;
+                 else {
+                   alert('최대 허용 태그는 10개 입니다.');
                  }
+               }
+             });
 
-                 const $tagItem = $('<li>',{ class : 'tag-item'});
-                 const $tagText = $('<span>',{ class: 'tag-text', text: `#${sanitizedValue.trim()}`});
-                 const $removeTag = $('<span>',
-                    { class:'remove-tag',
-                      text:'x',
-                      click: function() {
-                         $(this).closest('.tag-item').remove();
-                         updateTagInputVisibility();
-                      }
-                    });
-
-                 $tagItem.append($tagText,$removeTag);
-                 $tagList.append($tagItem);
-                 updateTagInputVisibility();
+             function addTag(tag) {
+               if (tag.trim() === '') return;
+               const sanitizedValue = tag.replace(/[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]/g, '');
+               if(sanitizedValue != tag) {
+                   alert('특수문자는 허용 되지 않습니다.');
+                   return;
                }
 
-               function updateTagInputVisibility() {
-                $tagInput.css('display',$tagList.children('li').length < maxTags ? 'block' : 'none');
-               }
-      });
-
-      function submit() {
-        const $tagList = $('#tag-list');
-        const tags = [];
-
-        $tagList.find('li').each(function() {
-            const $spanText = $(this).find('.tag-text').text();
-            const $cleanedText = $spanText.replace(/#/g, '');
-            tags.push($cleanedText);
-        })
-        var obj = {};
-     	obj.title = $("#title").val();
-     	obj.content = $("#content").val();
-     	obj.tags = tags;
-
-     	var formData = new FormData();
-        var fileInput = $('#files')[0]; // 파일 입력 필드 가져오기
-        var files = fileInput.files; // 선택된 파일들 가져오기
-        // 첨부파일이 2개 이상일 시
-        if (files.length > 2) {
-                alert("이미지는 최대 2개까지 첨부할 수 있습니다.");
-                fileInput.value = "";
-        }
-        else {
-            // FormData에 파일 추가
-            for (var i = 0; i < files.length; i++) {
-                formData.append('value', files[i]);
-            }
-            formData.append('key', new Blob([JSON.stringify(obj)], { type: "application/json" }));
-
-            $.ajax({
-                　　type:'post'
-                　  , processData: false // FormData를 사용하면 processData를 false로 설정해야 함
-                    , contentType: false // 파일 업로드 시에는 contentType을 false로 설정해야 함
-                　 　, data: formData
-                　 　, url: '/api/article/write'
-                　 　, success: function(data) {
-                        location.href='/';
-                　 　}
-                    , beforeSend : function(xhr) {
-                                xhr.setRequestHeader(header, token);
+               const $tagItem = $('<li>',{ class : 'tag-item'});
+               const $tagText = $('<span>',{ class: 'tag-text', text: `#${sanitizedValue.trim()}`});
+               const $removeTag = $('<span>',
+                  { class:'remove-tag',
+                    text:'x',
+                    click: function() {
+                       $(this).closest('.tag-item').remove();
+                       updateTagInputVisibility();
                     }
-                    , error:function(e) {
-                        // 제목 에러 메시지 설정
-                        var jsonResponse = JSON.parse(e.responseText);
-                        if (jsonResponse.hasOwnProperty('title')) {
-                            $("#titleError").text(jsonResponse.title);
-                        } else {
-                            $("#titleError").text('');
-                        }
-                        // 내용 에러 메시지 설정
-                        if (jsonResponse.hasOwnProperty('content')) {
-                            $("#contentError").text(jsonResponse.content);
-                        } else {
-                            $("#contentError").text('');
-                        }
-                　　　　
-                　　}
-            });
-        }
+                  });
+
+               $tagItem.append($tagText,$removeTag);
+               $tagList.append($tagItem);
+               updateTagInputVisibility();
+             }
+
+             function updateTagInputVisibility() {
+              $tagInput.css('display',$tagList.children('li').length < maxTags ? 'block' : 'none');
+             }
+    });
+
+    function submit() {
+      const $tagList = $('#tag-list');
+      const tags = [];
+
+      $tagList.find('li').each(function() {
+          const $spanText = $(this).find('.tag-text').text();
+          const $cleanedText = $spanText.replace(/#/g, '');
+          tags.push($cleanedText);
+      })
+      var obj = {};
+       obj.title = $("#title").val();
+       obj.content = $("#content").val();
+       obj.tags = tags;
+
+       var formData = new FormData();
+      var fileInput = $('#files')[0]; // 파일 입력 필드 가져오기
+      var files = fileInput.files; // 선택된 파일들 가져오기
+      // 첨부파일이 2개 이상일 시
+      if (files.length > 2) {
+              alert("이미지는 최대 2개까지 첨부할 수 있습니다.");
+              fileInput.value = "";
       }
+      else {
+          // FormData에 파일 추가
+          for (var i = 0; i < files.length; i++) {
+              formData.append('value', files[i]);
+          }
+          formData.append('key', new Blob([JSON.stringify(obj)], { type: "application/json" }));
+
+          $.ajax({
+              　　type:'post'
+              　  , processData: false // FormData를 사용하면 processData를 false로 설정해야 함
+                  , contentType: false // 파일 업로드 시에는 contentType을 false로 설정해야 함
+              　 　, data: formData
+              　 　, url: '/api/article/write'
+              　 　, success: function(data) {
+                      location.href='/';
+              　 　}
+                  , beforeSend : function(xhr) {
+                              xhr.setRequestHeader(header, token);
+                  }
+                  , error:function(e) {
+                      // 제목 에러 메시지 설정
+                      var jsonResponse = JSON.parse(e.responseText);
+                      if (jsonResponse.hasOwnProperty('title')) {
+                          $("#titleError").text(jsonResponse.title);
+                      } else {
+                          $("#titleError").text('');
+                      }
+                      // 내용 에러 메시지 설정
+                      if (jsonResponse.hasOwnProperty('content')) {
+                          $("#contentError").text(jsonResponse.content);
+                      } else {
+                          $("#contentError").text('');
+                      }
+              　　　　
+              　　}
+          });
+      }
+    }
 
   </script>
 </th:block>

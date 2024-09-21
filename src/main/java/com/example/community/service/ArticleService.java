@@ -318,7 +318,7 @@ public class ArticleService {
         // Article Entity가 null 일시 예외 상황 발생
         if(article == null)
         {
-            throw new RuntimeException("글 조회에 실패했습니다.");
+            throw new RuntimeException("글 조회 실패 및 데이터가 존재하지 않습니다");
         }
         // 쿠키카 Null일시 || 쿠키에 저장된 글 Id값과 조회한 글 Id값이 다를시 조회수를 올린다
         if(articleidCookie == null || !articleidCookie.equals(String.valueOf(id))){

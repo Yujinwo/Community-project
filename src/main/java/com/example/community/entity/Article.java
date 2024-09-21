@@ -13,9 +13,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Entity
-@Table(name = "article",indexes = {
-        @Index(name = "idx_title_content", columnList = "title, content")
-})
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper=true)

@@ -55,9 +55,10 @@
      </div>
     <script inline="javascript">
         var nickcheckstate = "false";
+        const token = $("meta[name='_csrf']").attr("content")
+        const header = $("meta[name='_csrf_header']").attr("content");
         $(document).ready(function() {
-            const token = $("meta[name='_csrf']").attr("content")
-            const header = $("meta[name='_csrf_header']").attr("content");
+
             $('#nickcheck_button').click(function() {
             var checkdata = {
                       Usernick : $('#Usernick').val()

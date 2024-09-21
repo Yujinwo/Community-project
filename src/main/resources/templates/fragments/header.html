@@ -91,8 +91,8 @@
     <script>
         let pageNumber = 0;
         let pageLast = true;
-        const token = $("meta[name='_csrf']").attr("content")
-        const header = $("meta[name='_csrf_header']").attr("content");
+        const header_token = $("meta[name='_csrf']").attr("content")
+        const header_csrf = $("meta[name='_csrf_header']").attr("content");
 
 
 
@@ -144,7 +144,7 @@
                                }
                             },
                             beforeSend : function(xhr) {
-                                xhr.setRequestHeader(header, token);
+                                xhr.setRequestHeader(header_csrf, header_token);
                             },
                             error: function(e) {
                                 console.log(e);
