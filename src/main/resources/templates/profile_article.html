@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns="http://www.w3.org/1999/html" layout:decorate="layout/default_layout">
+<th:block layout:fragment="content">
+    <div style="
+                    margin:0 auto;
+                    width:800px;
+                    padding: 20px;
+                    border:1px solid #e3e3e3;
+                    border-radius:10px;
+                    margin-bottom:30px;">
+        <div style="border:1px solid black; border-radius:10px; margin-bottom:10px;">
+            <div>
+                <div style="padding:20px">
+                    <span style="font-size:30px;" th:text="${user.usernick}"></span>
+                </div>
+            </div>
+            <div style="border-top:1px solid black; border-top-width:1px;">
+                <ul class="nav nav-tabs" style="padding:20px">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" th:href="@{/profilepage(userid=${user.id},type=article_list)}">작성한 글</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/profilepage(userid=${user.id},type=comment_list)}" >작성한 댓글</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <table class="table table-border table-Light">
+            <colgroup>
+                <col style="width:70%">
+                <col style="width:30%">
+            </colgroup>
+            <thead class="table-success">
+            <tr>
+                <th scope="col" style="text-align: center;">제목</th>
+                <th scope="col" style="text-align: center;">작성시간</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            <tr class="border-bottom" th:each="item : ${article}">
+
+                <td style="text-align: center;">
+                    <a th:href="@{/article/detail/{id}(id=${item.id})}" th:text="${item.title}" />
+                </td>
+                <td style="text-align: center;" th:text="${item.createdDate}"></td>
+
+            </tr>
+            </tbody>
+        </table>
+        <!-- 글 페이지 리스트 -->
+        <div th:if="${endPage != 0}" class="paging_list">
+            <ul class="pagination">
+                <li class="page-item">
+                    <!-- 이전 링크 있을시 활성화 없을시 비 활성화 -->
+                    <a class="page-link" th:classappend=" ${!pageable.previous} ? 'disabled' " th:href="${!pageable.first} ? @{/mypage(type=article_list,page=${pageable.number})}"> 이전 </a>
+                </li>
+                <!-- 시작페이지 -> 끝 페이지 까지 페이지 출력 -->
+                <span th:each="page: ${#numbers.sequence(startPage, endPage)}">
+                <li class="page-item">
+                    <!-- 현재페이지는 링크 없이 숫자만 -->
+                     <a class="page-link active" th:if="${page == pageable.number + 1}" href="javascript:;" th:text="${page}"></a>
+                    <!-- 현재페이지 링크 X, 다른 페이지번호에는 링크를 보여준다 -->
+                     <a class="page-link" th:unless="${page == pageable.number + 1}" th:href="@{/mypage(type=article_list,page=${page})}" th:text="${page}"></a>
+                </li>
+            </span>
+                <li class="page-item">
+                    <!-- 다음 링크 있을시 활성화 없을시 비 활성화 -->
+                    <a class="page-link" th:classappend=" ${!pageable.next} ? 'disabled' "  th:href="${pageable.last} ? '#' : @{/mypage(type=article_list,page=${pageable.number+2})}"> 다음 </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</th:block>

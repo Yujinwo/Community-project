@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/default_layout">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.w3.org/1999/xhtml" layout:decorate="layout/default_layout">
 <th:block layout:fragment="content">
     <div style="
         display:flex;
@@ -33,13 +34,22 @@
         <!-- 글 내용 -->
         <h5 class="overflow-text" th:text="${article.content}"></h5>
         <!-- 글 작성자 -->
-        <span class="article_addtext" th:text="${article.member.usernick}"></span>
+        <a href="javascript:;">
+            <span class="article_addtext bold" id="article_addtext_writer" th:text="${article.member.usernick}"></span>
+        </a>
         <span> · </span>
         <!-- 글 작성시간 -->
         <span class="article_addtext" th:text="${@timeUtil.calculateTimeAgo(article.createdDate)}"></span>
         <span> · </span>
         <!-- 글 조회수 -->
         <span class="article_addtext" th:text="${article.viewcount}"></span></br>
+        <div class="list-group" style="position:absolute; display:none; margin-top:10px" id="noteSend_Window">
+            <ul>
+                <a th:href="@{/profilepage(userid=${article.member.id},type=article_list)}" class="list-group-item list-group-item-action">
+                    프로필
+                </a>
+            </ul>
+        </div>
         <div th:if="${article.tagConents.size() != 0}"  class="detail_tag-container">
             <ul id="tag-list" >
                     <li th:each="tag : ${article.tagConents}">
@@ -83,43 +93,53 @@
 
     <script th:inline="javascript">
 
-
-
         $(document).ready(function() {
 
-            var nowsort = [[${sort}]];
-            console.log(nowsort);
-            var nowpage = [[${pageable.number}]] + 1
-            if(nowsort != "latest" && nowsort != "newest" && nowsort != "mostrecent")
-            {
-              $('#sort-select').val("newest");
-            }
-            else {
-                 $('#sort-select').val(nowsort);
-            }
-            $('#sort-select').change(function() {
-                var sort = $('#sort-select').val();
-               window.location.href = '?sort=' + sort + '&page=' + nowpage;
+        $('#article_addtext_writer').click(function() {
+            $('#noteSend_Window').show();
+         });
 
-            });
+         $(document).click(function(event) {
+              if (!$('#noteSend_Window').has(event.target).length && !$('#article_addtext_writer').is(event.target)) {
+                   $('#noteSend_Window').hide();
+               }
+         });
 
-            // 엔터 키를 눌렀을 때 검색 실행
-            $('#searchInput').keypress(function(event) {
-                if (event.keyCode === 13) { // 엔터 키 코드: 13
-                    event.preventDefault(); // 기본 엔터 키 동작 방지
-                    searchArticles(); // 검색 함수 호출
-                }
-            });
 
-            function searchArticles() {
-                var query = $('#searchInput').val();
-                var sort = $('#sort-select').val();
-                var search = $('#search-select').val();
-                if (query) {
-                    window.location.href = '/articles/search?query=' + encodeURIComponent(query) + '&sort=' + sort + '&search=' + search;
-                }
-            }
- });
+
+var nowsort = [[${sort}]];
+var nowpage = [[${pageable.number}]] + 1
+if(nowsort != "latest" && nowsort != "newest" && nowsort != "mostrecent")
+{
+  $('#sort-select').val("newest");
+}
+else {
+     $('#sort-select').val(nowsort);
+}
+$('#sort-select').change(function() {
+    var sort = $('#sort-select').val();
+   window.location.href = '?sort=' + sort + '&page=' + nowpage;
+
+});
+
+// 엔터 키를 눌렀을 때 검색 실행
+$('#searchInput').keypress(function(event) {
+    if (event.keyCode === 13) { // 엔터 키 코드: 13
+        event.preventDefault(); // 기본 엔터 키 동작 방지
+        searchArticles(); // 검색 함수 호출
+    }
+});
+
+
+function searchArticles() {
+    var query = $('#searchInput').val();
+    var sort = $('#sort-select').val();
+    var search = $('#search-select').val();
+    if (query) {
+        window.location.href = '/articles/search?query=' + encodeURIComponent(query) + '&sort=' + sort + '&search=' + search;
+    }
+}
+});
     </script>
 </th:block>
 </html>

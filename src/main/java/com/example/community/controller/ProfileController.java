@@ -22,16 +22,41 @@ import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
-public class MypageController {
+public class ProfileController {
 
     private final ArticleService articleService;
     private final MemberRepository memberRepository;
     private final AuthenticationUtil authenticationUtil;
-    @GetMapping("/mypage")
-    public String mypage(@RequestParam(name = "type",required = true,defaultValue = "article_list") String type,Model model,Pageable pageable) {
+    @GetMapping("/profilepage")
+    public String profilepage(@RequestParam(name = "userid",defaultValue = "0") Long userid,@RequestParam(name = "type",required = true,defaultValue = "article_list") String type,Model model,Pageable pageable) {
 
+        Member user = null;
 
-        Member user = authenticationUtil.getCurrentMember();
+        if(userid == 0)
+        {
+            user = authenticationUtil.getCurrentMember();
+            // 글 댓글 불러오기
+            MyArticleResultDto articles = articleService.findMyArticleList(user,pageable);
+            int startPage = Math.max(1, articles.getNumber() - 3);
+            int endPage = Math.min(articles.getNumber()+4, articles.getTotalPages());
+
+            // 뷰에 데이터 전달
+            model.addAttribute("article",articles.getContent());
+            model.addAttribute("pageable",articles);
+            model.addAttribute("startPage", startPage);
+            model.addAttribute("endPage", endPage);
+            return "mypage_article";
+        }
+        else {
+            Optional<Member> Optionaluser = memberRepository.findById(userid);
+
+            if(Optionaluser.isPresent())
+            {
+                user = Optionaluser.get();
+                model.addAttribute("user",user);
+            }
+
+        }
 
 
         if(type.equals("article_list"))
@@ -46,7 +71,7 @@ public class MypageController {
             model.addAttribute("pageable",articles);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
-            return "mypage_article";
+            return "profile_article";
         }
         else if(type.equals("comment_list")) {
             // 댓글 댓글 불러오기
@@ -59,26 +84,10 @@ public class MypageController {
             model.addAttribute("pageable",comments);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
-            return "mypage_comment";
-        }
-        else if(type.equals("bookmark_list")){
-            // 글 댓글 불러오기
-            MyBookmarkResultDto bookmarks = articleService.findMyBookmarkList(user,pageable);
-            int startPage = Math.max(1, bookmarks.getNumber() - 3);
-            int endPage = Math.min(bookmarks.getNumber()+4, bookmarks.getTotalPages());
-
-            // 뷰에 데이터 전달
-            model.addAttribute("bookmark",bookmarks.getContent());
-            model.addAttribute("pageable",bookmarks);
-            model.addAttribute("startPage", startPage);
-            model.addAttribute("endPage", endPage);
-            return "mypage_bookmark";
-        }
-        else if(type.equals("edit_profile")){
-            return "mypage_edit";
+            return "profile_comment";
         }
         else {
-            return "mypage_article";
+            return "profile_article";
         }
     }
 

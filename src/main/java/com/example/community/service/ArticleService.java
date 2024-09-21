@@ -9,7 +9,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -408,19 +407,19 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public MyArticleResultDto findMyArticleList(Pageable pageable) {
-        Page<MyArticleResponseDto> bymyArticlelist = articleRepository.findBymyArticlelist(authenticationUtil.getCurrentMember(), pageable).map(m-> m.changeMyArticleResponseDto());
+    public MyArticleResultDto findMyArticleList(Member user, Pageable pageable) {
+        Page<MyArticleResponseDto> bymyArticlelist = articleRepository.findBymyArticlelist(user, pageable).map(m-> m.changeMyArticleResponseDto());
         return MyArticleResultDto.createMyArticleResultDto(bymyArticlelist);
 
     }
     @Transactional(readOnly = true)
-    public MyCommentResultDto findMyCommentList(Pageable pageable) {
-        Page<MyCommentResponseDto> bymyCommentlist = articleRepository.findBymyCommentlist(authenticationUtil.getCurrentMember(), pageable).map(m-> m.changeMyCommentResponseDto());
+    public MyCommentResultDto findMyCommentList(Member user, Pageable pageable) {
+        Page<MyCommentResponseDto> bymyCommentlist = articleRepository.findBymyCommentlist(user, pageable).map(m-> m.changeMyCommentResponseDto());
         return MyCommentResultDto.createMyCommentResultDto(bymyCommentlist);
     }
     @Transactional(readOnly = true)
-    public MyBookmarkResultDto findMyBookmarkList(Pageable pageable) {
-        Page<MyBookmarkResponseDto> bymyBookmarklist = bookmarkRepository.findBymyBookmarklist(authenticationUtil.getCurrentMember(), pageable).map(m-> MyBookmarkResponseDto.builder().bookmark_id(m.getId()).article_id(m.getArticle().getId()).article_title(m.getArticle().getTitle()).build());
+    public MyBookmarkResultDto findMyBookmarkList(Member user, Pageable pageable) {
+        Page<MyBookmarkResponseDto> bymyBookmarklist = bookmarkRepository.findBymyBookmarklist(user, pageable).map(m-> MyBookmarkResponseDto.builder().bookmark_id(m.getId()).article_id(m.getArticle().getId()).article_title(m.getArticle().getTitle()).build());
         return MyBookmarkResultDto.createMyBookmarkResultDto(bymyBookmarklist);
     }
 
