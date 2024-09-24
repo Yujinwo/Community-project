@@ -106,12 +106,12 @@
 
                 $("#Temporary_Block").click(function() {
                                                $.ajax({
-                                            　　type:'post'
+                                            　　type:'patch'
                                             　　, contentType:'application/json'
                                             　　, data: JSON.stringify({
                                                     block_type : 'temporary'
                                                 })
-                                            　　, url: '/api/noteblock/update'
+                                            　　, url: '/api/noteblocks'
                                             　　, success: function(data) {
                                                   alert(data);
                                             　　}
@@ -128,12 +128,12 @@
                  if($("#Permanent_Block") != null) {
                      $("#Permanent_Block").click(function() {
                                              $.ajax({
-                                            　　type:'post'
+                                            　　type:'patch'
                                             　　, contentType:'application/json'
                                             　　, data: JSON.stringify({
                                                     block_type : 'permanent'
                                                 })
-                                            　　, url: '/api/noteblock/update'
+                                            　　, url: '/api/noteblocks'
                                             　　, success: function(data) {
                                                 alert(data);
                                             　　}
@@ -149,12 +149,12 @@
                  if($("#Remove_Permanent_Block") != null) {
                      $("#Remove_Permanent_Block").click(function() {
                                              $.ajax({
-                                            　　type:'post'
+                                            　　type:'patch'
                                             　　, contentType:'application/json'
                                             　　, data: JSON.stringify({
                                                     block_type : 'remove_permanent'
                                                 })
-                                            　　, url: '/api/noteblock/update'
+                                            　　, url: '/api/noteblocks'
                                             　　, success: function(data) {
                                                 alert(data);
                                             　　}
@@ -178,7 +178,7 @@
 
 
             function receivenote(id) {
-                 window.open('/receivenote/' + id, '쪽지', 'width=400,height=420');
+                 window.open('/notes/' + id, '쪽지', 'width=400,height=420');
             }
 
 

@@ -91,7 +91,7 @@ public class SecurityConfig{
                         authorizeRequests
                                 .requestMatchers("/admin").hasRole("ADMIN")
                                 .requestMatchers("/login","/join").anonymous()
-                                .requestMatchers("/","/article/detail/*","/articles/search","/api/userid/check","/api/usernick/check","/api/session/check","/authentication-fail","/authorization-fail","/api/user/join","/profilepage").permitAll()
+                                .requestMatchers("/","/articles/*","/articles","/api/userids","/api/usernicks","/api/sessions","/authentication-fail","/authorization-fail","/api/users","/profile").permitAll()
                                 .anyRequest().hasRole("USER")
                 )
                 .logout((logout) ->

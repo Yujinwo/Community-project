@@ -55,7 +55,7 @@
                                 <a th:href="@{/mypage(userid=my,type=article_list)}" class="list-group-item list-group-item-action">
                                    마이페이지
                                 </a>
-                                <a href="/note" class="list-group-item list-group-item-action">
+                                <a href="/notes" class="list-group-item list-group-item-action">
                                     쪽지
                                 </a>
                             </ul>
@@ -110,7 +110,7 @@
                        $.ajax({
                             type:'GET',
                             contentType:'application/json',
-                            url:'/api/notifications/get?page=' + pageNumber,
+                            url:'/api/notifications?page=' + pageNumber,
                             success:function(data){
                                const $notificationList = $('#notificationList');
                                const $noFeedList = $('#noFeedList');
@@ -126,7 +126,7 @@
                                    $noFeedList.hide();
                                    data.content.forEach(notification => {
                                        const $li = $('<li>',{ class:'notification-item' });
-                                       const $a = $('<a>', { href: '/article/detail/' + notification.articleId });
+                                       const $a = $('<a>', { href: '/articles/' + notification.articleId });
 
                                        // 메시지 텍스트 추가
                                        const $nickNameText = $('<p>',{ class: 'notification-nametext',text: notification.writerNickname});
@@ -206,7 +206,7 @@
          function subscribeToNotifications() {
 
            // 새로운 EventSource 인스턴스를 생성하고 구독 시작
-              eventSource = new EventSource('/api/notification/subscribe');
+              eventSource = new EventSource('/api/notifications/subscribe');
               const $notificationIndicator = $('#notificationIndicator');
                // 메시지 이벤트 리스너 추가
               eventSource.addEventListener('notification', function(event) {
@@ -235,7 +235,7 @@
                let ssesionStatus = 0
                $.ajax({
                         type:'get',
-                        url:'/api/session/check',
+                        url:'/api/sessions',
                         success:function(data){
                            ssesionStatus = data;
                            if(ssesionStatus)

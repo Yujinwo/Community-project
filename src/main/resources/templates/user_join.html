@@ -43,10 +43,10 @@
                       email : $('#email').val()
                 }
                 $.ajax({
-                         type:'post',
+                         type:'get',
                          contentType:'application/json',
                          data:JSON.stringify(checkdata),
-                         url:'/api/userid/check',
+                         url:'/api/userids',
                          success:function(data){
                              alert(data);
                              idcheckdstate = "true";
@@ -66,10 +66,10 @@
                       Usernick : $('#usernick').val()
                 }
                 $.ajax({
-                         type:'post',
+                         type:'get',
                          contentType:'application/json',
                          data:JSON.stringify(checkdata),
-                         url:'/api/usernick/check',
+                         url:'/api/usernicks',
                          success:function(data){
                              alert(data);
                              nickcheckdstate = "true";
@@ -105,7 +105,7 @@
                          type:'post',
                          contentType:'application/json',
                          data:JSON.stringify(joindata),
-                         url:'/api/user/join',
+                         url:'/api/users',
                          success: function(data) {
                             // 회원가입 결과 메시지 설정
                             if (data.hasOwnProperty('result')) {

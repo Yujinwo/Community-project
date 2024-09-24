@@ -424,20 +424,29 @@ public class ArticleService {
     }
 
     @Transactional
-    public String setBookmark(Long id, String type) {
+    public String setBookmark(Long id) {
         Optional<Article> articleOptional = articleRepository.findById(id);
         Optional<Member> byId = memberRepository.findById(authenticationUtil.getCurrentMember().getId());
 
-        if(articleOptional.isPresent() && byId.isPresent() && type.equals("create")) {
+        if(articleOptional.isPresent() && byId.isPresent()) {
             bookmarkRepository.save(Bookmark.builder().article(articleOptional.get()).member(byId.get()).build());
             return "즐겨 찾기 완료했습니다.";
         }
-        else if (articleOptional.isPresent() && byId.isPresent() && type.equals("delete")) {
+        else {
+            return "올바른 데이터 접근이 아닙니다.";
+        }
+    }
+    @Transactional
+    public String deleteBookmark(Long id) {
+        Optional<Article> articleOptional = articleRepository.findById(id);
+        Optional<Member> byId = memberRepository.findById(authenticationUtil.getCurrentMember().getId());
+
+        if (articleOptional.isPresent() && byId.isPresent()) {
             Optional<Bookmark> bookmarkOptional = bookmarkRepository.findByarticle(articleOptional.get());
-                    if(bookmarkOptional.isPresent())
-                    {
-                        bookmarkRepository.delete(bookmarkOptional.get());
-                    }
+            if(bookmarkOptional.isPresent())
+            {
+                bookmarkRepository.delete(bookmarkOptional.get());
+            }
             return "즐겨 찾기 삭제 완료했습니다.";
         }
         else {

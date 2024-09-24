@@ -42,7 +42,7 @@
             <tbody class="table-group-divider">
             <tr class="border-bottom" th:each="item : ${comment}">
                 <td style="text-align: center;">
-                    <a th:href="@{/article/detail/{id}(id=${item.article_id})}" th:text="${item.article_title}" />
+                    <a th:href="@{/articles/{id}(id=${item.article_id})}" th:text="${item.article_title}" />
                 </td>
                 <td style="text-align: center;">
                     <a th:text="${item.content}" />

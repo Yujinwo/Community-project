@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +29,7 @@ public class NoteRestController {
     private final NoteService noteService;
     private final AuthenticationUtil authenticationUtil;
 
-    @PostMapping("/api/note/save")
+    @PostMapping("/api/notes")
     public ResponseEntity<String> saveNote(@Valid @RequestBody NoteSaveRequestDto noteSaveRequestDto, BindingResult bindingResult) {
         if(bindingResult.hasErrors())
         {
@@ -67,7 +68,7 @@ public class NoteRestController {
         }
 
     }
-    @PostMapping("/api/noteblock/update")
+    @PatchMapping("/api/noteblocks")
     public ResponseEntity<String> updateNoteBlock(@RequestBody NoteBlockRequestDto noteBlockRequestDto) {
         if(noteBlockRequestDto.getBlock_type().equals("temporary")) {
             Long userid =  noteService.setTemporaryBlockDate();

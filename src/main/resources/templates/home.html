@@ -9,7 +9,7 @@
         width:800px">
         <!-- 글 작성 버튼 -->
         <div class="article_button">
-            <a href="/article/write" style="margin-top:15px; margin-right:10px ">
+            <a href="/articles/new" style="margin-top:15px; margin-right:10px ">
                 <img src="https://cdn-icons-png.flaticon.com/128/5948/5948954.png" loading="lazy" alt="펜 " title="펜 " width="37" height="37">
                 </img>
             </a>
@@ -28,7 +28,7 @@
     <!-- 글 정보 -->
     <div th:if="${pageable.hasResult}" th:each="article : ${article}" class="article">
             <!-- 글 제목 링크 -->
-        <a th:href="@{/article/detail/{id}(id=${article.id})}">
+        <a th:href="@{/articles/{id}(id=${article.id})}">
             <h2 class="overflow-text bold" th:text="${article.title}"></h2></br>
         </a>
         <!-- 글 내용 -->
@@ -45,7 +45,7 @@
         <span class="article_addtext" th:text="${article.viewcount}"></span></br>
         <div class="list-group" style="position:absolute; display:none; margin-top:10px" id="noteSend_Window">
             <ul>
-                <a th:href="@{/profilepage(userid=${article.member.id},type=article_list)}" class="list-group-item list-group-item-action">
+                <a th:href="@{/profile(userid=${article.member.id},type=article_list)}" class="list-group-item list-group-item-action">
                     프로필
                 </a>
             </ul>
@@ -53,7 +53,7 @@
         <div th:if="${article.tagConents.size() != 0}"  class="detail_tag-container">
             <ul id="tag-list" >
                     <li th:each="tag : ${article.tagConents}">
-                        <a th:href="'/articles/search?tagsearch=true&query=' + ${tag}">
+                        <a th:href="'/articles?tagsearch=true&query=' + ${tag}">
                             <span th:text="'#' + ${tag}" class="tag-text"></span>
                         </a>
                     </li>
@@ -136,7 +136,7 @@ function searchArticles() {
     var sort = $('#sort-select').val();
     var search = $('#search-select').val();
     if (query) {
-        window.location.href = '/articles/search?query=' + encodeURIComponent(query) + '&sort=' + sort + '&search=' + search;
+        window.location.href = '/articles?query=' + encodeURIComponent(query) + '&sort=' + sort + '&search=' + search;
     }
 }
 });

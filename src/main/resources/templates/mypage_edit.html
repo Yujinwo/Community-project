@@ -64,10 +64,10 @@
                       Usernick : $('#Usernick').val()
                 }
                 $.ajax({
-                         type:'post',
+                         type:'get',
                          contentType:'application/json',
                          data:JSON.stringify(checkdata),
-                         url:'/api/usernick/check',
+                         url:'/api/usernicks',
                          success:function(data){
                              alert(data);
                              nickcheckstate = "true";
@@ -100,10 +100,10 @@
                       confirmuserpw : confirmPassword
                 }
                 $.ajax({
-                         type:'post',
+                         type:'patch',
                          contentType:'application/json',
                          data:JSON.stringify(updatedata),
-                         url:'/api/user/update',
+                         url:'/api/users',
                          success:function(data){
                             alert(data.result);
                            window.location.href = '/';

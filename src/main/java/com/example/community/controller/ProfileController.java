@@ -27,8 +27,8 @@ public class ProfileController {
     private final ArticleService articleService;
     private final MemberRepository memberRepository;
     private final AuthenticationUtil authenticationUtil;
-    @GetMapping("/profilepage")
-    public String profilepage(@RequestParam(name = "userid",defaultValue = "0") Long userid,@RequestParam(name = "type",required = true,defaultValue = "article_list") String type,Model model,Pageable pageable) {
+    @GetMapping("/profile")
+    public String profile(@RequestParam(name = "userid",defaultValue = "0") Long userid,@RequestParam(name = "type",required = true,defaultValue = "article_list") String type,Model model,Pageable pageable) {
 
         Member user = null;
 

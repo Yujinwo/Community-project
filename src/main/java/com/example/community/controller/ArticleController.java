@@ -47,8 +47,8 @@ public class ArticleController {
     }
 
 
-    @GetMapping("/articles/search")
-    public String searchArticles(@RequestParam(value = "search",defaultValue = "newest",required = true) String search,@RequestParam(value = "sort",defaultValue = "newest",required = true) String sort,@RequestParam("query") String query, @RequestParam(value = "tagsearch",required = false,defaultValue = "false") Boolean tagsearch,Model model, @PageableDefault(page = 1)  Pageable pageable) {
+    @GetMapping("/articles")
+    public String searchArticles(@RequestParam(value = "search",required = false) String search,@RequestParam(value = "sort",defaultValue = "newest",required = true) String sort,@RequestParam("query") String query, @RequestParam(value = "tagsearch",required = false,defaultValue = "false") Boolean tagsearch,Model model, @PageableDefault(page = 1)  Pageable pageable) {
             ArticleindexResultDto page = articleService.searchArticles(query, pageable,tagsearch,sort,search);
             int startPage = Math.max(1, page.getNumber() - 3);
             int endPage = Math.min(page.getNumber()+4, page.getTotalPages());
@@ -63,14 +63,14 @@ public class ArticleController {
         return "article_search";
     }
     // 글 작성 페이지
-    @GetMapping("/article/write")
+    @GetMapping("/articles/new")
     public String write() {
         return "article_write";
     }
 
 
     // 글 상세 페이지
-    @GetMapping("/article/detail/{id}")
+    @GetMapping("/articles/{id}")
     public String detail(@PageableDefault(page = 1) Pageable pageable , @PathVariable("id") Long id, Model model, HttpServletRequest request, HttpServletResponse response) {
         // 조회수 1 증가하고 글 불러오기
         Article article = articleService.viewcount(id,request, response);
@@ -102,7 +102,7 @@ public class ArticleController {
 
 
     // 글 수정 페이지
-    @GetMapping("/article/update/{id}")
+    @GetMapping("/articles/{id}/edit")
     public String updatepage(@PathVariable Long id, Model model) {
         // 글 불러오기
         Article article = articleService.findById(id);

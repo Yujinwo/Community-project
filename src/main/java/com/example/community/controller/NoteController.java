@@ -31,12 +31,12 @@ public class NoteController {
     private final MemberRepository memberRepository;
     private final AuthenticationUtil authenticationUtil;
 
-    @GetMapping("/sendnote")
+    @GetMapping("/notes/new")
     public String sendMessageWindow(@RequestParam("id") String email, Model model) {
         model.addAttribute("email",email);
         return "send_note";
     }
-    @GetMapping("/receivenote/{id}")
+    @GetMapping("/notes/{id}")
     public String receiveMessageWindow(@PathVariable("id") Long id, String email, Model model) {
         Optional<Note> savednote = noteRespository.findById(id);
 
@@ -46,7 +46,7 @@ public class NoteController {
         return "receive_note";
     }
 
-    @GetMapping("/note")
+    @GetMapping("/notes")
     public String findNoteList(Pageable pageable, Model model) {
         NoteResultDto notelists = noteService.findNotes(pageable);
         int startPage = Math.max(1, notelists.getNumber() - 3);

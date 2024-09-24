@@ -185,18 +185,18 @@
              formData.append('key', new Blob([JSON.stringify(obj)], { type: "application/json" }));
 
              $.ajax({
-             　　type:'patch'
+             　　type:'put'
              　   , processData: false // FormData를 사용하면 processData를 false로 설정해야 함
                   , contentType: false // 파일 업로드 시에는 contentType을 false로 설정해야 함
               　 　, data: formData
-             　  　, url: '/api/article/update'
+             　  　, url: '/api/articles'
              　  　, success: function(data) {
                      if(data.message == "제목과 내용을 수정해주세요")
                      {
                          alert(data.message);
                      }
                      else {
-                         location.href='/article/detail/' + obj.id;
+                         location.href='/articles/' + obj.id;
                      }
              　 　}
                   , beforeSend : function(xhr) {

@@ -41,7 +41,7 @@
             <tr class="border-bottom" th:each="item : ${article}">
 
                 <td style="text-align: center;">
-                    <a th:href="@{/article/detail/{id}(id=${item.id})}" th:text="${item.title}" />
+                    <a th:href="@{/articles/{id}(id=${item.id})}" th:text="${item.title}" />
                 </td>
                 <td style="text-align: center;" th:text="${item.createdDate}"></td>
 

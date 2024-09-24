@@ -34,7 +34,7 @@ public class MemberRestController {
 
 
     // 회원가입 기능
-    @PostMapping("/api/user/join")
+    @PostMapping("/api/users")
     public ResponseEntity<Map<String,String>> joinUser(@Valid @RequestBody MemberDto requestDto) {
         // json 메세지 생성
         Map<String, String> resultdata = new HashMap<>();
@@ -50,7 +50,7 @@ public class MemberRestController {
         resultdata.put("result","회원가입 완료 했습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(resultdata);
     }
-    @PostMapping("/api/user/update")
+    @PatchMapping("/api/users")
     public ResponseEntity<Map<String,String>> UpdateUser(@RequestBody updateMemberDto requestDto) {
         // json 메세지 생성
         Map<String, String> errorresultdata = new HashMap<>();
@@ -82,7 +82,7 @@ public class MemberRestController {
         return resultdata;
     }
 
-    @GetMapping("/api/session/check")
+    @GetMapping("/api/sessions")
     public ResponseEntity<Boolean> ssesionCheck() {
         // 인증된 Member Entity 가져오기
         Member member = authenticationUtil.getCurrentMember();
@@ -95,7 +95,7 @@ public class MemberRestController {
 
     }
 
-    @PostMapping("/api/userid/check")
+    @GetMapping("/api/userids")
     public ResponseEntity<String> useridcheck(@RequestBody Map<String,String> checkdata) {
              // json email 속성 값 가져오기
              String email =  checkdata.get("email");
@@ -121,7 +121,7 @@ public class MemberRestController {
              }
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("이메일을 작성해주세요");
     }
-    @PostMapping("/api/usernick/check")
+    @GetMapping("/api/usernicks")
     public ResponseEntity<String> usernickcheck(@RequestBody Map<String,String> checkdata) {
 
             String usernick = checkdata.get("Usernick");
