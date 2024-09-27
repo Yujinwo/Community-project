@@ -1,17 +1,14 @@
 package com.example.community.service;
 
 
-import com.example.community.dto.MyBookmarkResultDto;
 import com.example.community.dto.NoteResponseDto;
 import com.example.community.dto.NoteResultDto;
-import com.example.community.dto.NoteSaveRequestDto;
 import com.example.community.entity.Member;
 import com.example.community.entity.Note;
 import com.example.community.repository.MemberRepository;
 import com.example.community.repository.NoteRespository;
 import com.example.community.util.AuthenticationUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,7 +25,7 @@ public class NoteService {
     private final NoteRespository noteRespository;
     private final MemberRepository memberRepository;
 
-
+    // 쪽지 작성
     @Transactional
     public Note saveNote(Member byemail, String message) {
             Member member = authenticationUtil.getCurrentMember();
@@ -42,6 +39,7 @@ public class NoteService {
                 return null;
             }
     }
+    // 쪽지 조회
     @Transactional(readOnly = true)
     public NoteResultDto findNotes(Pageable pageable){
         Member member = authenticationUtil.getCurrentMember();
@@ -54,6 +52,7 @@ public class NoteService {
             return null;
         }
     }
+    // 쪽지 임시 거부
     @Transactional
     public Long setTemporaryBlockDate() {
        if(authenticationUtil.getCurrentMember() != null)
@@ -61,6 +60,7 @@ public class NoteService {
            Long userid = authenticationUtil.getCurrentMember().getId();
            Optional<Member> user = memberRepository.findById(userid);
            if(user.isPresent()) {
+               // 현재시간에 + 24시간 동안 임시 거부 설정
                LocalDateTime now = LocalDateTime.now();
                LocalDateTime blockEndTime = now.plusHours(24); // 현재 시간에 24시간을 더함
                user.get().setTemporaryblockdate(blockEndTime);
@@ -75,6 +75,7 @@ public class NoteService {
        }
 
     }
+    // 쪽지 영구 거부
     @Transactional
     public Long setPermanentBlockd() {
         if(authenticationUtil.getCurrentMember() != null)
@@ -93,6 +94,7 @@ public class NoteService {
             return null;
         }
     }
+    // 쪽지 영구 거부 해제
     @Transactional
     public Long removePermanentBlockd() {
         if(authenticationUtil.getCurrentMember() != null)

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -71,7 +72,7 @@ public class SecurityConfig{
 
         http
 
-                // csrf 토큰 비활성화
+
                 .csrf((csrfConfig) ->
                         csrfConfig.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 )
@@ -91,8 +92,12 @@ public class SecurityConfig{
                         authorizeRequests
                                 .requestMatchers("/admin").hasRole("ADMIN")
                                 .requestMatchers("/login","/join").anonymous()
-                                .requestMatchers("/","/articles/*","/articles","/api/userids","/api/usernicks","/api/sessions","/authentication-fail","/authorization-fail","/api/users","/profile").permitAll()
-                                .anyRequest().hasRole("USER")
+                                .requestMatchers(HttpMethod.POST,"/api/articles","/articles/**","/api/notes","/api/replys","/api/comments","/api/bookmarks").hasRole("USER")
+                                .requestMatchers(HttpMethod.PUT,"/api/articles").hasRole("USER")
+                                .requestMatchers(HttpMethod.PATCH,"/api/noteblocks","/api/users").hasRole("USER")
+                                .requestMatchers(HttpMethod.GET,"/articles/*/edit","/articles/new","/mypage","/notes","/notes/**","/profile","/api/notifications","/api/notifications/**").hasRole("USER")
+                                .requestMatchers(HttpMethod.DELETE,"/api/articles/**","/api/bookmarks/**","/api/comments/**").hasRole("USER")
+                                .anyRequest().permitAll()
                 )
                 .logout((logout) ->
                           logout.logoutUrl("/logout")
@@ -121,14 +126,11 @@ public class SecurityConfig{
                         )
                                 .loginPage("/login")
 
+
                 )
+                // Csrf 토큰 쿠키에 항시 추가
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
-
-
-
-
         return http.build();
-
 
     }
 
@@ -136,15 +138,18 @@ public class SecurityConfig{
     @Bean
     public AuthenticationSuccessHandler customLoginSuccessHandler() {
         return (request, response, authentication) -> {
+            // 쿠키에서 ID 저장 체크 불러오기
             String rememberMe = request.getParameter("rememberMe");
+            // 체크 했을 시
             if ("on".equals(rememberMe)) {
-                // 쿠키 설정 예시
+                // 쿠키에 id 저장
                 CookieUtill.addCookie(response,"userId",request.getParameter("email"),30 * 24 * 60 * 60);
             }
             else {
                 CookieUtill.removeCookie(response,"userId");
             }
-            response.sendRedirect("/");  // 로그인 성공 후 리디렉션
+            // 로그인 성공 후 리디렉션
+            response.sendRedirect("/");
         };
     }
 

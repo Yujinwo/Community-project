@@ -31,7 +31,7 @@ public class NotificationService {
 
     private final AuthenticationUtil authenticationUtil;
 
-
+    // Emitter 생성
     public SseEmitter createEmitter(Long memberId) {
         try {
 
@@ -64,7 +64,7 @@ public class NotificationService {
             return null;
         }
     }
-    // 생성된 Emitter가 있는지 확인
+    // Emitter 중복 확인
     public SseEmitter vaildDuplicateEmitter(Long userId) {
         SseEmitter emitter = userEmitters.get(userId);
         if (emitter == null) {
@@ -75,9 +75,10 @@ public class NotificationService {
 
     }
 
-
+    // 알림 메세지 저장
     @Transactional
     public Notification sendNotification(Member receiver, Member writer, Article article,String message,boolean read) {
+        // 내 자신에게 알림 발송 차단
         if(receiver.getId() == writer.getId())
         {
             return null;
@@ -93,7 +94,7 @@ public class NotificationService {
         return savedNotification;
 
     }
-
+    // SSE 실시간 알림 메세지 전송
     public void sendRealTimeNotification(Notification notification) {
         if(notification != null)
         {
@@ -111,6 +112,7 @@ public class NotificationService {
             }
         }
     }
+    // 알림 조회
     @Transactional(readOnly = true)
     public NotificationResultDto getnotifications(Pageable pageable) {
         // 인증된 Member Entity 가져오기

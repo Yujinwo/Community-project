@@ -10,6 +10,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 final class CsrfCookieFilter extends OncePerRequestFilter {
+
+    // Csrf 토큰을 항시 쿠키에 추가
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {

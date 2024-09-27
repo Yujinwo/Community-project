@@ -17,7 +17,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode(callSuper=true)
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @BatchSize(size = 10)
 public class Article extends BaseTime{
@@ -25,25 +25,20 @@ public class Article extends BaseTime{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    // 글 제목
     @Column
     private String title;
-    // 글 내용
     @Column(length = 1000)
     private String content;
-    // Member Entity 다:1 관계 설정 * 한 유저가 여러 게시글이 가능
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Member member;
     // 조회수
     @Column
     private int viewcount;
-    // boardImages Entity 1:다 관계 설정 *한 게시글 안에 여러 이미지가 가능
     @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE)
     @OrderBy("id asc")
     @BatchSize(size = 10)
     private List<BoardImage> boardImages;
-    // comments Entity 1:다 관계 설정 * 한 게시글 안에 여러 댓글이 가능
     @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE)
     @OrderBy("id asc")
     private List<Comment> comments;
@@ -66,22 +61,23 @@ public class Article extends BaseTime{
         boardImage.setArticle(this);
         this.getBoardImages().add(boardImage);
     }
-
+    // 글 작성시간 형식 변환
     public MyArticleResponseDto changeMyArticleResponseDto() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String createdFormatDate = createdDate.format(formatter);
         return MyArticleResponseDto.builder().id(id).title(title).createdDate(createdFormatDate).build();
     }
-
+    // 조회 수 1 올리기
     public void updatecount() {
         this.viewcount = viewcount + 1;
     }
+
 
     public void changeTitleandContent(String title, String content) {
         this.title = title;
         this.content = content;
     }
-
+    // 댓글 수 1 올리기
     public void chagneCommentCount(int i) {
         this.commentcount = i;
     }

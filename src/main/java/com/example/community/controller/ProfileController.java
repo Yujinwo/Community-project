@@ -31,13 +31,15 @@ public class ProfileController {
     public String profile(@RequestParam(name = "userid",defaultValue = "0") Long userid,@RequestParam(name = "type",required = true,defaultValue = "article_list") String type,Model model,Pageable pageable) {
 
         Member user = null;
-
+        // userid가 기본값일 시 MY페이지로 이동
         if(userid == 0)
         {
             user = authenticationUtil.getCurrentMember();
-            // 글 댓글 불러오기
+            // 내 쪽지 전체 페이징처리 조회
             MyArticleResultDto articles = articleService.findMyArticleList(user,pageable);
+            // 최소 페이지
             int startPage = Math.max(1, articles.getNumber() - 3);
+            // 최대 페이지
             int endPage = Math.min(articles.getNumber()+4, articles.getTotalPages());
 
             // 뷰에 데이터 전달
@@ -49,7 +51,7 @@ public class ProfileController {
         }
         else {
             Optional<Member> Optionaluser = memberRepository.findById(userid);
-
+            // 유저 정보가 존재할 시
             if(Optionaluser.isPresent())
             {
                 user = Optionaluser.get();
@@ -61,9 +63,11 @@ public class ProfileController {
 
         if(type.equals("article_list"))
         {
-            // 글 댓글 불러오기
+            // 내 글 전체 페이징처리 조회
             MyArticleResultDto articles = articleService.findMyArticleList(user,pageable);
+            // 최소 페이지
             int startPage = Math.max(1, articles.getNumber() - 3);
+            // 최대 페이지
             int endPage = Math.min(articles.getNumber()+4, articles.getTotalPages());
 
             // 뷰에 데이터 전달
@@ -74,9 +78,11 @@ public class ProfileController {
             return "profile_article";
         }
         else if(type.equals("comment_list")) {
-            // 댓글 댓글 불러오기
+            // 내 댓글 전체 페이징처리 조회
             MyCommentResultDto comments = articleService.findMyCommentList(user,pageable);
+            // 최소 페이지
             int startPage = Math.max(1, comments.getNumber() - 3);
+            // 최대 페이지
             int endPage = Math.min(comments.getNumber()+4, comments.getTotalPages());
 
             // 뷰에 데이터 전달

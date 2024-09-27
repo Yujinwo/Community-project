@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 @Entity
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
 public class Note extends BaseTime {
@@ -32,7 +32,7 @@ public class Note extends BaseTime {
     private Member writer;
 
     private String message;
-
+    // 쪽지 작성시간 형식 변환
     public NoteResponseDto changeNoteDto() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String createdFormatDate = createdDate.format(formatter);

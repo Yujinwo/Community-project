@@ -24,6 +24,7 @@ public class NotificationRestController {
     private final NotificationService notificationService;
     private final AuthenticationUtil authenticationUtil;
 
+    // SSE 알림 구독
     @GetMapping(path = "/api/notifications/subscribe", produces = "text/event-stream")
     public SseEmitter streamNotifications() {
         // 인증된 Member Entity 가져오기

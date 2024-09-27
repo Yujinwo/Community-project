@@ -13,30 +13,27 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+// Home 페이지 글 전체 조회 DTO
 @Getter
 @NoArgsConstructor
 public class ArticleindexResponseDto {
 
+
     @NotNull
     private Long id;
-    // 제목 사이즈 1~60자
     @NotNull
     @Size(min=1,max=60,message = "제목은 1~60자 이내로 작성해주세요")
     private String title;
-    // 제목 사이즈 1~1000자
     @NotNull
     @Size(min=1,max=1000,message = "내용은 1~1000자 이내로 작성해주세요")
     private String content;
-    // 멤버 Entity
     @NotNull
     private Member member;
-    // 작성 시간
     @NotNull
     private LocalDateTime createdDate;
-    // 수정 시간
     @NotNull
     private LocalDateTime modifiedDate;
-    // 조회수
     @NotNull
     private int viewcount;
     // 태그
@@ -55,6 +52,7 @@ public class ArticleindexResponseDto {
         member.getUserpw();
         this.viewcount = article.getViewcount();
         List<Tag> tags = article.getTags();
+        // 태그 컬렉션을 String형식 List로 변환
         if(!tags.isEmpty()) {
             this.tagConents = tags.stream().map(tag -> tag.getContent()).collect(Collectors.toList());
         }

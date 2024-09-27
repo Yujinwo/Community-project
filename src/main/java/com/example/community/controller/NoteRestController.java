@@ -2,7 +2,7 @@ package com.example.community.controller;
 
 
 import com.example.community.dto.NoteBlockRequestDto;
-import com.example.community.dto.NoteSaveRequestDto;
+import com.example.community.dto.NoteRequestDto;
 import com.example.community.entity.Member;
 import com.example.community.entity.Note;
 import com.example.community.repository.MemberRepository;
@@ -28,31 +28,36 @@ public class NoteRestController {
     private final MemberRepository memberRepository;
     private final NoteService noteService;
     private final AuthenticationUtil authenticationUtil;
-
+    // 쪽지 작성
     @PostMapping("/api/notes")
-    public ResponseEntity<String> saveNote(@Valid @RequestBody NoteSaveRequestDto noteSaveRequestDto, BindingResult bindingResult) {
+    public ResponseEntity<String> saveNote(@Valid @RequestBody NoteRequestDto noteRequestDto, BindingResult bindingResult) {
+
+        // noteSaveRequestDto 유효성 검증 한 뒤 오류 발생할 시
         if(bindingResult.hasErrors())
         {
             StringBuilder errors = new StringBuilder();
+            // 에러 메세지를 가져와서 추가
             bindingResult.getFieldErrors().forEach(error -> {
                 errors.append(error.getDefaultMessage()).append(". ").append("\n");
             });
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(errors.toString());
         }
 
-        // 받는 사람 멤버 정보 가져오기
-        Optional<Member> byemail = memberRepository.findByEmail(noteSaveRequestDto.getReceiver_email());
-
+        // 받는 사람 유저 정보 가져오기
+        Optional<Member> byemail = memberRepository.findByEmail(noteRequestDto.getReceiver_email());
+        // 유저 정보가 있을 시
         if(byemail.isPresent()){
+            // 받는 사람이 수신 거부일 시
             if(byemail.get().getNoteblockd() == true || byemail.get().getTemporaryblockdate().isAfter(LocalDateTime.now()))
             {
                 return ResponseEntity.status(HttpStatus.MULTI_STATUS).body("수신 거부 상태이므로 쪽지를 발송할 수 없습니다.");
             }
+            // 받는 사람이 내 자신일 시
             if(byemail.get().getId().equals(authenticationUtil.getCurrentMember().getId()))
             {
                 return ResponseEntity.status(HttpStatus.MULTI_STATUS).body("자신에게 쪽지를 발송할 수 없습니다.");
             }
-            Note SavedNote = noteService.saveNote(byemail.get(),noteSaveRequestDto.getMessage());
+            Note SavedNote = noteService.saveNote(byemail.get(), noteRequestDto.getMessage());
             if(SavedNote != null)
             {
                 return ResponseEntity.status(HttpStatus.OK).body("전송이 완료 되었습니다.");
@@ -63,14 +68,15 @@ public class NoteRestController {
 
         }
         else {
-
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("이메일이 존재하지 않습니다.");
         }
 
     }
+    // 쪽지 거부 수정
     @PatchMapping("/api/noteblocks")
     public ResponseEntity<String> updateNoteBlock(@RequestBody NoteBlockRequestDto noteBlockRequestDto) {
         if(noteBlockRequestDto.getBlock_type().equals("temporary")) {
+            // 임시 거부 설정
             Long userid =  noteService.setTemporaryBlockDate();
             if(userid != null){
                 return ResponseEntity.status(HttpStatus.OK).body("임시 거부 설정 완료 되었습니다.");
@@ -81,6 +87,7 @@ public class NoteRestController {
             }
         }
         else if(noteBlockRequestDto.getBlock_type().equals("permanent")) {
+            // 영구 거부 설정
             Long userid = noteService.setPermanentBlockd();
             if(userid != null){
                 return ResponseEntity.status(HttpStatus.OK).body("영구 거부 설정 완료 되었습니다.");
@@ -90,6 +97,7 @@ public class NoteRestController {
             }
         }
         else {
+            // 영구 거부 해제
             Long userid = noteService.removePermanentBlockd();
             if(userid != null){
                 return ResponseEntity.status(HttpStatus.OK).body("영구 거부 해제 완료 되었습니다.");

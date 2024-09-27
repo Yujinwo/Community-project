@@ -37,6 +37,7 @@
         <span> · </span>
         <!-- 글 조회수  -->
         <span class="article_addtext" th:text="${article.viewcount}"></span></br>
+        <!-- 유저 닉네임 더보기 메뉴 창-->
         <div class="list-group" style="position:absolute; display:none; margin-top:10px" id="noteSend_Window">
             <ul>
                 <a th:href="@{/profile(userid=${article.member.id},type=article_list)}" class="list-group-item list-group-item-action">
@@ -47,6 +48,7 @@
                 </li>
             </ul>
         </div>
+        <!-- 태그 -->
         <div th:if="${article.tagConents.size() != 0}"  class="detail_tag-container">
             <ul id="tag-list" >
                 <li th:each="tag : ${article.tagConents}">
@@ -54,6 +56,7 @@
                 </li>
             </ul>
         </div>
+        <!-- 즐겨찾기 버튼 -->
         <div style="display: flex; justify-content:end;" sec:authorize="isAuthenticated()">
             <a href="javascript:;" >
                 <span th:classappend=" ${bookmark_state} ? 'active'" class="bookmark" id="bookmark"></span>
@@ -170,78 +173,83 @@
             </div>
     </div>
     <script th:inline="javascript">
+                 // 예/아니오 팝업창
                  const modal = $(document).find('.modal');
                  const articleId = [[${article.id}]];
                  const token = $("meta[name='_csrf']").attr("content")
                  const header = $("meta[name='_csrf_header']").attr("content");
 
-                   $(document).ready(function() {
-
-                   $("#bookmark").click(function() {
-                    var $bookmark = $("#bookmark").toggleClass("active");
-                    if($bookmark.hasClass("active")) {
-                             $.ajax({
-                                　　type:'post'
-                                　　, contentType:'application/json'
-                                　　, url: '/api/bookmarks/' + articleId
-                                　　, success: function(data) {
-                                　　}
-                                   , beforeSend : function(xhr) {
-                                      xhr.setRequestHeader(header, token);
-                                   }
-                                   , error:function(e) {
-                                        console.log(e);
-                                　　}
-                                });
-                    }
-                    else {
-                             $.ajax({
-                                　　type:'delete'
-                                　　, contentType:'application/json'
-                                　　, url: '/api/bookmarks/' + articleId
-                                　　, success: function(data) {
-                                　　}
-                                    , beforeSend : function(xhr) {
-                                      xhr.setRequestHeader(header, token);
-                                   }
-                                   , error:function(e) {
-                                        console.log(e);
-                                　　}
-                                });
-
-
-
-                    }
-                   });
+                 $(document).ready(function() {
+                    $("#bookmark").click(function() {
+                        var $bookmark = $("#bookmark").toggleClass("active");
+                        if($bookmark.hasClass("active")) {
+                                 // 즐겨찾기 추가
+                                 $.ajax({
+                                    　　type:'post'
+                                    　　, contentType:'application/json'
+                                    　　, url: '/api/bookmarks/' + articleId
+                                    　　, success: function(data) {
+                                    　　}
+                                       , beforeSend : function(xhr) {
+                                          xhr.setRequestHeader(header, token);
+                                       }
+                                       , error:function(e) {
+                                            console.log(e);
+                                    　　}
+                                    });
+                        }
+                        else {
+                                 // 즐겨찾기 삭제
+                                 $.ajax({
+                                    　　type:'delete'
+                                    　　, contentType:'application/json'
+                                    　　, url: '/api/bookmarks/' + articleId
+                                    　　, success: function(data) {
+                                    　　}
+                                        , beforeSend : function(xhr) {
+                                          xhr.setRequestHeader(header, token);
+                                       }
+                                       , error:function(e) {
+                                            console.log(e);
+                                    　　}
+                                    });
 
 
+
+                        }
+                    });
+
+                     // 글 작성자 클릭시 더보기 메뉴창
                      $('#article_addtext_writer').click(function() {
                         $('#noteSend_Window').show()
                      });
-
+                     // 특정 창 제외하고 나머지 요소를 클릭할 시 창 숨기기
                      $(document).click(function(event) {
+                            // 글 작성자 더보기 메뉴창 자식 요소 / 글 작성자를 제외한 좌표를 클릭시 더보기 메뉴창 숨기기
                             if (!$('#noteSend_Window').has(event.target).length && !$('#article_addtext_writer').is(event.target)) {
-                           $('#noteSend_Window').hide();
+                                  $('#noteSend_Window').hide();
                             }
                      });
-
+                     // 쪽지 보내기 클릭시
                      $('#open-message-btn').click(function() {
+                          // 쪽지 보내기 창 열기
                           window.open('/notes/new?id=' + [[${article.member.email}]], '쪽지 보내기', 'width=400,height=420');
                      });
-                   });
+                });
 
-                 // 삭제하기 버튼을 누를시 팝업창
+                 // 삭제하기 버튼을 누를시 예/아니오 팝업창
                  function articleDelete() {
                         modal.show();
                  }
-                 // 예 버튼을 누를시 글 삭제
+                 // 글 삭제
                  function articleDeleteYes(articleId) {
                      $.ajax({
                         　　type:'delete'
                         　　, contentType:'application/json'
                         　　, url: '/api/articles/' + articleId
                         　　, success: function(data) {
-                                modal.hide();
+                                 // 예/아니오 팝업창 숨기기
+                                 modal.hide();
                                  location.href='/';
                         　　}
                            , beforeSend : function(xhr) {

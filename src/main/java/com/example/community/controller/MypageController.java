@@ -25,7 +25,6 @@ import java.util.Optional;
 public class MypageController {
 
     private final ArticleService articleService;
-    private final MemberRepository memberRepository;
     private final AuthenticationUtil authenticationUtil;
     @GetMapping("/mypage")
     public String mypage(@RequestParam(name = "type",required = true,defaultValue = "article_list") String type,Model model,Pageable pageable) {
@@ -33,12 +32,14 @@ public class MypageController {
 
         Member user = authenticationUtil.getCurrentMember();
 
-
+        // 내가 작성한 글 리스트
         if(type.equals("article_list"))
         {
-            // 글 댓글 불러오기
+            // 내 글 전체 페이징처리 조회
             MyArticleResultDto articles = articleService.findMyArticleList(user,pageable);
+            // 최소 페이지
             int startPage = Math.max(1, articles.getNumber() - 3);
+            // 최대 페이지
             int endPage = Math.min(articles.getNumber()+4, articles.getTotalPages());
 
             // 뷰에 데이터 전달
@@ -48,10 +49,13 @@ public class MypageController {
             model.addAttribute("endPage", endPage);
             return "mypage_article";
         }
+        // 내가 작성한 댓글 리스트
         else if(type.equals("comment_list")) {
-            // 댓글 댓글 불러오기
+            // 내 댓글 전체 페이징처리 조회
             MyCommentResultDto comments = articleService.findMyCommentList(user,pageable);
+            // 최소 페이지
             int startPage = Math.max(1, comments.getNumber() - 3);
+            // 최대 페이지
             int endPage = Math.min(comments.getNumber()+4, comments.getTotalPages());
 
             // 뷰에 데이터 전달
@@ -61,10 +65,13 @@ public class MypageController {
             model.addAttribute("endPage", endPage);
             return "mypage_comment";
         }
+        // 내가 즐겨찾기 한 글 리스트
         else if(type.equals("bookmark_list")){
-            // 글 댓글 불러오기
+            // 내 즐겨찾기 전체 페이징처리 조회
             MyBookmarkResultDto bookmarks = articleService.findMyBookmarkList(user,pageable);
+            // 최소 페이지
             int startPage = Math.max(1, bookmarks.getNumber() - 3);
+            // 최대 페이지
             int endPage = Math.min(bookmarks.getNumber()+4, bookmarks.getTotalPages());
 
             // 뷰에 데이터 전달
@@ -74,6 +81,7 @@ public class MypageController {
             model.addAttribute("endPage", endPage);
             return "mypage_bookmark";
         }
+        // 내 정보 수정
         else if(type.equals("edit_profile")){
             return "mypage_edit";
         }

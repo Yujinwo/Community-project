@@ -10,9 +10,9 @@
         <div class="article_button">
             <a href="/article/write" style="margin-top:15px; margin-right:10px ">
                 <img src="https://cdn-icons-png.flaticon.com/128/5948/5948954.png" loading="lazy" alt="펜 " title="펜 " width="37" height="37">
-                </img>
             </a>
         </div>
+        <!-- 글 정렬 조건 선택 창 -->
         <select id="sort-select" class="form-select"  style="width:125px; height:40px; margin-top:15px" aria-label="Default select example">
             <option value="latest">오래된 순</option>
             <option selected value="newest">최신 순</option>
@@ -21,7 +21,7 @@
     </div>
     <!-- 글 정보 -->
     <div th:if="${pageable.hasResult}" th:each="article : ${article}" class="article">
-            <!-- 글 제목 링크 -->
+        <!-- 글 제목 링크 -->
         <a th:href="@{/articles/{id}(id=${article.id})}">
             <h2 class="overflow-text bold" th:text="${article.title}"></h2></br>
         </a>
@@ -35,9 +35,17 @@
         <span> · </span>
         <!-- 글 조회수 -->
         <span class="article_addtext" th:text="${article.viewcount}"></span></br>
+        <!-- 유저 닉네임 더보기 메뉴 창-->
+        <div class="list-group" style="position:absolute; display:none; margin-top:10px" id="noteSend_Window">
+            <ul>
+                <a th:href="@{/profile(userid=${article.member.id},type=article_list)}" class="list-group-item list-group-item-action">
+                    프로필
+                </a>
+            </ul>
+        </div>
+        <!-- 태그 -->
         <div th:if="${article.tagConents.size() != 0}" class="detail_tag-container">
             <ul id="tag-list" >
-
                 <li th:if="${article.tagConents != null}" th:each="tag : ${article.tagConents}">
                     <a th:href="'/articles?tagsearch=true&query=' + ${tag}">
                         <span th:text="'#' + ${tag}" class="tag-text"></span>
@@ -46,10 +54,13 @@
 
             </ul>
         </div>
+
     </div>
+    <!-- 검색 결과가 없을 시 문구 표시 -->
     <div th:unless="${pageable.hasResult}" class="article">
         <p>검색 결과가 없습니다.</p>
     </div>
+    <!-- 글 검색 div-->
     <div class="search_header">
         <input class="form-control" style="margin-left:200px" type="text" placeholder="검색어를 입력하세요" id="searchInput" />
         <select id="search-select" class="form-select"  style="width:130px; height:40px; margin-top:19px; margin-right:150px" aria-label="Default select example">
@@ -83,11 +94,27 @@
     <script th:inline="javascript">
 
         $(document).ready(function() {
+            // 글 작성자 클릭시 더보기 메뉴창
+            $('#article_addtext_writer').click(function() {
+                $('#noteSend_Window').show();
+            });
+            // 특정 창 제외하고 나머지 요소를 클릭할 시 창 숨기기
+            $(document).click(function(event) {
+                  // 글 작성자 더보기 메뉴창 자식 요소 / 글 작성자를 제외한 좌표를 클릭시 더보기 메뉴창 숨기기
+                  if (!$('#noteSend_Window').has(event.target).length && !$('#article_addtext_writer').is(event.target)) {
+                       $('#noteSend_Window').hide();
+                   }
+            });
 
+            // 글 정렬 조건
             var nowsort = [[${sort}]];
+            // 글 검색 키워드
             var nowquery = [[${query}]];
+            // 글 검색 조건
             var nowsearch = [[${search}]];
+            // 현재 페이지 숫자
             var nowpage = [[${pageable.number}]] + 1
+            // 글 정렬 조건 설정
             if(nowsort != "latest" && nowsort != "newest" && nowsort != "mostrecent")
             {
               $('#sort-select').val("newest");
@@ -95,9 +122,10 @@
             else {
                  $('#sort-select').val(nowsort);
             }
+            // 글 정렬 조건 변경시 조회
             $('#sort-select').change(function() {
                 var sort = $('#sort-select').val();
-               window.location.href = '?sort=' + sort + '&query=' + nowquery + '&search=' + nowsearch + '&page=' + nowpage;
+                window.location.href = '?sort=' + sort + '&query=' + nowquery + '&search=' + nowsearch + '&page=' + nowpage;
 
             });
             // 엔터 키를 눌렀을 때 검색 실행
@@ -107,7 +135,7 @@
                     searchArticles(); // 검색 함수 호출
                 }
             });
-
+            // 글 검색
             function searchArticles() {
                 var query = $('#searchInput').val();
                 var sort = $('#sort-select').val();

@@ -5,7 +5,7 @@ import lombok.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
-
+// 상세 페이지 댓글 전체 조회 커스텀 DTO
 @Getter
 @Builder
 @NoArgsConstructor

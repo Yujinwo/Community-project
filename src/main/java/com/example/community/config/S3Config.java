@@ -22,7 +22,9 @@ public class S3Config {
 
     @Bean
     public AmazonS3 s3Client() {
+        // AWS 자격 증명 생성
         AWSCredentials credentials = new BasicAWSCredentials(accessKey, accessSecret);
+        // AWS S3 클라이언트 객체 생성
         return AmazonS3ClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region).build();

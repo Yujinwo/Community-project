@@ -18,20 +18,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class MemberController {
 
-    // 로그인 페이지
     @GetMapping("/login")
     public String login(@RequestParam(value = "error",required = false) String error, @RequestParam(value = "exception",required = false) String exception, Model model,HttpServletRequest request) {
-    String userId = CookieUtill.getCookieValue(request,"userId");
-
+    // 쿠키에 저장되어 있는 ID 불러오기
+        String userId = CookieUtill.getCookieValue(request,"userId");
+    // ID 있을시 ID 저장 버튼 활성화 / 없을시 버튼 비활성화
     if(userId != null) {
-        model.addAttribute("rememberMe",true);
+        model.addAttribute("rememberMe", true);
         model.addAttribute("userId", userId);
     }
     else {
         model.addAttribute("rememberMe",false);
     }
 
-        // 로그인 실패 시 에러 메세지를 뷰에 전달
+    // 로그인 실패 시 에러 메세지를 뷰에 전달
     model.addAttribute("error",error);
     model.addAttribute("exception",exception);
     return "user_login";
@@ -47,14 +47,12 @@ public class MemberController {
     }
 
 
-
-
     @PostMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
-        // 저장된 인증 객체를 가져온다.
+        // Securoty Context에 저장한 인증 객체 불러오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // 인증된 정보가 있을 시
         if(authentication != null){
+                // 로그아웃
                 new SecurityContextLogoutHandler().logout(request,response,authentication);
         }
         return "redirect:/login";

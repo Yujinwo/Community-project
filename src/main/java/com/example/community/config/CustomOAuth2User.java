@@ -11,6 +11,9 @@ import java.util.Map;
 public class CustomOAuth2User extends DefaultOAuth2User {
     private Member member;
 
+
+
+    // OAuth2User 클래스를 커스텀해서 유저 정보도 저장
     public CustomOAuth2User(Collection<? extends GrantedAuthority> authorities,
                             Map<String, Object> attributes,
                             String nameAttributeKey,
@@ -21,5 +24,9 @@ public class CustomOAuth2User extends DefaultOAuth2User {
 
     public Member getMemberEntity() {
         return member;
+    }
+
+    public void changeMyProfile(String usernick) {
+        this.member.setUsernick(usernick);
     }
 }

@@ -3,7 +3,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:사용자명="http://www.w3.org/1999/xhtml">
 <th:block th:fragment="headerFragment">
     <head>
-        <title>Board List</title>
+        <title>커뮤니티</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name="_csrf" th:content="${_csrf.token}"/>
@@ -15,7 +15,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     </head>
     <body>
-    <!-- 자유/익명 게시판 -->
+    <!-- 자유 게시판 -->
         <div class="header">
             <div class="header_menu">
                 <ul >
@@ -44,12 +44,13 @@
                             align-items: center;
                             font-size: 14px;
                       ">!</div>
-                    <!-- Spring Security 으로 직접 로그인한 경우 -->
+                    <!-- 유저 닉네임 -->
                     <div th:if="${#authentication != null}">
                         <a href="javascript:;">
-                        <span class="bold" id="usernick" th:if="${#authentication.principal.usernick != null}"
-                              th:text="${#authentication.principal.usernick}"></span>
+                        <span class="bold" id="usernick" th:if="${@authenticationUtil.getCurrentMember()?.usernick != null}"
+                              th:text="${@authenticationUtil.getCurrentMember()?.usernick}"></span>
                         </a>
+                        <!-- 유저 닉네임 더보기 메뉴 -->
                         <div id="my_page" class="list-group" style="position:absolute; display:none;">
                             <ul>
                                 <a th:href="@{/mypage(userid=my,type=article_list)}" class="list-group-item list-group-item-action">
@@ -62,12 +63,11 @@
                         </div>
                         <span>님 안녕하세요</span>
                     </div>
-
+                    <!-- 알림 창 -->
                     <div id="notificationPopup" class="notification-popup">
                         <h2 style="width:250px; padding:10px; border: 1px solid;">알림</h2>
                         <div class="notification" id="notification">
                             <ul id="notificationList">
-                                <!-- 여기에 API에서 가져온 알림 데이터가 동적으로 추가될 예정 -->
                             </ul>
                             <div id="noFeedList" style="
                                         margin-top: 200px;
@@ -75,16 +75,15 @@
                                     ">
                                 <span>받은 알림이 없습니다.</span>
                             </div>
-
                         </div>
                     </div>
                 </div>
+                <!-- 회원가입/로그아웃 -->
                 <a sec:authorize="isAnonymous" href="/join">회원가입</a>
                 <form sec:authorize="isAuthenticated()" method="post" th:action="@{/logout}">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <input type="submit" style=" width: 70px; font-size: 12px;" class="btn btn-secondary" value="로그아웃" />
                 </form>
-
             </div>
         </div>
     </body>
@@ -95,7 +94,7 @@
         const header_csrf = $("meta[name='_csrf_header']").attr("content");
 
 
-
+        // 유저 닉네임 클릭시 더보기 메뉴창
         $(document).ready(function() {
             if($('#usernick').length) {
                 $('#usernick').on('click', function() {
@@ -104,7 +103,7 @@
             }
         });
 
-
+        // 알림 메세지 조회
         function addNotificaionList(pageNumber) {
 
                        $.ajax({
@@ -115,26 +114,29 @@
                                const $notificationList = $('#notificationList');
                                const $noFeedList = $('#noFeedList');
 
+                               // 데이터 없을시 noFeedList 창 표시
                                if(data.count == 0) {
                                    $noFeedList.show();
                                    pageNumber = 0;
                                }
                                else {
                                    $notificationList.empty();
+                                   // 현재 페이지 숫자
                                    pageNumber = data.number;
+                                   // 마지막 페이지 여부
                                    pageLast = data.last;
                                    $noFeedList.hide();
                                    data.content.forEach(notification => {
                                        const $li = $('<li>',{ class:'notification-item' });
                                        const $a = $('<a>', { href: '/articles/' + notification.articleId });
 
-                                       // 메시지 텍스트 추가
+                                       // 보낸자 닉네임
                                        const $nickNameText = $('<p>',{ class: 'notification-nametext',text: notification.writerNickname});
 
-                                       // 메시지 텍스트 추가
+                                       // 작성 내용
                                        const $articleTitleText = $('<p>',{ class: 'notification-text',text : "님이 " + "글 제목 : " + '"' + notification.articleTitle + '"'  + " 에 답변을 달았습니다." });
 
-                                       // 시간 추가
+                                       // 작성 시간
                                        const $time = $('<p>',{class: 'notification-time',text: notification.commentCreatetime});
                                        $a.append($nickNameText,$articleTitleText,$time);
 
@@ -154,71 +156,72 @@
 
            }
 
-
-
        const $notificationButton = $('#notificationBtn');
        const $popup = $('#notificationPopup');
-       const $closeButton = $('#closePopup');
-       if($notificationButton != null) {
-            const $notificationElement = $('#notification'); // 스크롤 가능한 요소의 ID를 가져옴
-             $notificationElement.on('scroll', function() {
-                     setTimeout(function() {
-                       const scrollTop = $notificationElement.scrollTop();
-                    const scrollHeight = $notificationElement[0].scrollHeight; // jQuery 객체에서 원본 DOM 요소를 가져와서 사용
-                    const clientHeight = $notificationElement[0].clientHeight;
 
-                        if (scrollTop + clientHeight >= scrollHeight) {
+       // 알림 버튼이 있을시
+       if($notificationButton != null) {
+             // 스크롤 가능한 요소의 ID를 가져옴
+             const $notificationElement = $('#notification');
+             $notificationElement.on('scroll', function() {
+                 setTimeout(function() {
+                       const scrollTop = $notificationElement.scrollTop();
+                       const scrollHeight = $notificationElement[0].scrollHeight;
+                       const clientHeight = $notificationElement[0].clientHeight;
+                       // 스크롤 끝을 도달할 시
+                       if (scrollTop + clientHeight >= scrollHeight) {
                           if(pageLast == false)
                           {
-                             console.log('스크롤이 끝에 도달했습니다.');
+                             // 리스트를 추가 조회
                              addNotificaionList(pageNumber+1)
-                           }
+                          }
                         }
-             }, 2000);
-           }); // 200ms 내에 다시 호출되지 않도록 디바운스 설정
+                 }, 2000); //중복 이벤트 발생 방지
+           });
 
 
+        // 알림 버튼을 클릭시 리스트 조회
         $notificationButton.on('click', function() {
           const $notificationList = $('#notificationList');
           $notificationList.innerHTML = '';
+          // 알림창 표시
           $popup.show()
+          // 알림 메세지 느낌표 숨기기
           $('#notificationIndicator').hide();
+          // 알림 메세지 조회
           addNotificaionList(pageNumber)
         });
 
-
-         document.addEventListener('click', function(event) {
+         // 특정 창 제외하고 나머지 요소를 클릭할 시 창 숨기기
+         $(document).click(function(event) {
+               // 알림창 / 알림버튼 / 알림창 자식 요소를 제외한 좌표를 클릭시 알림창 숨기기
                if (!$popup.is(event.target) && !$notificationButton.is(event.target) && !$popup.has(event.target).length) {
                    const $notificationList = $('#notificationList');
                    $notificationList.text('');
                    $popup.hide();
                }
-
+               // 더보기 메뉴창 / 유저닉네임을 제외한 좌표 클릭시 더보기 메뉴창 숨기기
                if(!$("#my_page").has(event.target).length && !$("#usernick").is(event.target)) {
                 $("#my_page").hide();
                }
            });
 
-
-
-
-         // 구독 함수
+         // SSE 알림 메세지 구독
          function subscribeToNotifications() {
 
-           // 새로운 EventSource 인스턴스를 생성하고 구독 시작
+              // 새로운 EventSource 인스턴스를 생성하고 구독 시작
               eventSource = new EventSource('/api/notifications/subscribe');
               const $notificationIndicator = $('#notificationIndicator');
-               // 메시지 이벤트 리스너 추가
+               // 실시간 메세지 수신
               eventSource.addEventListener('notification', function(event) {
                // 새로운 알림을 수신하면 느낌표를 표시
                if(event.data != "연결완료")
                {
                 $notificationIndicator.css('display','flex');
-                console.log('새 알림:', event.data);
                 }
               });
 
-              // 오류 이벤트 리스너 추가
+              // 오류 메세지 수신
               eventSource.addEventListener('error', function(event) {
                 console.error('EventSource 에러:', event);
                 // 에러가 발생하면 eventSource를 닫고 null로 초기화
@@ -228,10 +231,8 @@
 
          }
 
-
-         // 페이지 로드 시 자동 구독 (원하는 경우)
          window.onload = function() {
-          // 세션 상태 확인 여부
+               // 세션 상태 확인 여부
                let ssesionStatus = 0
                $.ajax({
                         type:'get',
@@ -240,6 +241,7 @@
                            ssesionStatus = data;
                            if(ssesionStatus)
                                {
+                               // 세션이 유효하면 SSE 구독
                                 subscribeToNotifications();
                                }
                         },

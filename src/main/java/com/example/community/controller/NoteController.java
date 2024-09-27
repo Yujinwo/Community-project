@@ -28,29 +28,34 @@ public class NoteController {
 
     private final NoteService noteService;
     private final NoteRespository noteRespository;
-    private final MemberRepository memberRepository;
     private final AuthenticationUtil authenticationUtil;
-
+    // 쪽지 작성 페이지
     @GetMapping("/notes/new")
     public String sendMessageWindow(@RequestParam("id") String email, Model model) {
         model.addAttribute("email",email);
         return "send_note";
     }
+    // 쪽지 상세 조회 페이지
     @GetMapping("/notes/{id}")
     public String receiveMessageWindow(@PathVariable("id") Long id, String email, Model model) {
         Optional<Note> savednote = noteRespository.findById(id);
-
+        // 쪽지가 있을 시
         if(savednote.isPresent()){
             model.addAttribute("note",savednote.get());
         }
         return "receive_note";
     }
 
+    // 쪽지 리스트 페이지
     @GetMapping("/notes")
     public String findNoteList(Pageable pageable, Model model) {
+        // 내 쪽지 전체 페이징처리 조회
         NoteResultDto notelists = noteService.findNotes(pageable);
+        // 최소 페이지
         int startPage = Math.max(1, notelists.getNumber() - 3);
+        // 최대 페이지
         int endPage = Math.min(notelists.getNumber()+4, notelists.getTotalPages());
+
         model.addAttribute("notelists",notelists.getContent());
         model.addAttribute("member",authenticationUtil.getCurrentMember());
         model.addAttribute("pageable",notelists);

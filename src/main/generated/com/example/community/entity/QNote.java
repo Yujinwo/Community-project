@@ -34,8 +34,6 @@ public class QNote extends EntityPathBase<Note> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modifiedDate = _super.modifiedDate;
 
-    public final BooleanPath read = createBoolean("read");
-
     public final QMember receiver;
 
     public final QMember writer;

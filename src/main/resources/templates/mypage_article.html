@@ -10,28 +10,35 @@
                     border-radius:10px;
                     margin-bottom:30px;">
          <div style="border:1px solid black; border-radius:10px; margin-bottom:10px;">
+             <!-- 유저 닉네임 -->
              <div>
                  <div style="padding:20px">
-                     <span style="font-size:30px;" th:text="${#authentication.principal.usernick}"></span>
+                     <span style="font-size:30px;" th:text="${@authenticationUtil.getCurrentMember()?.usernick}"></span>
                  </div>
              </div>
+             <!-- 탭 -->
              <div style="border-top:1px solid black; border-top-width:1px;">
                  <ul class="nav nav-tabs" style="padding:20px">
+                     <!-- 작성한 글 -->
                      <li class="nav-item">
                          <a class="nav-link active" aria-current="page" th:href="@{/mypage(type=article_list)}">작성한 글</a>
                      </li>
+                     <!-- 작성한 댓글 -->
                      <li class="nav-item">
                          <a class="nav-link" th:href="@{/mypage(type=comment_list)}" >작성한 댓글</a>
                      </li>
+                     <!-- 즐겨찾기 -->
                      <li class="nav-item" >
                          <a class="nav-link" href="/mypage?type=bookmark_list">즐겨찾기</a>
                      </li>
+                     <!-- 내 정보 수정 -->
                      <li class="nav-item" >
                          <a class="nav-link" href="/mypage?type=edit_profile">내 정보 수정</a>
                      </li>
                  </ul>
              </div>
          </div>
+         <!-- 테이블 -->
          <table class="table table-border table-Light">
              <colgroup>
                  <col style="width:70%">
@@ -45,10 +52,11 @@
              </thead>
              <tbody class="table-group-divider">
              <tr class="border-bottom" th:each="item : ${article}">
-
+                     <!-- 제목 -->
                      <td style="text-align: center;">
                          <a th:href="@{/articles/{id}(id=${item.id})}" th:text="${item.title}" />
                      </td>
+                     <!-- 작성시간 -->
                      <td style="text-align: center;" th:text="${item.createdDate}"></td>
 
              </tr>

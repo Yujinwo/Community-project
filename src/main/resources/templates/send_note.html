@@ -14,20 +14,22 @@
            border: 1px solid #b8b8b8;
           border-radius: 3px;
         }
-
     </style>
 </head>
 <body>
 <div id="message-container">
     <h3 style="position:relative; text-align:center; border-bottom:1px solid black">쪽지 보내기</h3>
+    <!-- 쪽지 전송 form -->
     <form id="message-form">
         <div style="padding:0 35px;">
             <label for="recipient" class="form-label">받는 사람</label>
+            <!-- 받는자 email -->
             <input  th:value="${email}" class="form-control" type="text" id="recipient" name="recipient" required style="width:242px;
             border-color: #3889bf;
             border: 1px solid #b8b8b8;
              border-radius: 3px;"><br><br>
             <label for="message" class="form-label" >메시지</label><br>
+            <!-- 보낼 내용 -->
             <textarea  class="form-control" id="message" name="message" required style="width:320px; height:160px;
             border-color: #3889bf;
             border: 1px solid #b8b8b8;
@@ -46,6 +48,7 @@
 <script th:inline="javascript">
     const token = $("meta[name='_csrf']").attr("content")
     const header = $("meta[name='_csrf_header']").attr("content");
+    // 쪽지 전송
     $('#message-form').submit(function(event) {
                               event.preventDefault();
                               const recipient = $('#recipient').val();
@@ -60,6 +63,7 @@
                                 　　, url: '/api/notes'
                                 　　, success: function(data) {
                                        alert(data);
+                                       // 창 닫기
                                        window.close();
                                 　　}
                                    , beforeSend : function(xhr) {

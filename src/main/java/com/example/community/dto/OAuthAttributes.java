@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+// OAuthAttributes
 @Getter
 @Builder
 @NoArgsConstructor
@@ -23,15 +24,13 @@ public class OAuthAttributes {
     private String name;
     // 사용자 이메일
     private String email;
+    // 로그인 종류
+    private String social;
     // 네이버 / 카카오 / 구글 로그인 할시 그에 맞는 메서드 실행
     public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
         // 네이버 로그인 할시
         if("naver".equals(registrationId)) {
             return ofNaver("id", attributes);
-        }
-        // 카카오 로그인 할시
-        else if ("kakao".equals(registrationId)) {
-            return ofKakao("id", attributes);
         }
         // 구글 로그인 할 시
         return ofGoogle(userNameAttributeName, attributes);
@@ -44,6 +43,7 @@ public class OAuthAttributes {
                 .email((String) attributes.get("email"))
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName)
+                .social("google")
                 .build();
     }
     // 네이버 로그인 메서드
@@ -56,21 +56,7 @@ public class OAuthAttributes {
                 .email((String) response.get("email"))
                 .attributes(response)
                 .nameAttributeKey(userNameAttributeName)
-                .build();
-    }
-    // 카카오 로그인 메서드
-    private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
-        // attributes에서 kakao_account 속성 값 get
-        Map<String, Object> kakao_account = (Map<String, Object>) attributes.get("kakao_account");
-        // attributes에서 properties 속성 값 get
-        Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
-        // properties에서 nickname 가져오기
-        // kakao_account에서 email 가져오기
-        return OAuthAttributes.builder()
-                .name((String) properties.get("nickname"))
-                .email((String) kakao_account.get("email"))
-                .attributes(attributes)
-                .nameAttributeKey(userNameAttributeName)
+                .social("naver")
                 .build();
     }
     // dto -> Member Entity로 생성
@@ -81,6 +67,7 @@ public class OAuthAttributes {
                 .role(Role.USER)
                 .noteblockd(false)
                 .temporaryblockdate(LocalDateTime.now())
+                .social(social)
                 .build();
     }
 }

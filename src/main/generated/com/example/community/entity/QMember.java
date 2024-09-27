@@ -27,6 +27,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final EnumPath<com.example.community.domain.member.Role> role = createEnum("role", com.example.community.domain.member.Role.class);
 
+    public final StringPath social = createString("social");
+
     public final DateTimePath<java.time.LocalDateTime> temporaryblockdate = createDateTime("temporaryblockdate", java.time.LocalDateTime.class);
 
     public final StringPath usernick = createString("usernick");

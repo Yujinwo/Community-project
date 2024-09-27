@@ -12,93 +12,91 @@
                     border-radius:10px;
                     margin-bottom:30px;">
          <div style="border:1px solid black; border-radius:10px;">
+             <!-- 유저 닉네임 -->
              <div>
                  <div style="padding:20px">
-                     <span style="font-size:30px;" th:text="${#authentication.principal.usernick}"></span>
+                     <span style="font-size:30px;" th:text="${@authenticationUtil.getCurrentMember()?.usernick}"></span>
                  </div>
              </div>
+             <!-- 탭 -->
              <div style="border-top:1px solid black; border-top-width:1px;">
                  <ul class="nav nav-tabs" style="padding:20px">
+                     <!-- 작성한 글 -->
                      <li class="nav-item">
                          <a class="nav-link" aria-current="page" th:href="@{/mypage(type=article_list)}">작성한 글</a>
                      </li>
+                     <!-- 작성한 댓글 -->
                      <li class="nav-item">
                          <a class="nav-link" th:href="@{/mypage(type=comment_list)}" >작성한 댓글</a>
                      </li>
+                     <!-- 즐겨찾기 -->
                      <li class="nav-item">
                          <a class="nav-link" href="/mypage?type=bookmark_list">즐겨찾기</a>
                      </li>
+                     <!-- 내 정보 수정 -->
                      <li class="nav-item">
                          <a class="nav-link active" href="/mypage?type=edit_profile">내 정보 수정</a>
                      </li>
                  </ul>
              </div>
          </div>
-         <div class="input-group mb-3" style="width:500px; margin: 0 auto;">
+         <!-- 닉네임 입력 -->
+         <div class="input-group mb-3" style="width:500px; margin: 0 auto; top:20px;">
              <span class="input-group-text" id="basic-addon1" style="margin:20px 0;">닉네임</span>
-             <input type="text" class="form-control" id="Usernick" placeholder="닉네임을 입력해주세요" aria-label="Usernick" aria-describedby="basic-addon1">
-             <button class="btn btn-outline-secondary" type="button" id="nickcheck_button" style="margin:20px 0;">중복 체크</button>
+             <input type="text" class="form-control" id="Usernick" placeholder="닉네임을 입력해주세요" aria-label="Usernick" aria-describedby="basic-addon1" th:value="${@authenticationUtil.getCurrentMember()?.usernick}">
          </div>
-         <div class="input-group mb-3" style="width:500px; margin: 0 auto; bottom:20px">
-             <span class="input-group-text" id="basic-addon2" style="margin:20px 0;">PW</span>
-             <input type="password" class="form-control" id="password"  placeholder="비밀번호를 입력해주세요" aria-label="password" aria-describedby="basic-addon1">
-
+         <!-- 원본 PW 입력 -->
+         <div class="input-group mb-3" style="width:500px; margin: 0 auto;" th:if="${@authenticationUtil.getCurrentMember()?.social == 'normal'}">
+             <span class="input-group-text" id="basic-addon4" style="margin:20px 0;">원본 PW</span>
+             <input type="password" class="form-control" id="originalpassword"  placeholder="원본 비밀번호를 입력해주세요" aria-label="password" aria-describedby="basic-addon1">
          </div>
-         <div class="input-group mb-3" style="width:500px; margin: 0 auto; bottom:40px">
-             <span class="input-group-text" id="basic-addon3" style="margin:20px 0;">PW 재확인</span>
+         <!-- 변경 PW 입력 -->
+         <div class="input-group mb-3" style="width:500px; margin: 0 auto; bottom:20px" th:if="${@authenticationUtil.getCurrentMember()?.social == 'normal'}">
+             <span class="input-group-text" id="basic-addon2" style="margin:20px 0;">변경 PW</span>
+             <input type="password" class="form-control" id="password"  placeholder="변경 비밀번호를 입력해주세요" aria-label="password" aria-describedby="basic-addon1">
+         </div>
+         <!-- 변경 PW 재입력 -->
+         <div class="input-group mb-3" style="width:500px; margin: 0 auto; bottom:40px" th:if="${@authenticationUtil.getCurrentMember()?.social == 'normal'}">
+             <span class="input-group-text" id="basic-addon3" style="margin:20px 0;">변경 PW 재확인</span>
              <input type="password" class="form-control" id="confirmPassword" placeholder="재확인 비밀번호를 입력해주세요" aria-label="confirmPassword" aria-describedby="basic-addon1">
-
          </div>
-         <div class="d-grid gap-2" style="width:500px; margin: 0 auto; position:relative; bottom:40px">
+         <div class="d-grid gap-2" style="width:500px; margin: 0 auto; position:relative; bottom:18px">
              <button class="btn btn-primary" id="prifileupdate_button" type="button">수정하기</button>
          </div>
      </div>
+
     <script inline="javascript">
-        var nickcheckstate = "false";
+        var updatedata;
         const token = $("meta[name='_csrf']").attr("content")
         const header = $("meta[name='_csrf_header']").attr("content");
+        // 소셜 로그인 여부
+        const social = '[[${@authenticationUtil.getCurrentMember()?.social}]]';
         $(document).ready(function() {
 
-            $('#nickcheck_button').click(function() {
-            var checkdata = {
-                      Usernick : $('#Usernick').val()
-                }
-                $.ajax({
-                         type:'get',
-                         contentType:'application/json',
-                         data:JSON.stringify(checkdata),
-                         url:'/api/usernicks',
-                         success:function(data){
-                             alert(data);
-                             nickcheckstate = "true";
-                         },
-                         beforeSend : function(xhr) {
-                                      xhr.setRequestHeader(header, token);
-                         },
-                         error: function(e) {
-                             alert(e.responseText);
-                             nickcheckstate = "false";
-                         }
-                });
-
-            });
             $('#prifileupdate_button').click(function(event) {
-                 if(nickcheckstate == "false") {
-                  alert('닉네임 체크를 해주세요.');
-                  return;
-                 }
                 event.preventDefault();
-                var password = $('#password').val();
-                var confirmPassword = $('#confirmPassword').val();
-                if (password !== confirmPassword) {
-                    alert('비밀번호가 일치하지 않습니다.');
-                    return;
+                // 소셜 로그인이 아닐 시
+                if(social == "normal")
+                {
+                    var password = $('#password').val();
+                    var confirmPassword = $('#confirmPassword').val();
+                    if (password !== confirmPassword) {
+                        alert('변경 비밀번호와 재확인 비밀번호를 일치 시켜주세요.');
+                        return;
+                    }
+                    updatedata = {
+                          usernick : $('#Usernick').val(),
+                          originaluserpw : $('#originalpassword').val(),
+                          userpw : password,
+                          confirmuserpw : confirmPassword
+                    }
                 }
-                var updatedata = {
-                      usernick : $('#Usernick').val(),
-                      userpw : password,
-                      confirmuserpw : confirmPassword
+                else {
+                     updatedata = {
+                          usernick : $('#Usernick').val(),
+                     }
                 }
+                // 회원 정보 수정
                 $.ajax({
                          type:'patch',
                          contentType:'application/json',

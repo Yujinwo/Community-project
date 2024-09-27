@@ -10,7 +10,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+// 상세 페이지 댓글 조회 DTO
 @Getter
 @Builder
 @NoArgsConstructor
@@ -18,31 +18,25 @@ import java.util.List;
 public class CommentResponseDto {
     @NotNull
     private Long id;
-    // 댓글 내용 사이즈 1~280자
     @NotNull
     @Size(min = 1,max = 280,message = "댓글은 1~280자 이내로 작성해주세요")
     private String content;
-    // 멤버 Entity
     @NotNull
     private Member member;
-    // 글 Entity
     @NotNull
     private Article article;
-    // 작성 시간
     @NotNull
     private LocalDateTime createdDate;
-    // 수정 시간
     @NotNull
     private LocalDateTime modifiedDate;
-    // 부모 댓글
     private Comment parent;
-    // 대댓글
+    // 대댓글 컬렉션
     private List<Comment> child;
-    // 대댓글이 있는 상태에서 부모 댓글 삭제 여부
+    // 대댓글이 있는 상태에서 댓글 삭제 여부
     @NotNull
     private Boolean deleted;
     @NotNull
-    // 댓글 번호
+    // 최상위 부모 댓글 번호
     private Long commentnumber;
     @NotNull
     // 댓글 깊이

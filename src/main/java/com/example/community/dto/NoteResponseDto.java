@@ -5,7 +5,7 @@ import com.example.community.entity.Member;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
+// 쪽지 조회 DTO
 @Getter
 @Builder
 @NoArgsConstructor

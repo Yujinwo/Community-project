@@ -10,28 +10,35 @@
                     border-radius:10px;
                     margin-bottom:30px;">
          <div style="border:1px solid black; border-radius:10px;">
+             <!-- 유저 닉네임 -->
              <div>
                  <div style="padding:20px">
-                     <span style="font-size:30px;" th:text="${#authentication.principal.usernick}"></span>
+                     <span style="font-size:30px;" th:text="${@authenticationUtil.getCurrentMember()?.usernick}"></span>
                  </div>
              </div>
+             <!-- 탭 -->
              <div style="border-top:1px solid black; border-top-width:1px;">
                  <ul class="nav nav-tabs" style="padding:20px">
+                     <!-- 작성한 글 -->
                      <li class="nav-item">
                          <a class="nav-link" aria-current="page" th:href="@{/mypage(type=article_list)}">작성한 글</a>
                      </li>
+                     <!-- 작성한 댓글 -->
                      <li class="nav-item">
                          <a class="nav-link" th:href="@{/mypage(type=comment_list)}" >작성한 댓글</a>
                      </li>
+                     <!-- 즐겨찾기 -->
                      <li class="nav-item">
                          <a class="nav-link active" href="/mypage?type=bookmark_list">즐겨찾기</a>
                      </li>
+                     <!-- 내 정보 수정 -->
                      <li class="nav-item">
                          <a class="nav-link" href="/mypage?type=edit_profile">내 정보 수정</a>
                      </li>
                  </ul>
              </div>
          </div>
+         <!-- 즐겨찾기 리스트 div -->
          <div>
              <ul th:each="item : ${bookmark}">
                  <li>
@@ -45,6 +52,7 @@
                         justify-content: center;
                         align-items: center;
                     }">
+                                <!-- 글 번호 -->
                                 <span style="border-radius:20px; border:1px solid blue" th:text="${item.bookmark_id}"/>
                          </div>
 
@@ -52,14 +60,13 @@
                          <div style="
                          margin:0 auto;
                          width:600px" >
+                             <!-- 글 제목 -->
                              <a th:href="@{/articles/{id}(id=${item.article_id})}" th:text="${item.article_title}">
                              </a>
                          </div>
                      </div>
                  </li>
              </ul>
-
-
          </div>
          <!-- 즐겨찾기 페이지 리스트 -->
          <div th:if="${endPage != 0}" class="paging_list">

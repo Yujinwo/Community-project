@@ -6,7 +6,7 @@ import lombok.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
-
+// 쪽지 조회 커스텀 DTO
 @Getter
 @Builder
 @AllArgsConstructor

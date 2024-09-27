@@ -1,3 +1,4 @@
+/* 즐겨찾기 off 버튼 */
 .bookmark {
         display: inline-block; /* span을 블록 요소처럼 표시하거나, */
         margin-top:5px;
@@ -7,6 +8,7 @@
         background-size: cover; /* 배경 이미지 크기 조절 */
         background-position: center; /* 배경 이미지 위치 조절 */
 }
+/* 즐겨찾기 On 버튼 */
 .bookmark.active {
         background-image: url('../images/bookmark_on.png');
 }
@@ -81,22 +83,10 @@ background-color: #000000;
 top:5px;
 width:100px
 }
-.nickcheck_btn {
-position:relative;
-border-radius:10px;
-color:#FFFFFF;
-margin:15px 5px 5px 5px;
-height:40px;
-border:3px solid #000000;
-background-color: #000000;
-top:5px;
-width:150px
-}
 /* 버튼 flex */
 .button_flex {
 display:flex;
 }
-
 /* 작성,수정,로그인,회원가입 form */
 .form_middle {
 margin: 100px auto;
@@ -254,42 +244,18 @@ margin:0 auto;
 width:800px;
 display:flex;
 }
+/* Home 페이지 검색 창 div */
 .search_header {
 margin:0 auto;
 width:800px;
 display:flex;
 }
-
-.search_box {
-  padding-left:300px;
-
-}
-
-.search_box input {
-    padding: 5px 50px;
-    font-size: 16px;
-    padding-right : 50px;
-}
-
-.search_box button {
-    padding: 5px 10px;
-    margin-left: 10px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
+/* 글 작성 버튼 */
 .article_button {
     margin-left: auto;
 }
 
-
-.tag-container {
-  flex-wrap: wrap;
-  border: 1px solid #ccc;
-  padding: 5px;
-  width: 100%;
-}
-
+/* 태그 리스트 div */
 .detail_tag-container {
   display: flex;
   flex-wrap: wrap;
@@ -298,6 +264,7 @@ display:flex;
    width: 800px;
 }
 
+/* 태그 리스트 ul */
 #tag-list {
   list-style-type: none;
   margin-top: 10px;
@@ -305,7 +272,7 @@ display:flex;
   display: flex;
   flex-wrap: wrap;
 }
-
+/* 태그 요소 li */
 #tag-list li {
   background-color: #e0e0e0;
   border-radius: 3px;
@@ -315,15 +282,16 @@ display:flex;
   align-items: center;
 }
 
+/* 태그 텍스트 */
 #tag-list li .tag-text {
   margin-right: 5px;
 }
-
+/* 태그 삭제버튼 */
 #tag-list li .remove-tag {
   cursor: pointer;
   color: #a00;
 }
-
+/* 태그 입력창 */
 #tag-input {
   border: none;
   outline: none;
@@ -332,7 +300,7 @@ display:flex;
   min-width: 50px;
   width: 480px;
 }
- /* 알림 팝업의 기본 스타일 */
+/* 알림 팝업 메인 */
 .notification {
                  width:250px;
                  overflow-y: auto;
@@ -342,6 +310,7 @@ display:flex;
                 background-color: #fff; /* 배경색 설정 */
                 position: absolute; /* 위치를 절대값으로 설정 */
 }
+/* 알림 팝업 상단바 */
 .notification-popup {
                 background-color: white;
                 box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -352,17 +321,16 @@ display:flex;
                 z-index: 1000;
                 top:5%;
 }
+/* 알림 팝업 상단바 제목 */
 .notification-popup h2 {
                 margin-top: 0;
 }
-
-.notification h2 {
-            margin-top: 0;
-}
+/* 알림 리스트 ul */
 .notification ul {
             list-style-type: none;
             padding: 0;
 }
+/* 알림 요소 li */
 .notification li {
             padding: 10px;
             border-bottom: 1px solid #ddd;
@@ -371,16 +339,20 @@ display:flex;
             cursor: pointer;
             transition: background-color 0.3s ease;
 }
+/* 알림 요소 li hover*/
 .notification li:hover {
             background-color: #f9f9f9;
 }
+/* 알림 메시지 보낸자 */
 .notification .notification-nametext {
            font-weight: bold;
            font-size : 15px;
 }
+/* 알림 메세지 내용 */
 .notification .notification-text {
             flex: 1; /* 텍스트가 넘칠 경우 자동으로 줄바꿈 되도록 설정 */
 }
+/* 알림 메세지 작성시간 */
 .notification .notification-time {
             color: #999;
             font-size: 12px;

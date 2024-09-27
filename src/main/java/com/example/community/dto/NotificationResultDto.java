@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
-
+// 알림 조회 커스텀 DTO
 @Getter
 @Builder
 @NoArgsConstructor

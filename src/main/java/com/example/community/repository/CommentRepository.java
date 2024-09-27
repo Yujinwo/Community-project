@@ -15,8 +15,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment,Long>, UserRepositoryCustom {
-
-    @Query("SELECT e FROM Comment e WHERE e.article.id = :boardId")
-    Page<Comment> findByboardld(@Param("boardId") Long boardId, Pageable pageable);
-
 }

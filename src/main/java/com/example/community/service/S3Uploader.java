@@ -62,6 +62,7 @@ public class S3Uploader {
         throw new IllegalArgumentException(String.format("파일 변환에 실패했습니다. %s", originalFileName));
     }
 
+    // S3 이미지 업로드
     private String putS3(File uploadFile, String fileName) {
         amazonS3.putObject(new PutObjectRequest(bucket, fileName, uploadFile)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
@@ -87,11 +88,4 @@ public class S3Uploader {
         }
     }
 
-    public String updateFile(MultipartFile newFile, String oldFileName) throws IOException {
-        // 기존 파일 삭제
-        log.info("S3 oldFileName: " + oldFileName);
-        deleteFile(oldFileName);
-        // 새 파일 업로드
-        return upload(newFile);
-    }
 }

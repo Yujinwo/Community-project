@@ -3,17 +3,17 @@ package com.example.community.dto;
 import com.example.community.entity.Article;
 import com.example.community.entity.Comment;
 import com.example.community.entity.Member;
-
+// 댓글 저장 dto
 public class CommentSaveDto {
     private String content;
-    // 멤버 Entity
     private Member member;
-    // 글 Entity
     private Article article;
     // 부모댓글
     private Comment parent;
+    // 최상위 부모 댓글 번호
     private Long commentnumber;
-    // 댓글 번호
+
+    // 부모 댓글 번호
     private Long commentorder;
     // 댓글 깊이
     private int redepth;

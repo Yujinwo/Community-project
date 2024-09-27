@@ -4,7 +4,7 @@
 <meta name="_csrf" th:content="${_csrf.token}"/>
 <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <th:block layout:fragment="content">
-
+    <!-- 상단바 제목 -->
     <div style="
     margin: 0 auto;
     width: 800px;
@@ -19,9 +19,11 @@
     width: 800px;
     padding-left:720px;
     margin-bottom: 30px;">
+        <!-- 쪽지 차단 버튼 -->
         <a href="javascript:;">
-        <span id="note_block_button">쪽지 차단</span>
+            <span id="note_block_button">쪽지 차단</span>
         </a>
+        <!-- 쪽지 차단 더보기 메뉴창 -->
         <div id="Note_blockpage" class="list-group" style="position:absolute; display:none; padding-left:20px">
             <ul>
                 <a href="javascript:;" id="Temporary_Block" class="list-group-item list-group-item-action">
@@ -36,7 +38,7 @@
             </ul>
         </div>
     </div>
-
+    <!-- 테이블 -->
     <div style="
     margin: 0 auto;
     width: 800px;
@@ -55,9 +57,11 @@
             </thead>
             <tbody class="table-group-divider">
             <tr class="border-bottom" th:each="item : ${notelists}">
-
+                    <!-- 쪽지 번호 -->
                     <th th:text="${item.id}" scope="row"></th>
+                    <!-- 쪽지 보낸 사람 -->
                     <td th:text="${item.writer.usernick}" ></td>
+                    <!-- 쪽지 내용 -->
                     <td style="
                     max-width: 50px;
                     white-space: nowrap;
@@ -65,8 +69,8 @@
                 text-overflow: ellipsis;">
                      <a href="javascript:;" th:onclick="'receivenote(' + ${item.id} + ')'" th:text="${item.message}" >  </a>
                     </td>
+                    <!-- 쪽지 보낸 시각 -->
                     <td th:text="${item.createdDate}"></td>
-
             </tr>
             </tbody>
         </table>
@@ -97,13 +101,12 @@
         const token = $("meta[name='_csrf']").attr("content")
         const header = $("meta[name='_csrf_header']").attr("content");
         $(document).ready(function() {
-
-
+                // 쪽지 차단 버튼 클릭시 차단 더보기 메뉴창
                 $("#note_block_button").click(function() {
                          $("#Note_blockpage").show();
                 });
 
-
+                // 임시 차단
                 $("#Temporary_Block").click(function() {
                                                $.ajax({
                                             　　type:'patch'
@@ -123,9 +126,10 @@
                                             　　}
                                                });
 
+                });
 
-                  });
-                 if($("#Permanent_Block") != null) {
+                // 영구 차단
+                if($("#Permanent_Block") != null) {
                      $("#Permanent_Block").click(function() {
                                              $.ajax({
                                             　　type:'patch'
@@ -146,6 +150,8 @@
                                                });
                      });
                   }
+
+                 // 영구 차단 해제
                  if($("#Remove_Permanent_Block") != null) {
                      $("#Remove_Permanent_Block").click(function() {
                                              $.ajax({
@@ -165,19 +171,19 @@
                                                 alert(e.responseText);
                                             　　}
                                                });
-
                      });
                   }
-
+                  // 특정 창 제외하고 나머지 요소를 클릭할 시 창 숨기기
                   $(document).click(function(event) {
+                  // 쪽지 차단 더보기 메뉴창 자식 요소 / 쪽지 차단 버튼을 제외한 좌표를 클릭시 더보기 메뉴창 숨기기
                    if(!$("#Note_blockpage").has(event.target).length && !$("#note_block_button").is(event.target) ) {
                       $("#Note_blockpage").hide();
                    }
                });
             });
-
-
+            // 받은 쪽지 클릭시
             function receivenote(id) {
+                 // 쪽지 상세 조회 페이지로 이동
                  window.open('/notes/' + id, '쪽지', 'width=400,height=420');
             }
 

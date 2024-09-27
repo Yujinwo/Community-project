@@ -22,7 +22,6 @@
         <!-- 닉네임 입력창 -->
         <div class="join_nickcheck">
             <input type="text" id="usernick" name="usernick" class="form-control" placeholder="닉네임" />
-            <button class="nickcheck_btn" onclick="nickcheck()">닉네임 체크</button>
         </div>
         <span style="color:#0054FF" id="usernickError"></span>
         <!-- 회원가입 버튼 -->
@@ -34,7 +33,6 @@
 
     <script th:inline="javascript">
         var idcheckdstate = "false";
-        var nickcheckdstate = "false";
         const token = $("meta[name='_csrf']").attr("content");
         const header = $("meta[name='_csrf_header']").attr("content");
         // ID 중복체크
@@ -43,7 +41,7 @@
                       email : $('#email').val()
                 }
                 $.ajax({
-                         type:'get',
+                         type:'post',
                          contentType:'application/json',
                          data:JSON.stringify(checkdata),
                          url:'/api/userids',
@@ -61,39 +59,12 @@
                 });
         };
 
-        function nickcheck() {
-                var checkdata = {
-                      Usernick : $('#usernick').val()
-                }
-                $.ajax({
-                         type:'get',
-                         contentType:'application/json',
-                         data:JSON.stringify(checkdata),
-                         url:'/api/usernicks',
-                         success:function(data){
-                             alert(data);
-                             nickcheckdstate = "true";
-                         },
-                         beforeSend : function(xhr) {
-                                      xhr.setRequestHeader(header, token);
-                         },
-                         error: function(e) {
-                             alert(e.responseText);
-                             nickcheckdstate = "false";
-                         }
-                });
-        };
         // 회원가입
         function joinBtn() {
                  if(idcheckdstate == "false")
                  {
-                 alert('ID 체크를 해주세요.');
-                  return;
-                 }
-                  if(nickcheckdstate == "false")
-                 {
-                 alert('닉네임 체크를 해주세요.');
-                  return;
+                      alert('ID 체크를 해주세요.');
+                      return;
                  }
                 var joindata = {
                   email : $('#email').val(),

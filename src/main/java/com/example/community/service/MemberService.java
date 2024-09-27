@@ -1,5 +1,6 @@
 package com.example.community.service;
 
+import com.example.community.config.CustomOAuth2User;
 import com.example.community.config.CustomUserDetails;
 import com.example.community.dto.MemberDto;
 import com.example.community.dto.updateMemberDto;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +34,6 @@ public class MemberService {
     // 회원 생성
     @Transactional
     public Member addUser(MemberDto requestDto) {
-        // MemberDto를 받아와서 패스워드를 암호화하고 회원을 생성한다
         Member member = memberRepository.save(requestDto.toEntity());
         // Member Entity가 null 일시 예외 상황 발생
         if (member == null) {
@@ -40,14 +41,14 @@ public class MemberService {
         }
         return member;
     }
-    // ID 중복 체크
+
+    // ID 조회
     @Transactional(readOnly = true)
     public Boolean idcheck(String email) {
-        // 이메일을 이용해서 회원을 조회한다
+        // 이메일을 이용해서 회원 조회
         Optional<Member> member = memberRepository.findByEmail(email);
         // 회원이 존재할 경우
         if(member.isPresent()){
-            // Member Entity를 return 한다
             return true;
         }
         else{
@@ -55,11 +56,12 @@ public class MemberService {
         }
 
     }
+    // 닉네임 조회
     @Transactional(readOnly = true)
     public Boolean nickcheck(String usernick) {
-        // 닉네임 중복 체크
+        // 닉네임 조회
         Optional<Member> byusernick = memberRepository.findByusernick(usernick);
-
+        // 닉네임이 존재하면
         if(byusernick.isPresent()){
             return true;
         }
@@ -67,8 +69,8 @@ public class MemberService {
             return false;
         }
 
-
     }
+    // 회원 정보 수정
     @Transactional
     public ResponseEntity<Map<String, String>> updateUser(updateMemberDto requestDto) {
         Member user = authenticationUtil.getCurrentMember();
@@ -77,20 +79,44 @@ public class MemberService {
         if(byEmail.isPresent())
         {
             Map<String, String> resultdata = new HashMap<>();
+            //소셜 로그인 이면
+            if(!user.getSocial().equals("normal")) {
+                // 닉네임만 변경
+                byEmail.get().changeUserNick(requestDto.getUsernick());
+                em.flush();
+                em.clear();
+                // 인증 유저 정보를 갱신
+                CustomOAuth2User userDetails = (CustomOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                userDetails.changeMyProfile(byEmail.get().getUsernick());
+                resultdata.put("result","회원 정보 수정이 완료되었습니다.");
+                return ResponseEntity.status(HttpStatus.OK).body(resultdata);
+            }
+
             //닉네임이 같으면
-            if( byEmail.get().getUsernick().equals(requestDto.getUsernick()) ) {
-                if(passwordEncoder.matches(requestDto.getUserpw(),user.getUserpw()) ){
+            else if( byEmail.get().getUsernick().equals(requestDto.getUsernick()) ) {
+                if(!passwordEncoder.matches(requestDto.getOriginaluserpw(),user.getUserpw()) ){
+                    resultdata.put("result","현재 사용하고 있는 비밀번호와 일치하지 않습니다.");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultdata);
+                }
+                else if(passwordEncoder.matches(requestDto.getUserpw(),user.getUserpw()) ){
                     resultdata.put("result","현재 사용하고 있는 비밀번호입니다.");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultdata);
                 }
                 //비밀번호 변경
                 byEmail.get().changeUserPw(passwordEncoder.encode(requestDto.getUserpw()));
+                em.flush();
+                em.clear();
+                // 인증 유저 정보를 갱신
+                CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                userDetails.changeMyProfile(byEmail.get().getUsernick(),byEmail.get().getUserpw());
+
                 resultdata.put("result","회원 정보 수정이 완료되었습니다.");
                 return ResponseEntity.status(HttpStatus.OK).body(resultdata);
             }
+            // 닉네임이 다르면
             else {
-                if(this.nickcheck(requestDto.getUsernick())){
-                    resultdata.put("result","닉네임 중복체크를 해주세요.");
+                if(!passwordEncoder.matches(requestDto.getOriginaluserpw(),user.getUserpw()) ){
+                    resultdata.put("result","현재 사용하고 있는 비밀번호와 일치하지 않습니다.");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultdata);
                 }
                 else if(passwordEncoder.matches(requestDto.getUserpw(),user.getUserpw()) ){
@@ -103,8 +129,10 @@ public class MemberService {
                     byEmail.get().changeUserPw(passwordEncoder.encode(requestDto.getUserpw()));
                     em.flush();
                     em.clear();
+                    // 인증 유저 정보를 갱신
                     CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                     userDetails.changeMyProfile(byEmail.get().getUsernick(),byEmail.get().getUserpw());
+
                     resultdata.put("result","회원 정보 수정이 완료되었습니다.");
                     return ResponseEntity.status(HttpStatus.OK).body(resultdata);
                 }

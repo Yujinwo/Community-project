@@ -28,7 +28,9 @@ public class QComment extends EntityPathBase<Comment> {
 
     public final ListPath<Comment, QComment> child = this.<Comment, QComment>createList("child", Comment.class, QComment.class, PathInits.DIRECT2);
 
-    public final NumberPath<Integer> commentnumber = createNumber("commentnumber", Integer.class);
+    public final NumberPath<Long> commentnumber = createNumber("commentnumber", Long.class);
+
+    public final NumberPath<Long> commentorder = createNumber("commentorder", Long.class);
 
     public final StringPath content = createString("content");
 
