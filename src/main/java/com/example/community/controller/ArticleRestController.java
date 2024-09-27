@@ -12,10 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 public class ArticleRestController {
@@ -30,18 +32,28 @@ public class ArticleRestController {
     }
 
 
-    // 글 작성 기능
+    // 글 작성
     @PostMapping("/api/articles")
     public ResponseEntity<Map<String,String>> write(@Valid @RequestPart(value = "key") ArticleRequestDto articleRequestDto, @RequestPart(required = false,value = "value") List<MultipartFile> files) {
+        int filesize = 0;
+        if(files != null)
+            filesize = files.size();
 
-        //태그가 10개 넘어갈 시
-        if(articleRequestDto.getTags().size() > 10){
+        //태그가 10개 넘어갈 시 || 이미지 + 파일이 2개 이상일 시
+        if(articleRequestDto.getTags().size() > 10 || articleRequestDto.getImageUrls().size() + filesize > 2){
             Map<String,String> responseJson = new HashMap<>();
             responseJson.put("message" , "허용되지 않은 사이즈 입니다.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseJson);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
+        }
+        // 유저 인증 및 글 조회 실패 시
+        Optional<Object> optionalarticle = articleService.write(articleRequestDto, files);
+        if(optionalarticle.isEmpty())
+        {
+            Map<String,String> responseJson = new HashMap<>();
+            responseJson.put("message" , "허용되지 않은 접근 입니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
 
-        articleService.write(articleRequestDto,files);
         // json 메세지 생성
         Map<String,String> responseJson = new HashMap<>();
         responseJson.put("message" , "글 작성 완료했습니다");
@@ -49,11 +61,35 @@ public class ArticleRestController {
 
     }
 
-    // 글 삭제 기능
+
+    // 글 수정
+    @PutMapping("/api/articles")
+    public ResponseEntity<Map<String,String>> update(@Valid @RequestPart(value = "key") ArticleRequestDto articleRequestDto, @RequestPart(required = false,value = "value") List<MultipartFile> files)
+    {
+        Optional<Object> optionalarticle = articleService.update(articleRequestDto,files);
+
+        // json 메세지 생성
+        Map<String,String> responseJson = new HashMap<>();
+        if (optionalarticle.isEmpty()) {
+            responseJson.put("message" , "허용되지 않은 접근 입니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
+        }
+        responseJson.put("message" , "글 수정 완료했습니다");
+        return ResponseEntity.status(HttpStatus.OK).body(responseJson);
+    }
+
+    // 글 삭제
     @DeleteMapping("/api/articles/{id}")
     public ResponseEntity<Map<String,String>> delete(@Valid @PathVariable Long id)
     {
-        articleService.delete(id);
+        // 유저 인증 및 글 조회 실패 시
+        Optional<Object> optionalarticle = articleService.delete(id);
+        if(optionalarticle.isEmpty())
+        {
+            Map<String,String> responseJson = new HashMap<>();
+            responseJson.put("message" , "허용되지 않은 접근 입니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
+        }
 
         // json 메세지 생성
         Map<String,String> responseJson = new HashMap<>();
@@ -66,25 +102,15 @@ public class ArticleRestController {
     @PostMapping("/api/bookmarks/{id}")
     public ResponseEntity<Map<String,String>> setbookmark(@PathVariable Long id)
     {
-        if(id == null)
-        {
-            Map<String,String> responseMap = new HashMap<>();
-            responseMap.put("message","비정상적인 데이터입니다.");
-             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
-        }
-        else {
-
-            String responseJson = articleService.setBookmark(id);
-
-            Map<String,String> responseMap = new HashMap<>();
-            responseMap.put("message" , responseJson);
-            if(responseJson.equals("올바른 데이터 접근이 아닙니다."))
-            {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
-            }
-
-            return ResponseEntity.status(HttpStatus.OK).body(responseMap);
-        }
+           Map<String,String> responseMap = new HashMap<>();
+           Optional<Object> optionalbookmark = articleService.setBookmark(id);
+           if(optionalbookmark.isEmpty())
+           {
+               responseMap.put("message" , "허용되지 않은 접근 입니다.");
+               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+           }
+           responseMap.put("message" , "즐겨 찾기 등록 완료했습니다.");
+           return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 
     }
     // 즐겨찾기 삭제
@@ -92,78 +118,73 @@ public class ArticleRestController {
     public ResponseEntity<Map<String,String>> deletebookmark(@PathVariable Long id)
     {
 
-        if(id == null)
+        Map<String,String> responseMap = new HashMap<>();
+        Optional<Object> optionalbookmark = articleService.deleteBookmark(id);
+        if(optionalbookmark.isEmpty())
         {
-            Map<String,String> responseMap = new HashMap<>();
-            responseMap.put("message","비정상적인 데이터입니다.");
+            responseMap.put("message" , "허용되지 않은 접근 입니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
         }
-        else {
-
-            String responseJson = articleService.deleteBookmark(id);
-
-            Map<String,String> responseMap = new HashMap<>();
-            responseMap.put("message" , responseJson);
-            if(responseJson.equals("올바른 데이터 접근이 아닙니다."))
-            {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
-            }
-
-            return ResponseEntity.status(HttpStatus.OK).body(responseMap);
-        }
+        responseMap.put("message" , "즐겨 찾기 등록 완료했습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 
     }
 
-    // 글 수정
-    @PutMapping("/api/articles")
-    public ResponseEntity<Map<String,String>> update(@Valid @RequestPart(value = "key") ArticleRequestDto articleRequestDto, @RequestPart(required = false,value = "value") List<MultipartFile> files)
-    {
-       Article article = articleService.update(articleRequestDto,files);
-
-       // json 메세지 생성
-       Map<String,String> responseJson = new HashMap<>();
-       if (article == null) {
-           responseJson.put("message" , "제목과 내용을 수정해주세요");
-       }
-       else{
-           responseJson.put("message" , "글 수정 완료했습니다");
-       }
-
-        return ResponseEntity.status(HttpStatus.OK).body(responseJson);
-    }
     // 댓글 작성
     @PostMapping("/api/comments")
     public ResponseEntity<Map<String,String>> commentwrite(@Valid @RequestBody CommentRequestDto commentRequestDto) {
 
-        Notification notification = articleService.commentwrite(commentRequestDto);
-        // SSE 댓글 메세지 전송
-        notificationService.sendRealTimeNotification(notification);
-
         // json 메세지 생성
         Map<String,String> responseJson = new HashMap<>();
+        Optional<Object> notification = articleService.commentwrite(commentRequestDto);
+
+        if(notification.isEmpty())
+        {
+            responseJson.put("message" , "허용되지 않은 접근 입니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
+        }
+
+        // SSE 댓글 메세지 전송
+        Optional<Object> optionalobject = notificationService.sendRealTimeNotification((Notification) notification.get());
+        if(optionalobject.isEmpty())
+        {
+            responseJson.put("message" , "전송 실패 했습니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
+        }
         responseJson.put("message" , "댓글 작성 완료했습니다");
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
+
     // 댓글 삭제
     @DeleteMapping("/api/comments/{id}")
     public ResponseEntity<Map<String,String>> commentdelete(@PathVariable Long id) {
 
-        articleService.commentdelete(id);
-
         // json 메세지 생성
         Map<String,String> responseJson = new HashMap<>();
+        Optional<Object> deletedcomment = articleService.commentdelete(id);
+        if(deletedcomment.isEmpty())
+        {
+            responseJson.put("message" , "허용되지 않은 접근 입니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
+        }
+
         responseJson.put("message" , "댓글 삭제 완료했습니다");
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
+
     // 대댓글 작성
     @PostMapping("/api/replys")
     public ResponseEntity<Map<String,String>> replywrite(@Valid @RequestBody CommentRequestDto ReplyRequestDto) {
-
-        articleService.replywrite(ReplyRequestDto);
-
         // json 메세지 생성
         Map<String,String> responseJson = new HashMap<>();
-        responseJson.put("message" , "답글 작성 완료했습니다");
+        Optional<Object> reply =  articleService.replywrite(ReplyRequestDto);
+        if(reply.isEmpty())
+        {
+            responseJson.put("message" , "허용되지 않은 접근 입니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
+        }
+
+        responseJson.put("message" , "대댓글 작성 완료했습니다");
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
 

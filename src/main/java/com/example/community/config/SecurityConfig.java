@@ -92,7 +92,7 @@ public class SecurityConfig{
                         authorizeRequests
                                 .requestMatchers("/admin").hasRole("ADMIN")
                                 .requestMatchers("/login","/join").anonymous()
-                                .requestMatchers(HttpMethod.POST,"/api/articles","/articles/**","/api/notes","/api/replys","/api/comments","/api/bookmarks").hasRole("USER")
+                                .requestMatchers(HttpMethod.POST,"/api/articles","/articles/**","/api/notes","/api/replys","/api/comments","/api/bookmarks","/logout").hasRole("USER")
                                 .requestMatchers(HttpMethod.PUT,"/api/articles").hasRole("USER")
                                 .requestMatchers(HttpMethod.PATCH,"/api/noteblocks","/api/users").hasRole("USER")
                                 .requestMatchers(HttpMethod.GET,"/articles/*/edit","/articles/new","/mypage","/notes","/notes/**","/profile","/api/notifications","/api/notifications/**").hasRole("USER")

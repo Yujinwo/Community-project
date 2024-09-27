@@ -21,7 +21,7 @@
        </select>
     </div>
     <!-- 작성된 글 리스트가 없을 시 문구 표시 -->
-    <div th:if="${endPage == 0}" class="article">
+    <div th:unless="${pageable.hasResult}" class="article">
         <h2>첫 글의 주인공이 되어 보세요!</h2></br>
         <h5>글을 작성해보세요!</h5>
     </div>
@@ -95,6 +95,12 @@
     </div>
 
     <script th:inline="javascript">
+
+        // 오류 메세지를 가지고 Home으로 리다이렉트 될때 오류 메세지 출력
+        if([[${errorMessage}]] != null)
+        {
+             alert([[${errorMessage}]]);
+        }
 
         $(document).ready(function() {
             // 글 작성자 클릭시 더보기 메뉴창

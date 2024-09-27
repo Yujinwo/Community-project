@@ -32,9 +32,8 @@ public class NotificationRestController {
         if(member != null){
             return notificationService.createEmitter(member.getId());
         }
-        else {
-            return null;
-        }
+        return null;
+
 
     }
     @GetMapping(path = "/api/notifications")

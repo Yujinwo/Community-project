@@ -4,6 +4,8 @@ import com.example.community.entity.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 public interface UserRepositoryCustom {
     // 글 조회
     Page<Article> findByArticlelist(Pageable pageable, String sort);
@@ -14,7 +16,7 @@ public interface UserRepositoryCustom {
     // 글 태그 검색 조회
     Page<Tag> findByTagContaining(String sort, String query, Pageable pageable, Boolean tagsearch);
     // 글과 글 작성자 FecthJoin 조회
-    Article findByArticleAndMemberlist(Long Id);
+    Optional<Article> findByArticleAndMemberlist(Long Id);
     // 댓글 조회
     Page<Comment> findByCommentlist(Long boardId, Pageable pageable);
     // 내 댓글 조회

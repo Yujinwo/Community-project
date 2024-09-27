@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
@@ -28,13 +29,18 @@ public class ProfileController {
     private final MemberRepository memberRepository;
     private final AuthenticationUtil authenticationUtil;
     @GetMapping("/profile")
-    public String profile(@RequestParam(name = "userid",defaultValue = "0") Long userid,@RequestParam(name = "type",required = true,defaultValue = "article_list") String type,Model model,Pageable pageable) {
+    public String profile(@RequestParam(name = "userid",defaultValue = "0") Long userid,@RequestParam(name = "type",defaultValue = "article_list") String type,Model model,Pageable pageable, RedirectAttributes redirectAttributes) {
 
         Member user = null;
         // userid가 기본값일 시 MY페이지로 이동
         if(userid == 0)
         {
             user = authenticationUtil.getCurrentMember();
+            // 유저 데이터가 없으면
+            if (user != null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다.");
+                return "redirect:/"; // 홈으로 리다이렉트
+            }
             // 내 쪽지 전체 페이징처리 조회
             MyArticleResultDto articles = articleService.findMyArticleList(user,pageable);
             // 최소 페이지
@@ -57,9 +63,12 @@ public class ProfileController {
                 user = Optionaluser.get();
                 model.addAttribute("user",user);
             }
+            else {
+                redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다.");
+                return "redirect:/"; // 홈으로 리다이렉트
+            }
 
         }
-
 
         if(type.equals("article_list"))
         {
@@ -96,7 +105,5 @@ public class ProfileController {
             return "profile_article";
         }
     }
-
-
 
 }

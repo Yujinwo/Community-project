@@ -46,7 +46,6 @@ public class MemberController {
         return "authorization_fail";
     }
 
-
     @PostMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         // Securoty Context에 저장한 인증 객체 불러오기

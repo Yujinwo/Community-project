@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,13 +31,13 @@ public class MemberService {
 
     // 회원 생성
     @Transactional
-    public Member addUser(MemberDto requestDto) {
-        Member member = memberRepository.save(requestDto.toEntity());
-        // Member Entity가 null 일시 예외 상황 발생
-        if (member == null) {
-            throw  new RuntimeException("회원가입에 실패했습니다.");
+    public Optional<Object> addUser(MemberDto requestDto) {
+        Optional<Member> member = Optional.ofNullable(memberRepository.save(requestDto.toEntity()));
+        if(member.isEmpty())
+        {
+            return Optional.ofNullable(null);
         }
-        return member;
+        return Optional.ofNullable(member);
     }
 
     // ID 조회
@@ -72,15 +70,22 @@ public class MemberService {
     }
     // 회원 정보 수정
     @Transactional
-    public ResponseEntity<Map<String, String>> updateUser(updateMemberDto requestDto) {
+    public Optional<Object> updateUser(updateMemberDto requestDto) {
+        // 인증된 Member Entity 가져오기
         Member user = authenticationUtil.getCurrentMember();
+        if(user == null)
+        {
+            return Optional.ofNullable(null);
+        }
 
         Optional<Member> byEmail = memberRepository.findByEmail(user.getEmail());
-        if(byEmail.isPresent())
+        if(byEmail.isEmpty())
         {
-            Map<String, String> resultdata = new HashMap<>();
-            //소셜 로그인 이면
-            if(!user.getSocial().equals("normal")) {
+            return Optional.ofNullable(null);
+        }
+
+        //소셜 로그인 이면
+        if(!user.getSocial().equals("normal")) {
                 // 닉네임만 변경
                 byEmail.get().changeUserNick(requestDto.getUsernick());
                 em.flush();
@@ -88,20 +93,10 @@ public class MemberService {
                 // 인증 유저 정보를 갱신
                 CustomOAuth2User userDetails = (CustomOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 userDetails.changeMyProfile(byEmail.get().getUsernick());
-                resultdata.put("result","회원 정보 수정이 완료되었습니다.");
-                return ResponseEntity.status(HttpStatus.OK).body(resultdata);
-            }
-
-            //닉네임이 같으면
-            else if( byEmail.get().getUsernick().equals(requestDto.getUsernick()) ) {
-                if(!passwordEncoder.matches(requestDto.getOriginaluserpw(),user.getUserpw()) ){
-                    resultdata.put("result","현재 사용하고 있는 비밀번호와 일치하지 않습니다.");
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultdata);
-                }
-                else if(passwordEncoder.matches(requestDto.getUserpw(),user.getUserpw()) ){
-                    resultdata.put("result","현재 사용하고 있는 비밀번호입니다.");
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultdata);
-                }
+                return Optional.ofNullable(byEmail);
+        }
+        //닉네임이 같으면
+        else if( byEmail.get().getUsernick().equals(requestDto.getUsernick()) ) {
                 //비밀번호 변경
                 byEmail.get().changeUserPw(passwordEncoder.encode(requestDto.getUserpw()));
                 em.flush();
@@ -109,21 +104,10 @@ public class MemberService {
                 // 인증 유저 정보를 갱신
                 CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 userDetails.changeMyProfile(byEmail.get().getUsernick(),byEmail.get().getUserpw());
-
-                resultdata.put("result","회원 정보 수정이 완료되었습니다.");
-                return ResponseEntity.status(HttpStatus.OK).body(resultdata);
-            }
-            // 닉네임이 다르면
-            else {
-                if(!passwordEncoder.matches(requestDto.getOriginaluserpw(),user.getUserpw()) ){
-                    resultdata.put("result","현재 사용하고 있는 비밀번호와 일치하지 않습니다.");
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultdata);
-                }
-                else if(passwordEncoder.matches(requestDto.getUserpw(),user.getUserpw()) ){
-                    resultdata.put("result","현재 사용하고 있는 비밀번호입니다.");
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultdata);
-                }
-                else {
+                return Optional.ofNullable(byEmail);
+        }
+        // 닉네임이 다르면
+        else {
                     // 닉네임과 비밀번호 변경
                     byEmail.get().changeUserNick(requestDto.getUsernick());
                     byEmail.get().changeUserPw(passwordEncoder.encode(requestDto.getUserpw()));
@@ -132,12 +116,7 @@ public class MemberService {
                     // 인증 유저 정보를 갱신
                     CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                     userDetails.changeMyProfile(byEmail.get().getUsernick(),byEmail.get().getUserpw());
-
-                    resultdata.put("result","회원 정보 수정이 완료되었습니다.");
-                    return ResponseEntity.status(HttpStatus.OK).body(resultdata);
-                }
-            }
+                    return Optional.ofNullable(byEmail);
         }
-        return null;
     }
 }

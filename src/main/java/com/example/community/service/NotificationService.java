@@ -15,11 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -77,12 +75,8 @@ public class NotificationService {
 
     // 알림 메세지 저장
     @Transactional
-    public Notification sendNotification(Member receiver, Member writer, Article article,String message,boolean read) {
-        // 내 자신에게 알림 발송 차단
-        if(receiver.getId() == writer.getId())
-        {
-            return null;
-        }
+    public Notification sendNotification(Member receiver, Member writer, Article article,String message) {
+
         Notification notification = Notification.
                                         builder()
                                         .receiver(receiver)
@@ -95,22 +89,21 @@ public class NotificationService {
 
     }
     // SSE 실시간 알림 메세지 전송
-    public void sendRealTimeNotification(Notification notification) {
-        if(notification != null)
-        {
+    public Optional<Object> sendRealTimeNotification(Notification notification) {
             SseEmitter emitter = userEmitters.get(notification.getReceiver().getId());
             if (emitter != null) {
                     try {
                         emitter.send(SseEmitter.event()
                                 .name("notification")
                                 .data(notification.getWriter().getUsernick() + " 님이 회원님이 작성한 " + notification.getArticle().getTitle() + "에 "  + notification.getMessage() + " 댓글을 작성했습니다."));
+                        return Optional.ofNullable(notification);
                     } catch (Exception e) {
                         log.info(e.getMessage());
                         userEmitters.remove(notification.getReceiver().getId());
                         // 예외 처리
                     }
             }
-        }
+            return Optional.ofNullable(null);
     }
     // 알림 조회
     @Transactional(readOnly = true)

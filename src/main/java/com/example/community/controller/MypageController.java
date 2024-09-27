@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
@@ -27,11 +28,13 @@ public class MypageController {
     private final ArticleService articleService;
     private final AuthenticationUtil authenticationUtil;
     @GetMapping("/mypage")
-    public String mypage(@RequestParam(name = "type",required = true,defaultValue = "article_list") String type,Model model,Pageable pageable) {
-
-
+    public String mypage(@RequestParam(name = "type",defaultValue = "article_list") String type,Model model,Pageable pageable, RedirectAttributes redirectAttributes) {
         Member user = authenticationUtil.getCurrentMember();
-
+        // 유저 데이터가 없으면
+        if (user != null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다.");
+            return "redirect:/"; // 홈으로 리다이렉트
+        }
         // 내가 작성한 글 리스트
         if(type.equals("article_list"))
         {

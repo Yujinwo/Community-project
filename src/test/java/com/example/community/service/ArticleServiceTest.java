@@ -311,13 +311,13 @@ class ArticleServiceTest {
         }
         em.flush();
         //when
-        Article findarticle = articleRepository.findByArticleAndMemberlist(savedArticle.getId());
-        findarticle.updatecount();
+        Optional<Article> findarticle = articleRepository.findByArticleAndMemberlist(savedArticle.getId());
+        findarticle.get().updatecount();
         em.flush();
         em.clear();
 
         //then
-        assertEquals(findarticle.getViewcount(),1);
+        assertEquals(findarticle.get().getViewcount(),1);
     }
 
     @Test

@@ -68,19 +68,24 @@ public class ArticleService {
 
     // 글 작성
     @Transactional
-    public void write(ArticleRequestDto articleRequestDto, List<MultipartFile> files) {
+    public Optional<Object> write(ArticleRequestDto articleRequestDto, List<MultipartFile> files) {
         // 인증된 Member Entity 가져오기
         Member member = authenticationUtil.getCurrentMember();
-        
+        if(member == null)
+        {
+            return Optional.ofNullable(null);
+        }
+
         // 글 저장 Dto 인스턴스 생성
         ArticleSaveDto articleSaveDto = new ArticleSaveDto();
         articleSaveDto.changeSaveArticleData(articleRequestDto.getTitle(),articleRequestDto.getContent(),member);
         
-        Article savedArticle = articleRepository.save(articleSaveDto.createArticleEntity());
-        
-        if (savedArticle == null) {
-            throw new RuntimeException("게시글 저장에 실패했습니다.");
+        Optional<Article> savedArticle = Optional.ofNullable(articleRepository.save(articleSaveDto.createArticleEntity()));
+        if(savedArticle.isEmpty())
+        {
+            return Optional.ofNullable(null);
         }
+
         // 이미지가 첨부 되었으면
         if (files != null && !files.isEmpty()) {
             // 이미지를 하나씩 꺼낸다
@@ -92,7 +97,7 @@ public class ArticleService {
                         // 저장된 파일 디렉터리를 저장
                         BoardImage image = BoardImage.builder()
                                 .url(fileName)
-                                .article(savedArticle)
+                                .article(savedArticle.get())
                                 .build();
                         boardImageRepository.save(image);
                     }
@@ -103,14 +108,14 @@ public class ArticleService {
             }
         }
         // 태그가 작성 되었으면
-        if(articleRequestDto.getTags()!= null){
+        if(articleRequestDto.getTags() != null){
             for (String tagname : articleRequestDto.getTags()) {
                 if(!tagname.isBlank())
                 {
                     // 태그 저장
                     Tag tag = Tag.builder()
                             .content(tagname)
-                            .article(savedArticle)
+                            .article(savedArticle.get())
                             .build();
                     tagRepository.save(tag);
                 }
@@ -118,26 +123,38 @@ public class ArticleService {
             }
         }
 
+        return Optional.of(savedArticle);
     }
     // 글 수정
     @Transactional
-    public Article update(ArticleRequestDto articleRequestDto, List<MultipartFile> files) {
+    public Optional<Object> update(ArticleRequestDto articleRequestDto, List<MultipartFile> files) {
 
         // 인증된 Member Entity 가져오기
         Member member = authenticationUtil.getCurrentMember();
-        
-        Article article = this.findById(articleRequestDto.getId());
-        // 기존 저장된 내용과 수정 요청한 내용이 같을 시 return 
-        if (article.getTitle().equals(articleRequestDto.getTitle()) && article.getContent().equals(articleRequestDto.getContent())){
-            return null;
-        }
-        // 인증된 유저와 글 작성한 유저 비교 || 요청한 글이 데이터베이스에 없을시
-        if(member.getId() != article.getMember().getId() || article == null)
+        if(member == null)
         {
-            throw new RuntimeException("회원 정보 불일치 및 게시글 조회에 실패했습니다.");
+            return Optional.ofNullable(null);
         }
         
-        article.changeTitleandContent(articleRequestDto.getTitle(),articleRequestDto.getContent());
+        Optional<Article> article = this.findById(articleRequestDto.getId());
+        // 글 조회 실패 시
+        if(article.isEmpty())
+        {
+            return Optional.ofNullable(null);
+        }
+
+        // 기존 저장된 내용과 수정 요청한 내용이 같을 시
+        if (article.get().getTitle().equals(articleRequestDto.getTitle()) && article.get().getContent().equals(articleRequestDto.getContent())){
+            return Optional.ofNullable(null);
+        }
+
+        // 인증된 유저와 글 작성한 유저 비교 || 요청한 글이 데이터베이스에 없을시
+        if(member.getId() != article.get().getMember().getId())
+        {
+            return Optional.ofNullable(null);
+        }
+        
+        article.get().changeTitleandContent(articleRequestDto.getTitle(),articleRequestDto.getContent());
         // 강제 플러시로 DB 쿼리 바로 호출
         em.flush();
         
@@ -164,7 +181,7 @@ public class ArticleService {
                         // 저장된 파일 디렉터리를 저장한다.
                         BoardImage image = BoardImage.builder()
                                 .url(fileName)
-                                .article(article)
+                                .article(article.get())
                                 .build();
                         boardImageRepository.save(image);
                     } catch (IOException e) {
@@ -209,7 +226,7 @@ public class ArticleService {
                         // 저장된 파일 디렉터리를 저장한다.
                         BoardImage image = BoardImage.builder()
                                 .url(fileName)
-                                .article(article)
+                                .article(article.get())
                                 .build();
                         boardImageRepository.save(image);
                     } catch (IOException e) {
@@ -255,45 +272,70 @@ public class ArticleService {
             }
         }
 
-        return article;
+        return Optional.of(article);
     }
     // 글 삭제
     @Transactional
-    public void delete(Long id) {
+    public Optional<Object> delete(Long id) {
         // 인증된 Member Entity 가져오기
         Member member = authenticationUtil.getCurrentMember();
-        
-        Article article = this.findById(id);
-        // 인증된 유저와 글 작성한 유저 비교 || 요청한 글이 데이터베이스에 없을시
-        if(member.getId() != article.getMember().getId() || article == null)
+        if(member == null)
         {
-            throw new RuntimeException("회원 정보 불일치 및 게시글 조회에 실패했습니다.");
+            return Optional.ofNullable(null);
         }
-        articleRepository.delete(article);
+        
+        Optional<Article> article = this.findById(id);
+        // 글 조회 실패 시
+        if(article.isEmpty())
+        {
+            return Optional.ofNullable(null);
+        }
+        // 인증된 유저와 글 작성한 유저 비교
+        if(member.getId() != article.get().getMember().getId())
+        {
+            return Optional.ofNullable(null);
+        }
+        articleRepository.delete(article.get());
+        return Optional.of(article);
     }
 
     // 댓글 작성
     @Transactional
-    public Notification commentwrite(CommentRequestDto commentRequestDto) {
+    public Optional<Object> commentwrite(CommentRequestDto commentRequestDto) {
         // 인증된 Member Entity 가져오기
         Member member = authenticationUtil.getCurrentMember();
-        Article article = this.findById(commentRequestDto.getBoardid());
+        if(member == null)
+        {
+            return Optional.ofNullable(null);
+        }
+
+        Optional<Article> article = this.findById(commentRequestDto.getBoardid());
+        // 글 조회 실패 시
+        if(article.isEmpty())
+        {
+            return Optional.ofNullable(null);
+        }
         
-        article.chagneCommentCount(article.getCommentcount() + 1);
+        article.get().chagneCommentCount(article.get().getCommentcount() + 1);
         em.flush();
 
         // 댓글 저장 Dto 인스턴스 생성
         CommentSaveDto commentSaveDto = new CommentSaveDto();
-        commentSaveDto.changeCommentSaveData(commentRequestDto.getContent(),article, member);
+        commentSaveDto.changeCommentSaveData(commentRequestDto.getContent(),article.get(), member);
         
         Optional<Comment> comment = Optional.ofNullable(commentRepository.save(commentSaveDto.createCommentEntity()));
-        if (!comment.isPresent()) {
-            throw new RuntimeException("댓글 작성에 실패했습니다.");
+        if (comment.isEmpty()) {
+            return Optional.ofNullable(null);
+        }
+        // 내 자신에게 알림 발송 차단
+        if(article.get().getMember().getId() == member.getId())
+        {
+            Optional.ofNullable(comment);
         }
 
         // 글 작성자에게 댓글 알림 전송
-        Notification notification = notificationService.sendNotification(article.getMember(),member,article,commentRequestDto.getContent(),false);
-        return notification;
+        Notification notification = notificationService.sendNotification(article.get().getMember(),member,article.get(),commentRequestDto.getContent());
+        return Optional.ofNullable(notification);
     }
 
 
@@ -312,20 +354,16 @@ public class ArticleService {
 
     // 글 조회수 올리기
     @Transactional
-    public Article viewcount(Long id,HttpServletRequest request, HttpServletResponse response) {
+    public Optional<Article> viewcount(Long id,HttpServletRequest request, HttpServletResponse response) {
         // 쿠키에 articleid 파라미터값 불러오기
         String articleidCookie = CookieUtill.getCookieValue(request,"articleid");
 
-        Article article = articleRepository.findByArticleAndMemberlist(id);
-        if(article == null)
-        {
-            throw new RuntimeException("글 조회 실패 및 데이터가 존재하지 않습니다");
-        }
+        Optional<Article> article = articleRepository.findByArticleAndMemberlist(id);
 
         // 쿠키카 Null일시 || 쿠키에 저장된 글 Id값과 조회한 글 Id값이 다를시 조회수를 올린다
-        if(articleidCookie == null || !articleidCookie.equals(String.valueOf(id))){
+        if(articleidCookie == null || !articleidCookie.equals(String.valueOf(id)) ){
             // Article Entity viewcount를 1 증가시킨다
-            article.updatecount();
+            article.ifPresent(Article::updatecount);
             // 쿠키에 조회수 올린 글 Id값을 저장한다. 유효기간은 1시간으로 설정한다.
             CookieUtill.addCookie(response,"articleid",String.valueOf(id),3600);
             return article;
@@ -334,79 +372,97 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Article findById(Long id) {
-        Article article = articleRepository.findById(id).orElse(null);
-        if(article == null)
-        {
-            throw new RuntimeException("글 조회에 실패했습니다.");
-        }
+    public Optional<Article> findById(Long id) {
+        Optional<Article> article = articleRepository.findById(id);
         return article;
     }
     // 댓글 삭제
     @Transactional
-    public void commentdelete(Long id) {
+    public Optional<Object> commentdelete(Long id) {
         // 인증된 Member Entity 가져오기
         Member member = authenticationUtil.getCurrentMember();
-
-        Comment comment = commentRepository.findById(id).orElse(null);
-        // 인증된 유저와 댓글 작성한 유저 비교 || 요청한 댓글이 데이터베이스에 없을시
-        if(member.getId() != comment.getMember().getId() || comment == null)
+        if(member == null)
         {
-            throw new RuntimeException("회원 정보 불일치 및 댓글 조회에 실패했습니다.");
+            return Optional.ofNullable(null);
+        }
+        Optional<Comment> comment = commentRepository.findById(id);
+        // 댓글 조회 실패 시
+        if(comment.isEmpty())
+        {
+            return Optional.ofNullable(null);
+        }
+        // 인증된 유저와 댓글 작성한 유저 비교 ||
+        if(member.getId() != comment.get().getMember().getId())
+        {
+            return Optional.ofNullable(null);
         }
 
         // 글 댓글 개수 1 감소
-        Article article = comment.getArticle();
+        Article article = comment.get().getArticle();
         article.setCommentcount(article.getCommentcount() - 1);
 
         // 부모 댓글과 대댓글이 없을 시
-        if(comment.getParent() == null && comment.getChild().size() == 0) {
-            commentRepository.delete(comment);
+        if(comment.get().getParent() == null && comment.get().getChild().size() == 0) {
+            commentRepository.delete(comment.get());
         }
         // 부모 댓글이 있지만 대댓글이 없을 시
-        else if(comment.getParent() != null && comment.getChild().size() == 0) {
-            commentRepository.delete(comment);
+        else if(comment.get().getParent() != null && comment.get().getChild().size() == 0) {
+            commentRepository.delete(comment.get());
         }
         // 대댓글이 있을 시
         else {
             // 삭제 여부를 true
-            comment.setDeleted(true);
+            comment.get().setDeleted(true);
         }
 
+        return Optional.ofNullable(comment);
     }
     // 대댓글 작성
     @Transactional
-    public void replywrite(CommentRequestDto replyRequestDto) {
+    public Optional<Object> replywrite(CommentRequestDto replyRequestDto) {
         // 인증된 Member Entity 가져오기
         Member member = authenticationUtil.getCurrentMember();
-
-        Article article = this.findById(replyRequestDto.getBoardid());
+        if(member == null)
+        {
+            return Optional.ofNullable(null);
+        }
+        Optional<Article> article = this.findById(replyRequestDto.getBoardid());
+        // 글 조회 실패 시
+        if(article.isEmpty())
+        {
+            return Optional.ofNullable(null);
+        }
         // 글 댓글 개수 1 증가
-        article.chagneCommentCount(article.getCommentcount() + 1);
+        article.get().chagneCommentCount(article.get().getCommentcount() + 1);
         em.flush();
 
         // 부모 댓글 Comment Entity 조회
-        Comment parentcomment = commentRepository.findById(replyRequestDto.getParentid()).orElse(null);
-
+        Optional<Comment> parentcomment = commentRepository.findById(replyRequestDto.getParentid());
+        if(parentcomment.isEmpty())
+        {
+            return Optional.ofNullable(null);
+        }
         // 대댓글 작성 Dto 인스턴스 생성
         CommentSaveDto commentSaveDto = new CommentSaveDto();
-        commentSaveDto.changeReplySaveData(replyRequestDto.getContent(),article,member,parentcomment);
+        commentSaveDto.changeReplySaveData(replyRequestDto.getContent(),article.get(),member,parentcomment.get());
 
         // 부모댓글이 최상위이면
-        if(parentcomment.getCommentorder() == 0)
+        if(parentcomment.get().getCommentorder() == 0)
         {
             // commentorder 값을 현재 댓글수로 설정
-            commentSaveDto.changeReplySaveOrderData(parentcomment.getCommentnumber(),(long) article.getCommentcount(),parentcomment.getRedepth() + 1);
+            commentSaveDto.changeReplySaveOrderData(parentcomment.get().getCommentnumber(),(long) article.get().getCommentcount(),parentcomment.get().getRedepth() + 1);
         }
         else {
             // commentorder 값을 부모 댓글 값으로 설정
-            commentSaveDto.changeReplySaveOrderData(parentcomment.getCommentnumber(),parentcomment.getCommentorder(),parentcomment.getRedepth() + 1);
+            commentSaveDto.changeReplySaveOrderData(parentcomment.get().getCommentnumber(),parentcomment.get().getCommentorder(),parentcomment.get().getRedepth() + 1);
         }
 
-        Comment comment = commentRepository.save(commentSaveDto.createCommentEntity());
-        if (comment == null) {
-            throw new RuntimeException("댓글 작성에 실패했습니다.");
+        Optional<Comment> comment = Optional.of(commentRepository.save(commentSaveDto.createCommentEntity()));
+        if(comment.isEmpty())
+        {
+            return Optional.ofNullable(null);
         }
+        return Optional.ofNullable(comment);
     }
     // 내 글 조회
     @Transactional(readOnly = true)
@@ -431,35 +487,53 @@ public class ArticleService {
     }
     // 즐겨찾기 추가
     @Transactional
-    public String setBookmark(Long id) {
+    public Optional<Object> setBookmark(Long id) {
+        // 인증된 Member Entity 가져오기
+        Member member = authenticationUtil.getCurrentMember();
+        if(member == null)
+        {
+            return Optional.ofNullable(null);
+        }
+        Optional<Member> byId = memberRepository.findById(member.getId());
+        if(byId.isEmpty())
+        {
+            return Optional.ofNullable(null);
+        }
         Optional<Article> articleOptional = articleRepository.findById(id);
-        Optional<Member> byId = memberRepository.findById(authenticationUtil.getCurrentMember().getId());
-
-        if(articleOptional.isPresent() && byId.isPresent()) {
-            bookmarkRepository.save(Bookmark.builder().article(articleOptional.get()).member(byId.get()).build());
-            return "즐겨 찾기 완료했습니다.";
+        if(articleOptional.isEmpty())
+        {
+            return Optional.ofNullable(null);
         }
-        else {
-            return "올바른 데이터 접근이 아닙니다.";
-        }
+        Optional<Bookmark> savedbookmark = Optional.ofNullable(bookmarkRepository.save(Bookmark.builder().article(articleOptional.get()).member(byId.get()).build()));
+        return Optional.of(savedbookmark);
     }
     // 즐겨찾기 삭제
     @Transactional
-    public String deleteBookmark(Long id) {
+    public Optional<Object> deleteBookmark(Long id) {
+        // 인증된 Member Entity 가져오기
+        Member member = authenticationUtil.getCurrentMember();
+        if(member == null)
+        {
+            return Optional.ofNullable(null);
+        }
+        Optional<Member> byId = memberRepository.findById(member.getId());
+        if(byId.isEmpty())
+        {
+            return Optional.ofNullable(null);
+        }
         Optional<Article> articleOptional = articleRepository.findById(id);
-        Optional<Member> byId = memberRepository.findById(authenticationUtil.getCurrentMember().getId());
+        if(articleOptional.isEmpty())
+        {
+            return Optional.ofNullable(null);
+        }
+        Optional<Bookmark> bookmarkOptional = bookmarkRepository.findByarticle(articleOptional.get());
+        if(bookmarkOptional.isEmpty())
+        {
+            return Optional.ofNullable(null);
+        }
+        bookmarkRepository.delete(bookmarkOptional.get());
+        return Optional.of(bookmarkOptional);
 
-        if (articleOptional.isPresent() && byId.isPresent()) {
-            Optional<Bookmark> bookmarkOptional = bookmarkRepository.findByarticle(articleOptional.get());
-            if(bookmarkOptional.isPresent())
-            {
-                bookmarkRepository.delete(bookmarkOptional.get());
-            }
-            return "즐겨 찾기 삭제 완료했습니다.";
-        }
-        else {
-            return "올바른 데이터 접근이 아닙니다.";
-        }
     }
     // 즐겨찾기 조회
     @Transactional(readOnly = true)

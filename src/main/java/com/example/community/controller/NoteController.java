@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
@@ -37,12 +38,14 @@ public class NoteController {
     }
     // 쪽지 상세 조회 페이지
     @GetMapping("/notes/{id}")
-    public String receiveMessageWindow(@PathVariable("id") Long id, String email, Model model) {
+    public String receiveMessageWindow(@PathVariable("id") Long id, String email, Model model, RedirectAttributes redirectAttributes) {
         Optional<Note> savednote = noteRespository.findById(id);
-        // 쪽지가 있을 시
-        if(savednote.isPresent()){
-            model.addAttribute("note",savednote.get());
+        // 쪽지가 없으면
+        if (savednote.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "쪽지 데이터가 존재하지 않습니다.");
+            return "redirect:/"; // 홈으로 리다이렉트
         }
+        model.addAttribute("note",savednote.get());
         return "receive_note";
     }
 

@@ -238,7 +238,7 @@
                         type:'get',
                         url:'/api/sessions',
                         success:function(data){
-                           ssesionStatus = data;
+                           ssesionStatus = data.state;
                            if(ssesionStatus)
                                {
                                // 세션이 유효하면 SSE 구독
@@ -246,7 +246,7 @@
                                }
                         },
                         error: function(e) {
-                            console.log(e);
+                            console.log(e.responseJSON.state);
                         }
                });
 

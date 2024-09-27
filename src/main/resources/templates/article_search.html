@@ -8,7 +8,7 @@
         width:800px">
         <!-- 글 작성 버튼 -->
         <div class="article_button">
-            <a href="/article/write" style="margin-top:15px; margin-right:10px ">
+            <a href="/articles/new" style="margin-top:15px; margin-right:10px ">
                 <img src="https://cdn-icons-png.flaticon.com/128/5948/5948954.png" loading="lazy" alt="펜 " title="펜 " width="37" height="37">
             </a>
         </div>
@@ -70,11 +70,11 @@
         </select>
     </div>
     <!-- 글 페이지 리스트 -->
-    <div th:if="${endPage != 0}" class="paging_list">
+    <div th:if="${pageable.hasResult}" class="paging_list">
         <ul class="pagination">
             <li class="page-item">
                 <!-- 이전 링크 있을시 활성화 없을시 비 활성화 -->
-                <a class="page-link" th:classappend=" ${!pageable.previous} ? 'disabled' " th:href="${!pageable.first} ? @{/articles(query=${query},sort=${sort},page=${pageable.number})}"> 이전 </a>
+                <a class="page-link" th:classappend=" ${!pageable.previous} ? 'disabled' " th:href="${!pageable.first} ? @{/articles(query=${query},sort=${sort},search=${search},page=${pageable.number})}"> 이전 </a>
             </li>
             <!-- 시작페이지 -> 끝 페이지 까지 페이지 출력 -->
             <span th:each="page: ${#numbers.sequence(startPage, endPage)}">
@@ -82,12 +82,12 @@
                     <!-- 현재페이지는 링크 없이 숫자만 -->
                      <a class="page-link active" th:if="${page == pageable.number + 1}" href="javascript:;" th:text="${page}"></a>
                     <!-- 현재페이지 링크 X, 다른 페이지번호에는 링크를 보여준다 -->
-                     <a class="page-link" th:unless="${page == pageable.number + 1}" th:href="@{/articles(query=${query},sort=${sort},page=${page})}" th:text="${page}"></a>
+                     <a class="page-link" th:unless="${page == pageable.number + 1}" th:href="@{/articles(query=${query},sort=${sort},search=${search},page=${page})}" th:text="${page}"></a>
                 </li>
             </span>
             <li class="page-item">
                 <!-- 다음 링크 있을시 활성화 없을시 비 활성화 -->
-                <a class="page-link" th:classappend=" ${!pageable.next} ? 'disabled' "  th:href="${pageable.last} ? '#' : @{/articles(query=${query},sort=${sort},page=${pageable.number+2})}"> 다음 </a>
+                <a class="page-link" th:classappend=" ${!pageable.next} ? 'disabled' "  th:href="${pageable.last} ? '#' : @{/articles(query=${query},sort=${sort},search=${search},page=${pageable.number+2})}"> 다음 </a>
             </li>
         </ul>
     </div>

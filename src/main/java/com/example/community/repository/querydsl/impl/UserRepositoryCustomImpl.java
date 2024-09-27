@@ -13,6 +13,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.community.entity.QArticle.article;
 import static com.example.community.entity.QBookmark.bookmark;
@@ -68,14 +69,14 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
 
     @Override
-    public Article findByArticleAndMemberlist(Long Id) {
+    public Optional<Article> findByArticleAndMemberlist(Long Id) {
         // 조회 쿼리
         Article articles = jpaQueryFactory.selectFrom(article)
                 .where(article.id.eq(Id))
                 .join(article.member, QMember.member).fetchJoin()
                 .fetchOne();
 
-        return articles;
+        return Optional.ofNullable(articles);
 
     }
 

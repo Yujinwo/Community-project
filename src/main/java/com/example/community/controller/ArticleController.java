@@ -20,8 +20,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.awt.print.Book;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -33,7 +35,7 @@ public class ArticleController {
 
     // 홈
     @GetMapping("/")
-    public String page(@RequestParam(value = "sort",defaultValue = "newest",required = true) String sort ,@PageableDefault(page = 1) Pageable pageable, Model model) {
+    public String page(@RequestParam(value = "sort",defaultValue = "newest") String sort ,@PageableDefault(page = 1) Pageable pageable, Model model) {
         // 글 전체 페이징처리 조회
         ArticleindexResultDto page = articleService.findArticles(pageable,sort);
         // 최소 페이지
@@ -50,7 +52,12 @@ public class ArticleController {
 
     // 검색 페이지
     @GetMapping("/articles")
-    public String searchArticles(@RequestParam(value = "search",required = false) String search,@RequestParam(value = "sort",defaultValue = "newest",required = true) String sort,@RequestParam("query") String query, @RequestParam(value = "tagsearch",required = false,defaultValue = "false") Boolean tagsearch,Model model, @PageableDefault(page = 1)  Pageable pageable) {
+    public String searchArticles(@RequestParam(value = "search",defaultValue = "titleAndcontent") String search,@RequestParam(value = "sort",defaultValue = "newest") String sort,@RequestParam(value = "query",defaultValue = "") String query, @RequestParam(value = "tagsearch",defaultValue = "false") Boolean tagsearch, Model model, @PageableDefault(page = 1)  Pageable pageable, RedirectAttributes redirectAttributes) {
+        // 검색 키워드가 없으면
+        if (query.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "검색 키워드를 입력해주세요");
+            return "redirect:/"; // 홈으로 리다이렉트
+        }
         // 글 검색 페이징 처리 조회
         ArticleindexResultDto page = articleService.searchArticles(query, pageable,tagsearch,sort,search);
         // 최소 페이지
@@ -78,10 +85,15 @@ public class ArticleController {
 
     // 글 상세 페이지
     @GetMapping("/articles/{id}")
-    public String detail(@PageableDefault(page = 1) Pageable pageable , @PathVariable("id") Long id, Model model, HttpServletRequest request, HttpServletResponse response) {
+    public String detail(@PageableDefault(page = 1) Pageable pageable , @PathVariable("id") Long id, Model model, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
         // 조회수 1 증가하고 글 불러오기
-        Article article = articleService.viewcount(id,request, response);
-        ArticleResponseDto articleResponseDto = ArticleResponseDto.builder().article(article).build();
+        Optional<Article> article = articleService.viewcount(id,request, response);
+        // 글 조회 실패시
+        if (article.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "조회할 게시글이 존재하지 않습니다.");
+            return "redirect:/"; // 홈으로 리다이렉트
+        }
+        ArticleResponseDto articleResponseDto = ArticleResponseDto.builder().article(article.get()).build();
 
         // 댓글 전체 페이징처리 조회
         CommentResultDto comments = articleService.findCommentid(id,pageable);
@@ -107,14 +119,17 @@ public class ArticleController {
     }
 
 
-
-
     // 글 수정 페이지
     @GetMapping("/articles/{id}/edit")
-    public String updatepage(@PathVariable Long id, Model model) {
+    public String updatepage(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         // 글 불러오기
-        Article article = articleService.findById(id);
-        ArticleResponseDto articleResponseDto = ArticleResponseDto.builder().article(article).build();
+        Optional<Article> article = articleService.findById(id);
+        // 글 조회 실패시
+        if (article.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "조회할 게시글이 존재하지 않습니다.");
+            return "redirect:/"; // 홈으로 리다이렉트
+        }
+        ArticleResponseDto articleResponseDto = ArticleResponseDto.builder().article(article.get()).build();
         // 뷰에 데이터 전달
         model.addAttribute("article",articleResponseDto);
         return "article_update";
