@@ -17,27 +17,17 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class ArticleResponseDto {
 
-    @NotNull
     private Long id;
-    @NotNull
-    @Size(min=1,max=60,message = "제목은 1~60자 이내로 작성해주세요")
     private String title;
-    @NotNull
-    @Size(min=1,max=1000,message = "내용은 1~1000자 이내로 작성해주세요")
     private String content;
-    @NotNull
     private Member member;
-    @NotNull
     private LocalDateTime createdDate;
-    @NotNull
     private LocalDateTime modifiedDate;
-    @NotNull
     private int viewcount;
     private List<String> imageUrls;
     private List<String> tagConents;
     private List<Comment> comments;
     // 댓글 수
-    @NotNull
     private int commentcount;
 
     @Builder
