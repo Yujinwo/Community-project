@@ -31,7 +31,7 @@ public class MypageController {
     public String mypage(@RequestParam(name = "type",defaultValue = "article_list") String type,Model model,Pageable pageable, RedirectAttributes redirectAttributes) {
         Member user = authenticationUtil.getCurrentMember();
         // 유저 데이터가 없으면
-        if (user != null) {
+        if (user == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다.");
             return "redirect:/"; // 홈으로 리다이렉트
         }

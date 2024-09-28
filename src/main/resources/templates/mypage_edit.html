@@ -103,14 +103,14 @@
                          data:JSON.stringify(updatedata),
                          url:'/api/users',
                          success:function(data){
-                            alert(data.result);
-                           window.location.href = '/';
+                            alert(data.message);
+                            window.location.href = '/';
                          },
                          beforeSend : function(xhr) {
-                                      xhr.setRequestHeader(header, token);
+                           xhr.setRequestHeader(header, token);
                          },
                          error: function(e) {
-                             alert(e.responseJSON.result);
+                             alert(e.responseJSON.message);
                          }
                 });
             });

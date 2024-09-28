@@ -39,9 +39,9 @@ public class ArticleRestController {
         if(files != null)
             filesize = files.size();
 
-        //태그가 10개 넘어갈 시 || 이미지 + 파일이 2개 이상일 시
-        if(articleRequestDto.getTags().size() > 10 || articleRequestDto.getImageUrls().size() + filesize > 2){
-            Map<String,String> responseJson = new HashMap<>();
+        Map<String,String> responseJson = new HashMap<>();
+        // 이미지 + 파일이 2개 이상일 시
+        if(articleRequestDto.getImageUrls().size() + filesize > 2){
             responseJson.put("message" , "허용되지 않은 사이즈 입니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
@@ -49,13 +49,10 @@ public class ArticleRestController {
         Optional<Object> optionalarticle = articleService.write(articleRequestDto, files);
         if(optionalarticle.isEmpty())
         {
-            Map<String,String> responseJson = new HashMap<>();
             responseJson.put("message" , "허용되지 않은 접근 입니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
 
-        // json 메세지 생성
-        Map<String,String> responseJson = new HashMap<>();
         responseJson.put("message" , "글 작성 완료했습니다");
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
 
@@ -80,7 +77,7 @@ public class ArticleRestController {
 
     // 글 삭제
     @DeleteMapping("/api/articles/{id}")
-    public ResponseEntity<Map<String,String>> delete(@Valid @PathVariable Long id)
+    public ResponseEntity<Map<String,String>> delete(@PathVariable Long id)
     {
         // 유저 인증 및 글 조회 실패 시
         Optional<Object> optionalarticle = articleService.delete(id);

@@ -148,7 +148,7 @@ public class ArticleService {
             return Optional.ofNullable(null);
         }
 
-        // 인증된 유저와 글 작성한 유저 비교 || 요청한 글이 데이터베이스에 없을시
+        // 인증된 유저와 글 작성한 유저 비교
         if(member.getId() != article.get().getMember().getId())
         {
             return Optional.ofNullable(null);

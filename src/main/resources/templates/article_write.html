@@ -134,26 +134,15 @@
                   　 　, data: formData
                   　 　, url: '/api/articles'
                   　 　, success: function(data) {
+                          alert(data.message);
                           location.href='/';
                   　 　}
                       , beforeSend : function(xhr) {
-                                  xhr.setRequestHeader(header, token);
+                          xhr.setRequestHeader(header, token);
                       }
                       , error:function(e) {
-                          // 제목 에러 메시지 설정
-                          var jsonResponse = JSON.parse(e.responseText);
-                          if (jsonResponse.hasOwnProperty('title')) {
-                              $("#titleError").text(jsonResponse.title);
-                          } else {
-                              $("#titleError").text('');
-                          }
-
-                          // 내용 에러 메시지 설정
-                          if (jsonResponse.hasOwnProperty('content')) {
-                              $("#contentError").text(jsonResponse.content);
-                          } else {
-                              $("#contentError").text('');
-                          }
+                          // 에러 메시지 설정
+                          alert(e.responseJSON.message);
                   　　}
               });
           }

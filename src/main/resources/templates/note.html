@@ -116,13 +116,14 @@
                                                 })
                                             　　, url: '/api/noteblocks'
                                             　　, success: function(data) {
-                                                  alert(data);
+                                                     alert(data.message);
+                                                     window.location.href = '/notes';
                                             　　}
                                                 , beforeSend : function(xhr) {
-                                                    xhr.setRequestHeader(header, token);
+                                                     xhr.setRequestHeader(header, token);
                                                 }
                                                , error:function(e) {
-                                                alert(e.responseText);
+                                                     alert(e.responseJSON.message);
                                             　　}
                                                });
 
@@ -139,13 +140,14 @@
                                                 })
                                             　　, url: '/api/noteblocks'
                                             　　, success: function(data) {
-                                                alert(data);
+                                                    alert(data.message);
+                                                    window.location.href = '/notes';
                                             　　}
                                                 , beforeSend : function(xhr) {
                                                     xhr.setRequestHeader(header, token);
                                                 }
                                                , error:function(e) {
-                                                alert(e.responseText);
+                                                    alert(e.responseJSON.message);
                                             　　}
                                                });
                      });
@@ -162,13 +164,14 @@
                                                 })
                                             　　, url: '/api/noteblocks'
                                             　　, success: function(data) {
-                                                alert(data);
+                                                      alert(data.message);
+                                                      window.location.href = '/notes';
                                             　　}
                                                 , beforeSend : function(xhr) {
-                                                    xhr.setRequestHeader(header, token);
+                                                     xhr.setRequestHeader(header, token);
                                                 }
                                                , error:function(e) {
-                                                alert(e.responseText);
+                                                     alert(e.responseJSON.message);
                                             　　}
                                                });
                      });

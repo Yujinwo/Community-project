@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 @Getter
@@ -49,6 +50,12 @@ public class CustomUserDetails implements UserDetails {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         this.member.setUsernick(usernick);
         this.member.setUserpw(passwordEncoder.encode(password));
+    }
+    public void changeNoteBlock(Boolean noteblock) {
+        this.member.setNoteblockd(noteblock);
+    }
+    public void changeTemporaryblockdate(LocalDateTime temporaryblockdate) {
+        this.member.setTemporaryblockdate(temporaryblockdate);
     }
 
     // 계정 만료 여부 확인

@@ -1,6 +1,8 @@
 package com.example.community.service;
 
 
+import com.example.community.config.CustomOAuth2User;
+import com.example.community.config.CustomUserDetails;
 import com.example.community.dto.NoteResponseDto;
 import com.example.community.dto.NoteResultDto;
 import com.example.community.entity.Member;
@@ -11,6 +13,7 @@ import com.example.community.util.AuthenticationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,13 +63,22 @@ public class NoteService {
     public Optional<Object> setTemporaryBlockDate() {
        if(authenticationUtil.getCurrentMember() != null)
        {
-           Long userid = authenticationUtil.getCurrentMember().getId();
-           Optional<Member> user = memberRepository.findById(userid);
+           Member authentication = authenticationUtil.getCurrentMember();
+           Optional<Member> user = memberRepository.findById(authentication.getId());
            if(user.isPresent()) {
                // 현재시간에 + 24시간 동안 임시 거부 설정
                LocalDateTime now = LocalDateTime.now();
                LocalDateTime blockEndTime = now.plusHours(24); // 현재 시간에 24시간을 더함
-               user.get().setTemporaryblockdate(blockEndTime);
+               user.get().changeTemporaryblockdate(blockEndTime);
+               if(user.get().getSocial().equals("normal"))
+               {
+                   CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                   userDetails.changeTemporaryblockdate(blockEndTime);
+               }
+               else{
+                   CustomOAuth2User userDetails = (CustomOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                   userDetails.changeTemporaryblockdate(blockEndTime);
+               }
                return Optional.ofNullable(user);
            }
        }
@@ -78,10 +90,19 @@ public class NoteService {
     public Optional<Object> setPermanentBlockd() {
         if(authenticationUtil.getCurrentMember() != null)
         {
-            Long userid = authenticationUtil.getCurrentMember().getId();
-            Optional<Member> user = memberRepository.findById(userid);
+            Member authentication = authenticationUtil.getCurrentMember();
+            Optional<Member> user = memberRepository.findById(authentication.getId());
             if(user.isPresent()) {
                 user.get().changeNoteBlockd(true);
+                if(user.get().getSocial().equals("normal"))
+                {
+                    CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                    userDetails.changeNoteBlock(true);
+                }
+                else{
+                    CustomOAuth2User userDetails = (CustomOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                    userDetails.changeNoteBlock(true);
+                }
                 return Optional.ofNullable(user);
             }
         }
@@ -92,10 +113,19 @@ public class NoteService {
     public Optional<Object> removePermanentBlockd() {
         if(authenticationUtil.getCurrentMember() != null)
         {
-            Long userid = authenticationUtil.getCurrentMember().getId();
-            Optional<Member> user = memberRepository.findById(userid);
+            Member authentication = authenticationUtil.getCurrentMember();
+            Optional<Member> user = memberRepository.findById(authentication.getId());
             if(user.isPresent()) {
                 user.get().changeNoteBlockd(false);
+                if(user.get().getSocial().equals("normal"))
+                {
+                    CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                    userDetails.changeNoteBlock(false);
+                }
+                else{
+                    CustomOAuth2User userDetails = (CustomOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                    userDetails.changeNoteBlock(false);
+                }
                 return Optional.ofNullable(user);
             }
         }

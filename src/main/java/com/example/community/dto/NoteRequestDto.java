@@ -10,8 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NoteRequestDto {
-
-    @NotNull
     @Size(min=8,max=320,message = "이메일은 8~320자 이내로 작성해주세요")
     private String receiver_email;
     @Size(min=8,max=320,message = "메세지는 8~500자 이내로 작성해주세요")

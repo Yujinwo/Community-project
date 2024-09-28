@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CommentRequestDto {
 
-    @Size(min = 1,max = 280,message = "댓글은 1~280자 이내로 작성해주세요")
+    @Size(min = 3,max = 280,message = "댓글은 3~280자 이내로 작성해주세요")
     private String content;
     private Long boardid;
     // 부모 댓글 id

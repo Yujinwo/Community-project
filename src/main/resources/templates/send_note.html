@@ -62,15 +62,15 @@
                                     })
                                 　　, url: '/api/notes'
                                 　　, success: function(data) {
-                                       alert(data);
+                                       alert(data.message);
                                        // 창 닫기
                                        window.close();
                                 　　}
                                    , beforeSend : function(xhr) {
-                                                xhr.setRequestHeader(header, token);
+                                       xhr.setRequestHeader(header, token);
                                     }
                                    , error:function(e) {
-                                       alert(e.responseText);
+                                       alert(e.responseJSON.message);
                                 　　}
                          });
     });

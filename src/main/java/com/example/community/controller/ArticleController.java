@@ -3,6 +3,7 @@ package com.example.community.controller;
 import com.example.community.dto.*;
 import com.example.community.entity.Article;
 import com.example.community.entity.Bookmark;
+import com.example.community.entity.Member;
 import com.example.community.repository.BookmarkRepository;
 import com.example.community.service.ArticleService;
 import com.example.community.util.AuthenticationUtil;
@@ -122,6 +123,12 @@ public class ArticleController {
     // 글 수정 페이지
     @GetMapping("/articles/{id}/edit")
     public String updatepage(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Member user = authenticationUtil.getCurrentMember();
+        // 유저 데이터가 없으면
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다.");
+            return "redirect:/"; // 홈으로 리다이렉트
+        }
         // 글 불러오기
         Optional<Article> article = articleService.findById(id);
         // 글 조회 실패시

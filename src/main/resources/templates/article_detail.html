@@ -194,7 +194,7 @@
                                           xhr.setRequestHeader(header, token);
                                        }
                                        , error:function(e) {
-                                            console.log(e);
+                                            alert(e.responseJSON.message);
                                     　　}
                                     });
                         }
@@ -210,7 +210,7 @@
                                           xhr.setRequestHeader(header, token);
                                        }
                                        , error:function(e) {
-                                            console.log(e);
+                                            alert(e.responseJSON.message);
                                     　　}
                                     });
 
@@ -250,13 +250,14 @@
                         　　, success: function(data) {
                                  // 예/아니오 팝업창 숨기기
                                  modal.hide();
+                                 alert(data.message);
                                  location.href='/';
                         　　}
                            , beforeSend : function(xhr) {
                                       xhr.setRequestHeader(header, token);
                            }
                            , error:function(e) {
-                                console.log(e);
+                                alert(e.responseJSON.message);
                         　　}
                         });
                  }
@@ -281,14 +282,11 @@
                                       xhr.setRequestHeader(header, token);
                                    }
                                    , error:function(e) {
-                                        var jsonResponse = JSON.parse(e.responseText);
-                                        if (jsonResponse.hasOwnProperty('content')) {
-                                        alert(jsonResponse.content);
-                                        }
+                                        alert(e.responseJSON.message);
                                 　　}
                          });
                 }
-                // 댓글 삭제
+                // 댓글/대댓글 삭제
                 function deleteComment(commentId) {
                    $.ajax({
                         　　type:'delete'
@@ -298,10 +296,10 @@
                                  window.location.href = '/articles/' + articleId;
                         　　}
                            , beforeSend : function(xhr) {
-                                      xhr.setRequestHeader(header, token);
+                                 xhr.setRequestHeader(header, token);
                            }
                            , error:function(e) {
-                                 console.log(e);
+                                 alert(e.responseJSON.message);
                         　　}
                         });
                 };
@@ -332,13 +330,10 @@
                                     window.location.href = '/articles/' + articleId;
                             　　}
                                 , beforeSend : function(xhr) {
-                                      xhr.setRequestHeader(header, token);
+                                     xhr.setRequestHeader(header, token);
                                 }
                                , error:function(e) {
-                                 var jsonResponse = JSON.parse(e.responseText);
-                                 if (jsonResponse.hasOwnProperty('content')) {
-                                    alert(jsonResponse.content);
-                                 }
+                                    alert(e.responseJSON.message);
                             　　}
                             });
                 }

@@ -31,13 +31,18 @@ public class ProfileController {
     @GetMapping("/profile")
     public String profile(@RequestParam(name = "userid",defaultValue = "0") Long userid,@RequestParam(name = "type",defaultValue = "article_list") String type,Model model,Pageable pageable, RedirectAttributes redirectAttributes) {
 
-        Member user = null;
+        Member user = authenticationUtil.getCurrentMember();;
+        // 유저 데이터가 없으면
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다.");
+            return "redirect:/"; // 홈으로 리다이렉트
+        }
         // userid가 기본값일 시 MY페이지로 이동
         if(userid == 0)
         {
             user = authenticationUtil.getCurrentMember();
             // 유저 데이터가 없으면
-            if (user != null) {
+            if (user == null) {
                 redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다.");
                 return "redirect:/"; // 홈으로 리다이렉트
             }

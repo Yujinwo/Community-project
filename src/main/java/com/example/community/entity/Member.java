@@ -39,8 +39,14 @@ public class Member {
     @Column
     private String social;
 
+    @Column
+    private LocalDateTime temporaryblockdate;
+
     public void changeNoteBlockd(Boolean noteblockd) {
         this.noteblockd = noteblockd;
+    }
+    public void changeTemporaryblockdate(LocalDateTime temporaryblockdate) {
+        this.temporaryblockdate = temporaryblockdate;
     }
     public void changeUserNick(String usernick) {
         this.usernick = usernick;
@@ -49,8 +55,7 @@ public class Member {
         this.userpw = userpw;
     }
     // 임시 거부 유효시간
-    @Column
-    private LocalDateTime temporaryblockdate;
+
 
     // Entity -> MemberDto 생성
     public MemberDto toDto() {

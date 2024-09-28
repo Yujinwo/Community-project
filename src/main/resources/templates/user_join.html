@@ -46,14 +46,14 @@
                          data:JSON.stringify(checkdata),
                          url:'/api/userids',
                          success:function(data){
-                             alert(data);
+                             alert(data.message);
                              idcheckdstate = "true";
                          },
                          beforeSend : function(xhr) {
                                       xhr.setRequestHeader(header, token);
                          },
                          error: function(e) {
-                             alert(e.responseText);
+                             alert(e.responseJSON.message);
                              idcheckdstate = "false";
                          }
                 });
@@ -79,41 +79,15 @@
                          url:'/api/users',
                          success: function(data) {
                             // 회원가입 결과 메시지 설정
-                            if (data.hasOwnProperty('result')) {
-                                alert(data.result);
-                                location.href = '/login';
-                            }
+                            alert(data.message);
+                            location.href = '/login';
                          },
                          beforeSend : function(xhr) {
-                                      xhr.setRequestHeader(header, token);
+                            xhr.setRequestHeader(header, token);
                          },
                          error: function(e) {
-                            // 이메일 에러 메시지 설정
-                            var jsonResponse = JSON.parse(e.responseText);
-                            if (jsonResponse.hasOwnProperty('email')) {
-                                $("#emailError").text(jsonResponse.email);
-                            } else {
-                                $("#emailError").text("");
-                            }
-
-                            // 패스워드 에러 메시지 설정
-                            if (jsonResponse.hasOwnProperty('userpw')) {
-                                $("#userpwError").text(jsonResponse.userpw);
-                            } else {
-                                $("#userpwError").text("");
-                            }
-
-                            // 닉네임 에러 메시지 설정
-                            if (jsonResponse.hasOwnProperty('usernick')) {
-                                $("#usernickError").text(jsonResponse.usernick);
-                            } else {
-                                $("#usernickError").text("");
-                            }
-
-                            // 회원가입 결과 메시지 설정
-                            if (jsonResponse.hasOwnProperty('result')) {
-                                alert(jsonResponse.result);
-                            }
+                            // 에러 메시지 설정
+                            alert(e.responseJSON.message);
                          }
                 });
    }
