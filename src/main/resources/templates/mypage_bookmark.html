@@ -39,35 +39,22 @@
              </div>
          </div>
          <!-- 즐겨찾기 리스트 div -->
-         <div>
-             <ul th:each="item : ${bookmark}">
-                 <li>
-                     <div style="display:flex; height:100%; align-items: center;">
-                         <div style="
-                        border-right: 1px solid black;
-                        width: 50px;
-                        margin: 0 auto;
-                        height: 100%;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                    }">
-                                <!-- 글 번호 -->
-                                <span style="border-radius:20px; border:1px solid blue" th:text="${item.bookmark_id}"/>
-                         </div>
-
-                         </span>
-                         <div style="
-                         margin:0 auto;
-                         width:600px" >
-                             <!-- 글 제목 -->
-                             <a th:href="@{/articles/{id}(id=${item.article_id})}" th:text="${item.article_title}">
-                             </a>
-                         </div>
-                     </div>
-                 </li>
-             </ul>
+         <div style="display:flex;" th:each="item : ${bookmark}">
+             <div style="padding: 15px;
+                     border: 1px solid;
+                     margin-top: 10px;">
+                 <!-- 글 번호 -->
+                 <span style="font-weight: bold;" th:text="${item.bookmark_id}"/>
+             </div>
+             <div style="padding: 15px;
+                     border: 1px solid;
+                     margin-top: 10px;
+                     width:100%">
+                 <!-- 글 제목 -->
+                 <a th:href="@{/articles/{id}(id=${item.article_id})}" th:text="${item.article_title}"/>
+             </div>
          </div>
+
          <!-- 즐겨찾기 페이지 리스트 -->
          <div th:if="${endPage != 0}" class="paging_list">
              <ul class="pagination">

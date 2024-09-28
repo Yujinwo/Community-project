@@ -50,7 +50,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     public Page<Comment> findBymyCommentlist(Member user, Pageable pageable) {
         // 조회 쿼리
         JPAQuery<Comment> comments = jpaQueryFactory.selectFrom(comment)
-                .where(comment.member.id.eq(user.getId()))
+                .where(comment.member.id.eq(user.getId()).and(comment.deleted.isFalse()))
                 .join(comment.article,article).fetchJoin()
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());

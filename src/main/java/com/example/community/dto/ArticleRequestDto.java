@@ -20,6 +20,6 @@ public class ArticleRequestDto {
     @Size(max = 2,message = "이미지는 최대 2개까지 가능합니다")
     private List<String> ImageUrls = new ArrayList<>();
 
-    @Size(max = 9,message = "태그는 9개 이내로 작성해주세요")
+    @Size(max = 10,message = "태그는 10개 이내로 작성해주세요")
     private List<String> tags = new ArrayList<>();
 }

@@ -401,12 +401,8 @@ public class ArticleService {
         Article article = comment.get().getArticle();
         article.setCommentcount(article.getCommentcount() - 1);
 
-        // 부모 댓글과 대댓글이 없을 시
-        if(comment.get().getParent() == null && comment.get().getChild().size() == 0) {
-            commentRepository.delete(comment.get());
-        }
-        // 부모 댓글이 있지만 대댓글이 없을 시
-        else if(comment.get().getParent() != null && comment.get().getChild().size() == 0) {
+        // 대댓글이 없을 시
+        if(comment.get().getChild().size() == 0) {
             commentRepository.delete(comment.get());
         }
         // 대댓글이 있을 시
