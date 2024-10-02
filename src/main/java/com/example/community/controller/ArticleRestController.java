@@ -36,10 +36,13 @@ public class ArticleRestController {
     @PostMapping("/api/articles")
     public ResponseEntity<Map<String,String>> write(@Valid @RequestPart(value = "key") ArticleRequestDto articleRequestDto, @RequestPart(required = false,value = "value") List<MultipartFile> files) {
         int filesize = 0;
-        if(files != null)
-            filesize = files.size();
-
         Map<String,String> responseJson = new HashMap<>();
+        // 파일 확장자 검증
+        if(files != null)
+        {
+            filesize = files.size();
+        }
+
         // 이미지 + 파일이 2개 이상일 시
         if(articleRequestDto.getImageUrls().size() + filesize > 2){
             responseJson.put("message" , "허용되지 않은 사이즈 입니다.");

@@ -94,10 +94,10 @@ public class ArticleController {
             redirectAttributes.addFlashAttribute("errorMessage", "조회할 게시글이 존재하지 않습니다.");
             return "redirect:/"; // 홈으로 리다이렉트
         }
-        ArticleResponseDto articleResponseDto = ArticleResponseDto.builder().article(article.get()).build();
-
         // 댓글 전체 페이징처리 조회
         CommentResultDto comments = articleService.findCommentid(id,pageable);
+        ArticleResponseDto articleResponseDto = ArticleResponseDto.builder().article(article.get()).commentcount(comments.getCount()).build();
+
         if(authenticationUtil.getCurrentMember() != null)
         {
             // 즐겨찾기 현황 불러오기

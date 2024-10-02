@@ -93,7 +93,6 @@ public class MemberService {
                 // 인증 유저 정보를 갱신
                 CustomOAuth2User userDetails = (CustomOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 userDetails.changeMyProfile(byEmail.get().getUsernick());
-                return Optional.ofNullable(byEmail);
         }
         //닉네임이 같으면
         else if( byEmail.get().getUsernick().equals(requestDto.getUsernick()) ) {
@@ -104,7 +103,6 @@ public class MemberService {
                 // 인증 유저 정보를 갱신
                 CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 userDetails.changeMyProfile(byEmail.get().getUsernick(),byEmail.get().getUserpw());
-                return Optional.ofNullable(byEmail);
         }
         // 닉네임이 다르면
         else {
@@ -116,7 +114,7 @@ public class MemberService {
                     // 인증 유저 정보를 갱신
                     CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                     userDetails.changeMyProfile(byEmail.get().getUsernick(),byEmail.get().getUserpw());
-                    return Optional.ofNullable(byEmail);
         }
+        return Optional.ofNullable(byEmail);
     }
 }

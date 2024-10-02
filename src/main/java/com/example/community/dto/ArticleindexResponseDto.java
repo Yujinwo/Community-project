@@ -19,22 +19,12 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class ArticleindexResponseDto {
 
-
-    @NotNull
     private Long id;
-    @NotNull
-    @Size(min=1,max=60,message = "제목은 1~60자 이내로 작성해주세요")
     private String title;
-    @NotNull
-    @Size(min=1,max=1000,message = "내용은 1~1000자 이내로 작성해주세요")
     private String content;
-    @NotNull
     private Member member;
-    @NotNull
     private LocalDateTime createdDate;
-    @NotNull
     private LocalDateTime modifiedDate;
-    @NotNull
     private int viewcount;
     // 태그
     private List<String> tagConents;

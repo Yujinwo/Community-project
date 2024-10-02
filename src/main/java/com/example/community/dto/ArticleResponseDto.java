@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 // 상세 페이지 글 조회 DTO
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ArticleResponseDto {
 
     private Long id;
@@ -27,11 +28,10 @@ public class ArticleResponseDto {
     private List<String> imageUrls;
     private List<String> tagConents;
     private List<Comment> comments;
-    // 댓글 수
-    private int commentcount;
+    private Long commentcount;
 
     @Builder
-    public ArticleResponseDto(Article article) {
+    public ArticleResponseDto(Article article,Long commentcount) {
         this.id = article.getId();
         this.title = article.getTitle();
         this.content = article.getContent();
@@ -59,7 +59,8 @@ public class ArticleResponseDto {
             this.tagConents = Collections.emptyList();
         }
         this.comments = article.getComments();
-        this.commentcount = article.getCommentcount();
+        this.commentcount = commentcount;
+
     }
 
 

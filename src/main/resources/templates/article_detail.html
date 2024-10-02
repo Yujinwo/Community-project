@@ -67,7 +67,7 @@
     <div class="article_images" th:if="${article.imageUrls.size() != 0}">
         <label class="form-label">이미지</label>
         <div th:each="imageUrl : ${article.imageUrls}">
-            <img th:src="@{${imageUrl}}" width="750px" height="375px">
+            <img th:src="@{'https://imagetest.s3.ap-northeast-2.amazonaws.com/' + ${imageUrl}}" width="750px" height="375px">
         </div>
     </div>
 

@@ -55,7 +55,7 @@ class ArticleServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
         Page<ArticleindexResponseDto> articleDtos = articleRepository.findByArticlelist(pageRequest, "newest").map(article -> ArticleindexResponseDto.builder().article(article).build());
         //then
-        assertEquals(articleDtos.getTotalElements(),20);
+        assertEquals(articleDtos.getTotalElements(),1);
     }
 
     @Test

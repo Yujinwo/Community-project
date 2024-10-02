@@ -122,7 +122,6 @@ public class ArticleService {
 
             }
         }
-
         return Optional.of(savedArticle);
     }
     // 글 수정
@@ -158,11 +157,13 @@ public class ArticleService {
         // 강제 플러시로 DB 쿼리 바로 호출
         em.flush();
         
+
+        List<String> imageUrls = articleRequestDto.getImageUrls();
+        List<BoardImage> boardImage = boardImageRepository.findByboardId(articleRequestDto.getId());
+
         // 글 이미지가 없었는데 첨부가 되었으면 || 글 이미지를 다 삭제하고 이미지 첨부 파일이 있으면
-        if (articleRequestDto.getImageUrls().isEmpty() && files != null){
+        if (imageUrls.isEmpty()){
             // 이전에 저장되어 있던 이미지 파일이 존재할 시 파일과 데이터를 삭제한다.
-            // 글에 저장된 이미지 불러오기
-            List<BoardImage> boardImage = boardImageRepository.findByboardId(articleRequestDto.getId());
             if(boardImage.size() != 0)
             {
                 for (BoardImage image : boardImage) {
@@ -170,7 +171,6 @@ public class ArticleService {
                     boardImageRepository.delete(image);
                 }
             }
-
             // 이미지가 첨부 되었으면
             if (files != null && !files.isEmpty()) {
                 // 이미지를 하나씩 꺼낸다
@@ -190,30 +190,19 @@ public class ArticleService {
                 }
             }
         }
-        
-        // 글 이미지를 다 삭제하고 이미지 첨부 파일이 없으면
-        if (articleRequestDto.getImageUrls().isEmpty() && files == null){
-            // 이전에 저장되어 있던 이미지 파일이 존재할 시 파일과 데이터를 삭제한다.
-            // 글에 저장된 이미지 불러오기
-            List<BoardImage> boardImage = boardImageRepository.findByboardId(articleRequestDto.getId());
-            if(boardImage.size() != 0) {
-                for (BoardImage image : boardImage) {
-                    s3Uploader.deleteFile(image.getUrl());
-                    boardImageRepository.delete(image);
-                }
-            }
-        }
-        // 다시 확인 요망
         // 글 이미지를 하나만 삭제하고 이미지 첨부 파일이 있으면
-        if (!articleRequestDto.getImageUrls().isEmpty() && files != null){
+        if (!imageUrls.isEmpty()){
             // 이전에 저장되어 있던 이미지 파일이 존재할 시 파일과 데이터를 삭제한다.
-            // 글에 저장된 이미지 불러오기
-            List<BoardImage> boardImage = boardImageRepository.findByboardId(articleRequestDto.getId());
             if(boardImage.size() != 0)
             {
                 for (BoardImage image : boardImage) {
-                    s3Uploader.deleteFile(image.getUrl());
-                    boardImageRepository.delete(image);
+                    for (String imageurl : imageUrls) {
+                        if(!image.getUrl().equals(imageurl))
+                        {
+                            s3Uploader.deleteFile(image.getUrl());
+                            boardImageRepository.delete(image);
+                        }
+                    }
                 }
             }
             // 수정된 이미지 첨부 파일로 저장한다
@@ -235,43 +224,21 @@ public class ArticleService {
                 }
             }
         }
-        // 태그 리스트가 없을 시 저장했던 태그가 있으면 모두 삭제
-        if(articleRequestDto.getTags().isEmpty() ) {
-            Iterable<Long> iterable = new ArrayList<>();
-
-            Optional<Article> articleOptional = articleRepository.findById(articleRequestDto.getId());
-            // 글이 존재하면
-            if(articleOptional.isPresent()){
-                // 태그를 하나씩 꺼내서 id를 리스트에 추가
-                for (Tag tag : articleOptional.get().getTags()){
-                    ((ArrayList<Long>) iterable).add(tag.getId());
-                }
-                // Batch를 이용해 한번에 삭제
-                tagRepository.deleteAllByIdInBatch(iterable);
-            }
+        Iterable<Long> iterable = new ArrayList<>();
+        // 태그를 하나씩 꺼내서 id를 리스트에 추가
+        for (Tag tag : article.get().getTags()) {
+                ((ArrayList<Long>) iterable).add(tag.getId());
         }
-        else {
-            Iterable<Long> iterable = new ArrayList<>();
-
-            Optional<Article> articleOptional = articleRepository.findById(articleRequestDto.getId());
-            // 글이 존재하면
-            if(articleOptional.isPresent()){
-                // 태그를 하나씩 꺼내서 id를 리스트에 추가
-                for (Tag tag : articleOptional.get().getTags()){
-                    ((ArrayList<Long>) iterable).add(tag.getId());
-                }
-                // Batch를 이용해 한번에 삭제
-                tagRepository.deleteAllByIdInBatch(iterable);
-                em.flush();
-                // 태그 추가
-                for (String tagContent : articleRequestDto.getTags()) {
-                    Tag tag = Tag.builder().content(tagContent).article(articleOptional.get()).build();
-                    articleOptional.get().getTags().add(tag);
-                }
-
-            }
+        // Batch를 이용해 한번에 삭제
+        tagRepository.deleteAllByIdInBatch(iterable);
+        em.flush();
+        // 태그 추가
+        if (!articleRequestDto.getTags().isEmpty()) {
+                    for (String tagContent : articleRequestDto.getTags()) {
+                        Tag tag = Tag.builder().content(tagContent).article(article.get()).build();
+                        article.get().getTags().add(tag);
+                    }
         }
-
         return Optional.of(article);
     }
     // 글 삭제
@@ -315,8 +282,9 @@ public class ArticleService {
         {
             return Optional.ofNullable(null);
         }
-        
-        article.get().chagneCommentCount(article.get().getCommentcount() + 1);
+
+        // 댓글 수 1 증가
+        article.get().chagneCommentCount(1);
         em.flush();
 
         // 댓글 저장 Dto 인스턴스 생성
@@ -327,6 +295,7 @@ public class ArticleService {
         if (comment.isEmpty()) {
             return Optional.ofNullable(null);
         }
+
         // 내 자신에게 알림 발송 차단
         if(article.get().getMember().getId() == member.getId())
         {
@@ -397,9 +366,6 @@ public class ArticleService {
             return Optional.ofNullable(null);
         }
 
-        // 글 댓글 개수 1 감소
-        Article article = comment.get().getArticle();
-        article.setCommentcount(article.getCommentcount() - 1);
 
         // 대댓글이 없을 시
         if(comment.get().getChild().size() == 0) {
@@ -409,6 +375,8 @@ public class ArticleService {
         else {
             // 삭제 여부를 true
             comment.get().setDeleted(true);
+            // 댓글 수 1 감소
+            comment.get().getArticle().chagneCommentCount(-1);
         }
 
         return Optional.ofNullable(comment);
@@ -428,9 +396,6 @@ public class ArticleService {
         {
             return Optional.ofNullable(null);
         }
-        // 글 댓글 개수 1 증가
-        article.get().chagneCommentCount(article.get().getCommentcount() + 1);
-        em.flush();
 
         // 부모 댓글 Comment Entity 조회
         Optional<Comment> parentcomment = commentRepository.findById(replyRequestDto.getParentid());
@@ -442,11 +407,13 @@ public class ArticleService {
         CommentSaveDto commentSaveDto = new CommentSaveDto();
         commentSaveDto.changeReplySaveData(replyRequestDto.getContent(),article.get(),member,parentcomment.get());
 
+
+
         // 부모댓글이 최상위이면
         if(parentcomment.get().getCommentorder() == 0)
         {
             // commentorder 값을 현재 댓글수로 설정
-            commentSaveDto.changeReplySaveOrderData(parentcomment.get().getCommentnumber(),(long) article.get().getCommentcount(),parentcomment.get().getRedepth() + 1);
+            commentSaveDto.changeReplySaveOrderData(parentcomment.get().getCommentnumber(), (long) article.get().getCommentcount(),parentcomment.get().getRedepth() + 1);
         }
         else {
             // commentorder 값을 부모 댓글 값으로 설정
@@ -458,6 +425,9 @@ public class ArticleService {
         {
             return Optional.ofNullable(null);
         }
+        // 댓글 수 1 증가
+        comment.get().getArticle().chagneCommentCount(1);
+        em.flush();
         return Optional.ofNullable(comment);
     }
     // 내 글 조회

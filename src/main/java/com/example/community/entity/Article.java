@@ -77,8 +77,8 @@ public class Article extends BaseTime{
         this.title = title;
         this.content = content;
     }
-    // 댓글 수 1 올리기
+    // 댓글 수 변경
     public void chagneCommentCount(int i) {
-        this.commentcount = i;
+        this.commentcount = commentcount + i;
     }
 }

@@ -19,8 +19,9 @@ public class CommentResultDto {
     private Boolean previous;
     private Boolean next;
     private int number;
+    private Long count;
 
     public static CommentResultDto createCommentResultDto(Page<CommentResponseDto> comment) {
-        return CommentResultDto.builder().first(comment.isFirst()).last(comment.isLast()).hasResult(comment.hasContent()).previous(comment.hasPrevious()).next(comment.hasNext()).content(comment.getContent()).number(comment.getNumber()).totalPages(comment.getTotalPages()).build();
+        return CommentResultDto.builder().first(comment.isFirst()).last(comment.isLast()).hasResult(comment.hasContent()).previous(comment.hasPrevious()).next(comment.hasNext()).content(comment.getContent()).number(comment.getNumber()).totalPages(comment.getTotalPages()).count(comment.getTotalElements()).build();
     }
 }

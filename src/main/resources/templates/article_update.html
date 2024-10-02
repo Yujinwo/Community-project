@@ -16,13 +16,13 @@
             <div  class="form-control">
                 <!-- 이미지 -->
                 <div th:each="imageUrl : ${article.imageUrls}"  th:if="${article.imageUrls.size() != 0}">
-                    <img th:src="@{${imageUrl}}" width="475px" height="240px">
+                    <img th:src="@{'https://imagetest.s3.ap-northeast-2.amazonaws.com/' + ${ imageUrl}}" width="475px" height="240px">
                     <button class="size_full btn btn-primary" onclick="deleteImage(this)">삭제하기</button>
                 </div>
                 <!-- 이미지 첨부 -->
                 <div class="form-floating mb-3">
                     <!-- 이미지 첨부 창 -->
-                    <input type="file" name="files" class="form-control" id="files" multiple>
+                    <input type="file" name="files" class="form-control" id="files" multiple accept=".png, .jpg">
                     <label for="files">이미지 업로드</label>
                 </div>
             </div>
@@ -152,8 +152,10 @@
       // 이미지 삭제
       function deleteImage(button) {
           var imageUrl = button.previousElementSibling.getAttribute('src');
+          var base_url = "https://yujinwoimage.s3.ap-northeast-2.amazonaws.com/"
+          var result_url = imageUrl.replace(base_url,"");
           imageUrls = imageUrls.filter(function(item) {
-              return item !== imageUrl;
+              return item !== result_url;
           });
           obj.imageUrls = imageUrls;
           var parentDiv = button.parentNode;
@@ -188,6 +190,13 @@
          {
                   obj.imageUrls = imageUrls;
          }
+         const originaltitle = [[${article.title}]];
+         const originalcontent = [[${article.content}]];
+         if(originaltitle == obj.title && originalcontent == obj.content){
+         alert("제목과 내용을 수정해주세요.");
+         return;
+         }
+
 
          // 첨부파일 + 현재 이미지 개수가 2개 초과할 시
          if (files.length + obj.imageUrls.length > 2) {
