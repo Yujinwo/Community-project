@@ -19,6 +19,7 @@ import static com.example.community.entity.QArticle.article;
 import static com.example.community.entity.QBookmark.bookmark;
 import static com.example.community.entity.QComment.comment;
 import static com.example.community.entity.QTag.tag;
+import static com.example.community.entity.QNote.note;
 
 @RequiredArgsConstructor
 public class UserRepositoryCustomImpl implements UserRepositoryCustom {
@@ -131,7 +132,9 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         QNote note = QNote.note;
         // 조회 쿼리
         JPAQuery<Note> notelistsQuery = jpaQueryFactory.selectFrom(note)
-                .where(note.receiver.eq(user).and(note.createdDate.after(LocalDateTime.now().minusDays(90))));
+                .where(note.receiver.eq(user).and(note.createdDate.after(LocalDateTime.now().minusDays(90))))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
         // Count 쿼리
         JPAQuery<Long> countQuery = jpaQueryFactory
                 .select(note.count())
@@ -147,13 +150,21 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     }
 
     @Override
+    public List<Note> findNotesByIds(Member user, List<Long> selectIds) {
+
+        JPAQuery<Note> query = jpaQueryFactory.selectFrom(note)
+                .where(note.id.in(selectIds));
+        return query.fetch();
+    }
+
+    @Override
     public Page<Article> findByArticlelist(Pageable pageable, String sort) {
         // 조회 쿼리
         JPAQuery<Article> query = jpaQueryFactory.selectFrom(article)
                 .orderBy(orderData(sort))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
-        
+
         // Count 쿼리
         JPAQuery<Long> countQuery = jpaQueryFactory
                 .select(article.count())

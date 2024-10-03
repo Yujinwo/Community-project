@@ -34,7 +34,7 @@ public class Member {
     private Role role;
     // 쪽지 수신 거부
     @Column
-    private Boolean noteblockd;
+    private Boolean noteblock;
 
     @Column
     private String social;
@@ -42,8 +42,8 @@ public class Member {
     @Column
     private LocalDateTime temporaryblockdate;
 
-    public void changeNoteBlockd(Boolean noteblockd) {
-        this.noteblockd = noteblockd;
+    public void changeNoteBlock(Boolean noteblock) {
+        this.noteblock = noteblock;
     }
     public void changeTemporaryblockdate(LocalDateTime temporaryblockdate) {
         this.temporaryblockdate = temporaryblockdate;

@@ -46,7 +46,7 @@ class ArticleServiceTest {
     @DisplayName("글 조회")
     void index() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         Member savedMember = memberRepository.save(member);
         articleRepository.save(Article.builder().title("테스트 제목").content("테스트 내용").member(savedMember).build());
         em.flush();
@@ -62,7 +62,7 @@ class ArticleServiceTest {
     @DisplayName("글 검색 키워드 조회")
     void searchArticles() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         Member savedMember = memberRepository.save(member);
         Article savedArticle = articleRepository.save(Article.builder().title("테스트 제목").content("테스트 내용").member(savedMember).build());
         List<String> tags = new ArrayList<>();
@@ -91,7 +91,7 @@ class ArticleServiceTest {
     @DisplayName("글 작성")
     void write() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         Member savedMember = memberRepository.save(member);
         List<String> tags = new ArrayList<>();
         tags.add("태그1");
@@ -120,7 +120,7 @@ class ArticleServiceTest {
     @DisplayName("글 수정")
     void update() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         Member savedMember = memberRepository.save(member);
         List<String> tags = new ArrayList<>();
         tags.add("태그1");
@@ -164,7 +164,7 @@ class ArticleServiceTest {
     @DisplayName("글 삭제")
     void delete() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         Member savedMember = memberRepository.save(member);
         List<String> tags = new ArrayList<>();
         tags.add("태그1");
@@ -201,7 +201,7 @@ class ArticleServiceTest {
     @DisplayName("댓글 작성")
     void commentwrite() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         Member savedMember = memberRepository.save(member);
         List<String> tags = new ArrayList<>();
         tags.add("태그1");
@@ -247,7 +247,7 @@ class ArticleServiceTest {
     @DisplayName("댓글 조회")
     void findCommentid() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         Member savedMember = memberRepository.save(member);
         List<String> tags = new ArrayList<>();
         tags.add("태그1");
@@ -291,7 +291,7 @@ class ArticleServiceTest {
     @DisplayName("조회수 올리기")
     void viewcount() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         Member savedMember = memberRepository.save(member);
         List<String> tags = new ArrayList<>();
         tags.add("태그1");
@@ -324,7 +324,7 @@ class ArticleServiceTest {
     @DisplayName("댓글 삭제")
     void commentdelete() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         Member savedMember = memberRepository.save(member);
         List<String> tags = new ArrayList<>();
         tags.add("태그1");
@@ -370,7 +370,7 @@ class ArticleServiceTest {
     @DisplayName("작성한 글 조회")
     void findMyArticleList() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         Member savedMember = memberRepository.save(member);
         List<String> tags = new ArrayList<>();
         tags.add("태그1");
@@ -401,7 +401,7 @@ class ArticleServiceTest {
     @DisplayName("작성한 댓글 조회")
     void findMyCommentList() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         Member savedMember = memberRepository.save(member);
         List<String> tags = new ArrayList<>();
         tags.add("태그1");
@@ -445,7 +445,7 @@ class ArticleServiceTest {
     @DisplayName("즐겨찾기 조회")
     void findMyBookmarkList() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         Member savedMember = memberRepository.save(member);
         List<String> tags = new ArrayList<>();
         tags.add("태그1");
@@ -479,7 +479,7 @@ class ArticleServiceTest {
     @Test
     @DisplayName("즐겨찾기 삭제")
     void setBookmark() {
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         Member savedMember = memberRepository.save(member);
         List<String> tags = new ArrayList<>();
         tags.add("태그1");
@@ -514,7 +514,7 @@ class ArticleServiceTest {
     @Test
     @DisplayName("즐겨찾기 현황 조회")
     void checkBookmark() {
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         Member savedMember = memberRepository.save(member);
         List<String> tags = new ArrayList<>();
         tags.add("태그1");

@@ -4,6 +4,7 @@ import com.example.community.entity.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepositoryCustom {
@@ -25,6 +26,8 @@ public interface UserRepositoryCustom {
     Page<Notification> findByNoticication(Member user,Pageable pageable);
     // 내 즐겨찾기 조회
     Page<Bookmark> findBymyBookmarklist(Member user,Pageable pageable);
-    // 쪽지 조회
+    // 쪽지 페이지 조회
     Page<Note> findByNote(Member user, Pageable pageable);
+    // 쪽지 특정 조회
+    List<Note> findNotesByIds(Member user,List<Long> selectIds);
 }

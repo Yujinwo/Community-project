@@ -55,7 +55,6 @@ public class ArticleRestController {
             responseJson.put("message" , "허용되지 않은 접근 입니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
-
         responseJson.put("message" , "글 작성 완료했습니다");
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
 
@@ -82,17 +81,15 @@ public class ArticleRestController {
     @DeleteMapping("/api/articles/{id}")
     public ResponseEntity<Map<String,String>> delete(@PathVariable Long id)
     {
+        // json 메세지 생성
+        Map<String,String> responseJson = new HashMap<>();
         // 유저 인증 및 글 조회 실패 시
         Optional<Object> optionalarticle = articleService.delete(id);
         if(optionalarticle.isEmpty())
         {
-            Map<String,String> responseJson = new HashMap<>();
             responseJson.put("message" , "허용되지 않은 접근 입니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
-
-        // json 메세지 생성
-        Map<String,String> responseJson = new HashMap<>();
         responseJson.put("message" , "글 삭제 완료했습니다");
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
@@ -125,7 +122,7 @@ public class ArticleRestController {
             responseMap.put("message" , "허용되지 않은 접근 입니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
         }
-        responseMap.put("message" , "즐겨 찾기 등록 완료했습니다.");
+        responseMap.put("message" , "즐겨 찾기 삭제 완료했습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 
     }
@@ -173,7 +170,7 @@ public class ArticleRestController {
     }
 
     // 대댓글 작성
-    @PostMapping("/api/replys")
+    @PostMapping("/api/comments/replies")
     public ResponseEntity<Map<String,String>> replywrite(@Valid @RequestBody CommentRequestDto ReplyRequestDto) {
         // json 메세지 생성
         Map<String,String> responseJson = new HashMap<>();
@@ -183,7 +180,6 @@ public class ArticleRestController {
             responseJson.put("message" , "허용되지 않은 접근 입니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
-
         responseJson.put("message" , "대댓글 작성 완료했습니다");
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }

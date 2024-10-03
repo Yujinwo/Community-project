@@ -38,8 +38,8 @@ class NoteServiceTest {
     @DisplayName("쪽지 저장")
     void saveNote() {
         //given
-        Member writer = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("보내는자").role(Role.USER).noteblockd(false).build();
-        Member receiver = Member.builder().email("dbwlsdn0124").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("받는자").role(Role.USER).noteblockd(false).build();
+        Member writer = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("보내는자").role(Role.USER).noteblock(false).build();
+        Member receiver = Member.builder().email("dbwlsdn0124").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("받는자").role(Role.USER).noteblock(false).build();
         memberRepository.save(writer);
         memberRepository.save(receiver);
 
@@ -55,8 +55,8 @@ class NoteServiceTest {
     @DisplayName("쪽지 조회")
     void findNotes() {
         //given
-        Member writer = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("보내는자").role(Role.USER).noteblockd(false).build();
-        Member receiver = Member.builder().email("dbwlsdn0124").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("받는자").role(Role.USER).noteblockd(false).build();
+        Member writer = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("보내는자").role(Role.USER).noteblock(false).build();
+        Member receiver = Member.builder().email("dbwlsdn0124").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("받는자").role(Role.USER).noteblock(false).build();
         memberRepository.save(writer);
         memberRepository.save(receiver);
         Note saveNote = Note.builder().receiver(receiver).writer(writer).message("안녕하세요").build();
@@ -76,7 +76,7 @@ class NoteServiceTest {
     @DisplayName("쪽지 임시 차단")
     void setTemporaryBlockDate() {
         //given
-        Member member = Member.builder().email("dbwlsdn0124").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("받는자").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0124").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("받는자").role(Role.USER).noteblock(false).build();
         Member savedmember = memberRepository.save(member);
 
         //when
@@ -93,31 +93,31 @@ class NoteServiceTest {
     @DisplayName("쪽지 영구 차단")
     void setPermanentBlockd() {
         //given
-        Member member = Member.builder().email("dbwlsdn0124").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("받는자").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0124").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("받는자").role(Role.USER).noteblock(false).build();
         Member savedmember = memberRepository.save(member);
 
         //when
-        savedmember.changeNoteBlockd(true);
+        savedmember.changeNoteBlock(true);
         em.flush();
 
         // then
-        assertEquals(savedmember.getNoteblockd(),true);
+        assertEquals(savedmember.getNoteblock(),true);
     }
 
     @Test
     @DisplayName("쪽지 영구 차단 해제")
     void removePermanentBlockd() {
         //given
-        Member member = Member.builder().email("dbwlsdn0124").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("받는자").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0124").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("받는자").role(Role.USER).noteblock(false).build();
         Member savedmember = memberRepository.save(member);
-        savedmember.changeNoteBlockd(true);
+        savedmember.changeNoteBlock(true);
         em.flush();
 
         //when
-        savedmember.changeNoteBlockd(false);
+        savedmember.changeNoteBlock(false);
         em.flush();
 
         // then
-        assertEquals(savedmember.getNoteblockd(),false);
+        assertEquals(savedmember.getNoteblock(),false);
     }
 }

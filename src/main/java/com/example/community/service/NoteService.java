@@ -3,6 +3,7 @@ package com.example.community.service;
 
 import com.example.community.config.CustomOAuth2User;
 import com.example.community.config.CustomUserDetails;
+import com.example.community.dto.NoteDeleteDto;
 import com.example.community.dto.NoteResponseDto;
 import com.example.community.dto.NoteResultDto;
 import com.example.community.entity.Member;
@@ -12,12 +13,14 @@ import com.example.community.repository.NoteRespository;
 import com.example.community.util.AuthenticationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -52,7 +55,8 @@ public class NoteService {
         Member member = authenticationUtil.getCurrentMember();
         if(member != null)
         {
-            Page<NoteResponseDto> notelists = noteRespository.findByNote(member,pageable).map(Note::changeNoteDto);
+            PageRequest pageRequest = PageRequest.of(pageable.getPageNumber()-1,10);
+            Page<NoteResponseDto> notelists = noteRespository.findByNote(member,pageRequest).map(Note::changeNoteDto);
             return NoteResultDto.createNoteResultDto(notelists);
         }
        return null;
@@ -93,7 +97,7 @@ public class NoteService {
             Member authentication = authenticationUtil.getCurrentMember();
             Optional<Member> user = memberRepository.findById(authentication.getId());
             if(user.isPresent()) {
-                user.get().changeNoteBlockd(true);
+                user.get().changeNoteBlock(true);
                 if(user.get().getSocial().equals("normal"))
                 {
                     CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -116,7 +120,7 @@ public class NoteService {
             Member authentication = authenticationUtil.getCurrentMember();
             Optional<Member> user = memberRepository.findById(authentication.getId());
             if(user.isPresent()) {
-                user.get().changeNoteBlockd(false);
+                user.get().changeNoteBlock(false);
                 if(user.get().getSocial().equals("normal"))
                 {
                     CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -130,5 +134,21 @@ public class NoteService {
             }
         }
         return Optional.ofNullable(null);
+    }
+
+    public Optional<Object> deleteNotes(NoteDeleteDto noteDeleteDto) {
+        Member user = authenticationUtil.getCurrentMember();
+        if(user == null)
+        {
+            return Optional.ofNullable(null);
+        }
+        List<Note> notesByIds = noteRespository.findNotesByIds(user, noteDeleteDto.getSelectdIds());
+        if(noteDeleteDto.getSelectdIds().size() == notesByIds.size()){
+            noteRespository.deleteAllInBatch(notesByIds);
+        }
+        else {
+            return Optional.ofNullable(null);
+        }
+        return Optional.ofNullable(notesByIds);
     }
 }

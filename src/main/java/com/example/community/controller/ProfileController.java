@@ -29,7 +29,7 @@ public class ProfileController {
     private final MemberRepository memberRepository;
     private final AuthenticationUtil authenticationUtil;
     @GetMapping("/profile")
-    public String profile(@RequestParam(name = "userid",defaultValue = "0") Long userid,@RequestParam(name = "type",defaultValue = "article_list") String type,Model model,Pageable pageable, RedirectAttributes redirectAttributes) {
+    public String profile(@RequestParam(name = "userid",defaultValue = "0") Long userid,@RequestParam(name = "type",defaultValue = "article_list") String type,Model model,@PageableDefault(page = 1) Pageable pageable, RedirectAttributes redirectAttributes) {
 
         Member user = authenticationUtil.getCurrentMember();;
         // 유저 데이터가 없으면

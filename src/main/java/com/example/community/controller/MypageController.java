@@ -28,7 +28,7 @@ public class MypageController {
     private final ArticleService articleService;
     private final AuthenticationUtil authenticationUtil;
     @GetMapping("/mypage")
-    public String mypage(@RequestParam(name = "type",defaultValue = "article_list") String type,Model model,Pageable pageable, RedirectAttributes redirectAttributes) {
+    public String mypage(@RequestParam(name = "type",defaultValue = "article_list") String type,Model model,@PageableDefault(page = 1) Pageable pageable, RedirectAttributes redirectAttributes) {
         Member user = authenticationUtil.getCurrentMember();
         // 유저 데이터가 없으면
         if (user == null) {

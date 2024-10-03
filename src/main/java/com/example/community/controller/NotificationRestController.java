@@ -34,8 +34,6 @@ public class NotificationRestController {
             return notificationService.createEmitter(member.getId());
         }
         return null;
-
-
     }
     @GetMapping(path = "/api/notifications")
     public NotificationResultDto getnotifications(Pageable pageable) {

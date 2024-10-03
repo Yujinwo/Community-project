@@ -2,6 +2,7 @@ package com.example.community.controller;
 
 
 import com.example.community.dto.NoteBlockRequestDto;
+import com.example.community.dto.NoteDeleteDto;
 import com.example.community.dto.NoteRequestDto;
 import com.example.community.entity.Member;
 import com.example.community.repository.MemberRepository;
@@ -12,10 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -42,7 +40,7 @@ public class NoteRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
         }
         // 받는 사람이 수신 거부일 시
-        if(byemail.get().getNoteblockd() == true || byemail.get().getTemporaryblockdate().isAfter(LocalDateTime.now()))
+        if(byemail.get().getNoteblock() == true || byemail.get().getTemporaryblockdate().isAfter(LocalDateTime.now()))
         {
             errorresultdata.put("message","수신 거부 상태이므로 쪽지를 발송할 수 없습니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
@@ -64,7 +62,7 @@ public class NoteRestController {
 
     }
     // 쪽지 거부 수정
-    @PatchMapping("/api/noteblocks")
+    @PatchMapping("/api/users/me/noteblock")
     public ResponseEntity<Map<String, String>> updateNoteBlock(@Valid @RequestBody NoteBlockRequestDto noteBlockRequestDto) {
         // json 메세지 생성
         Map<String, String> errorresultdata = new HashMap<>();
@@ -106,7 +104,24 @@ public class NoteRestController {
         }
         errorresultdata.put("message","비정상적인 데이터 입니다.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
+    }
+    // 쪽지 삭제
+    @DeleteMapping("/api/notes")
+    public ResponseEntity<Map<String, String>> deleteNote(@Valid @RequestBody NoteDeleteDto noteDeleteDto) {
+        // json 메세지 생성
+        Map<String, String> errorresultdata = new HashMap<>();
+        if(noteDeleteDto.getSelectdIds() == null)
+        {
+            errorresultdata.put("message","데이터가 존재하지 않습니다.");
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
+        }
 
-
+        Optional<Object> optionalnote = noteService.deleteNotes(noteDeleteDto);
+        if(optionalnote.isEmpty()){
+            errorresultdata.put("message","일치하지 않는 데이터입니다.");
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
+        }
+        errorresultdata.put("message","쪽지 삭제 완료 했습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(errorresultdata);
     }
 }

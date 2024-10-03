@@ -65,7 +65,7 @@ public class OAuthAttributes {
                 .email(email)
                 .usernick(name)
                 .role(Role.USER)
-                .noteblockd(false)
+                .noteblock(false)
                 .temporaryblockdate(LocalDateTime.now())
                 .social(social)
                 .build();

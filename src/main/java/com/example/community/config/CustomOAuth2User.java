@@ -33,7 +33,7 @@ public class CustomOAuth2User extends DefaultOAuth2User {
     }
 
     public void changeNoteBlock(Boolean noteblock) {
-        this.member.setNoteblockd(noteblock);
+        this.member.setNoteblock(noteblock);
     }
     public void changeTemporaryblockdate(LocalDateTime temporaryblockdate) {
         this.member.setTemporaryblockdate(temporaryblockdate);

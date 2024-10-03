@@ -33,7 +33,7 @@ class MemberServiceTest {
     @DisplayName("회원 저장")
     void addUser() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         //when
         Member savedmember = memberRepository.save(member);
         //then
@@ -44,7 +44,7 @@ class MemberServiceTest {
     @DisplayName("회원 ID 존재")
     void id_check_true() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         memberRepository.save(member);
         //when
         Optional<Member> member1 = memberRepository.findByEmail("dbwlsdn0125");
@@ -57,7 +57,7 @@ class MemberServiceTest {
     @DisplayName("회원 ID 미존재")
     void id_check_false() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         memberRepository.save(member);
         //when
         Optional<Member> member1 = memberRepository.findByEmail("dbwlsdn0124");
@@ -71,7 +71,7 @@ class MemberServiceTest {
     @DisplayName("회원 닉네임 존재")
     void nick_check_true() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         memberRepository.save(member);
         //when
         Optional<Member> member1 = memberRepository.findByusernick("테스트");
@@ -83,7 +83,7 @@ class MemberServiceTest {
     @DisplayName("회원 닉네임 미존재")
     void nick_check_false() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         memberRepository.save(member);
         //when
         Optional<Member> member1 = memberRepository.findByusernick("테스트2");
@@ -96,7 +96,7 @@ class MemberServiceTest {
     @DisplayName("회원 비밀번호 / 닉네임 수정")
     void updateUser() {
         //given
-        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblockd(false).build();
+        Member member = Member.builder().email("dbwlsdn0125").userpw("$2a$10$UeWyzwythf399jEl8XNXEezsbwskpaZR8HPm2V6V70WcHoygxDun2").usernick("테스트").role(Role.USER).noteblock(false).build();
         memberRepository.save(member);
 
         //when

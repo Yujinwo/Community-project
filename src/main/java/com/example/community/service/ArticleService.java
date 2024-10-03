@@ -433,7 +433,8 @@ public class ArticleService {
     // 내 글 조회
     @Transactional(readOnly = true)
     public MyArticleResultDto findMyArticleList(Member user, Pageable pageable) {
-        Page<MyArticleResponseDto> bymyArticlelist = articleRepository.findBymyArticlelist(user, pageable).map(m-> m.changeMyArticleResponseDto());
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber()-1,10);
+        Page<MyArticleResponseDto> bymyArticlelist = articleRepository.findBymyArticlelist(user, pageRequest).map(m-> m.changeMyArticleResponseDto());
         return MyArticleResultDto.createMyArticleResultDto(bymyArticlelist);
 
     }
@@ -441,14 +442,16 @@ public class ArticleService {
     // 내 댓글 조회
     @Transactional(readOnly = true)
     public MyCommentResultDto findMyCommentList(Member user, Pageable pageable) {
-        Page<MyCommentResponseDto> bymyCommentlist = articleRepository.findBymyCommentlist(user, pageable).map(m-> m.changeMyCommentResponseDto());
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber()-1,10);
+        Page<MyCommentResponseDto> bymyCommentlist = articleRepository.findBymyCommentlist(user, pageRequest).map(m-> m.changeMyCommentResponseDto());
         return MyCommentResultDto.createMyCommentResultDto(bymyCommentlist);
     }
 
     // 내 즐겨찾기 조회
     @Transactional(readOnly = true)
     public MyBookmarkResultDto findMyBookmarkList(Member user, Pageable pageable) {
-        Page<MyBookmarkResponseDto> bymyBookmarklist = bookmarkRepository.findBymyBookmarklist(user, pageable).map(m-> MyBookmarkResponseDto.builder().bookmark_id(m.getId()).article_id(m.getArticle().getId()).article_title(m.getArticle().getTitle()).build());
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber()-1,10);
+        Page<MyBookmarkResponseDto> bymyBookmarklist = bookmarkRepository.findBymyBookmarklist(user, pageRequest).map(m-> MyBookmarkResponseDto.builder().bookmark_id(m.getId()).article_id(m.getArticle().getId()).article_title(m.getArticle().getTitle()).build());
         return MyBookmarkResultDto.createMyBookmarkResultDto(bymyBookmarklist);
     }
     // 즐겨찾기 추가

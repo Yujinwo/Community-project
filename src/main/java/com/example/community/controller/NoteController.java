@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,7 +64,7 @@ public class NoteController {
 
     // 쪽지 리스트 페이지
     @GetMapping("/notes")
-    public String findNoteList(Pageable pageable, Model model, RedirectAttributes redirectAttributes) {
+    public String findNoteList(@PageableDefault(page = 1) Pageable pageable, Model model, RedirectAttributes redirectAttributes) {
         Member user = authenticationUtil.getCurrentMember();
         // 유저 데이터가 없으면
         if (user == null) {

@@ -34,7 +34,7 @@ public class MemberDto {
                 // User 권한 설정
                 .role(role.USER)
                 // 쪽지 거부 설정
-                .noteblockd(false)
+                .noteblock(false)
                 .social("normal")
                 .temporaryblockdate(LocalDateTime.now())
                 .build();

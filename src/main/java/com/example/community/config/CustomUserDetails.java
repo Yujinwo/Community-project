@@ -52,7 +52,7 @@ public class CustomUserDetails implements UserDetails {
         this.member.setUserpw(passwordEncoder.encode(password));
     }
     public void changeNoteBlock(Boolean noteblock) {
-        this.member.setNoteblockd(noteblock);
+        this.member.setNoteblock(noteblock);
     }
     public void changeTemporaryblockdate(LocalDateTime temporaryblockdate) {
         this.member.setTemporaryblockdate(temporaryblockdate);

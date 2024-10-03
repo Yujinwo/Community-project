@@ -29,10 +29,10 @@
                 <a href="javascript:;" id="Temporary_Block" class="list-group-item list-group-item-action">
                     임시 거부
                 </a>
-                <a th:if="${member.noteblockd == false}" href="javascript:;" id="Permanent_Block" class="list-group-item list-group-item-action">
+                <a th:if="${member.noteblock == false}" href="javascript:;" id="Permanent_Block" class="list-group-item list-group-item-action">
                     영구 거부
                 </a>
-                <a th:if="${member.noteblockd == true}" href="javascript:;" id="Remove_Permanent_Block" class="list-group-item list-group-item-action">
+                <a th:if="${member.noteblock == true}" href="javascript:;" id="Remove_Permanent_Block" class="list-group-item list-group-item-action">
                     영구 거부 해제
                 </a>
             </ul>
@@ -46,9 +46,15 @@
     border: 1px solid #e3e3e3;
     border-radius: 10px;
     margin-bottom: 30px;">
+        <div style="display:flex; justify-content:right">
+            <button class="btn btn-danger" id="deleteNote">삭제</button>
+        </div>
         <table class="table table-border table-Light">
             <thead class="table-success">
             <tr>
+                <th scope="col">
+                    <input id="selectAll" style="margin:0;" type="checkbox">
+                </th>
                 <th scope="col">번호</th>
                 <th scope="col">보낸 사람</th>
                 <th scope="col">쪽지 내용</th>
@@ -57,6 +63,10 @@
             </thead>
             <tbody class="table-group-divider">
             <tr class="border-bottom" th:each="item : ${notelists}">
+                    <!-- 쪽지 체크 -->
+                    <th>
+                        <input class="form-check-input" style="margin:0;" type="checkbox" th:value="${item.id}">
+                    </th>
                     <!-- 쪽지 번호 -->
                     <th th:text="${item.id}" scope="row"></th>
                     <!-- 쪽지 보낸 사람 -->
@@ -79,7 +89,7 @@
             <ul class="pagination">
                 <li class="page-item">
                     <!-- 이전 링크 있을시 활성화 없을시 비 활성화 -->
-                    <a class="page-link" th:classappend=" ${!pageable.previous} ? 'disabled' " th:href="${!pageable.first} ? @{/note(page=${pageable.number})}"> 이전 </a>
+                    <a class="page-link" th:classappend=" ${!pageable.previous} ? 'disabled' " th:href="${!pageable.first} ? @{/notes(page=${pageable.number})}"> 이전 </a>
                 </li>
                 <!-- 시작페이지 -> 끝 페이지 까지 페이지 출력 -->
                 <span th:each="page: ${#numbers.sequence(startPage, endPage)}">
@@ -87,12 +97,12 @@
                     <!-- 현재페이지는 링크 없이 숫자만 -->
                      <a class="page-link active" th:if="${page == pageable.number + 1}" href="javascript:;" th:text="${page}"></a>
                     <!-- 현재페이지 링크 X, 다른 페이지번호에는 링크를 보여준다 -->
-                     <a class="page-link" th:unless="${page == pageable.number + 1}" th:href="@{/note(page=${page})}" th:text="${page}"></a>
+                     <a class="page-link" th:unless="${page == pageable.number + 1}" th:href="@{/notes(page=${page})}" th:text="${page}"></a>
                 </li>
             </span>
                 <li class="page-item">
                     <!-- 다음 링크 있을시 활성화 없을시 비 활성화 -->
-                    <a class="page-link" th:classappend=" ${!pageable.next} ? 'disabled' "  th:href="${pageable.last} ? '#' : @{/note(page=${pageable.number + 2})}"> 다음 </a>
+                    <a class="page-link" th:classappend=" ${!pageable.next} ? 'disabled' "  th:href="${pageable.last} ? '#' : @{/notes(page=${pageable.number + 2})}"> 다음 </a>
                 </li>
             </ul>
         </div>
@@ -100,7 +110,86 @@
     <script th:inline="javascript">
         const token = $("meta[name='_csrf']").attr("content")
         const header = $("meta[name='_csrf_header']").attr("content");
+        var selectedIds = [];
+
         $(document).ready(function() {
+
+               // 쪽지 모두 선택 누를시
+                $('#selectAll').change(function() {
+                     selectedIds = [];
+                     const checkboxes = document.querySelectorAll('.form-check-input');
+                     checkboxes.forEach(checkbox => {
+                        // "모두 선택" 체크박스 상태에 따라 체크
+                        checkbox.checked = this.checked;
+                        // 체크박스가 선택되면 리스트에 ID 추가
+                        if (!selectedIds.includes(checkbox.value)) {
+                            selectedIds.push(checkbox.value);
+                        }
+                        else {
+                            // 체크박스가 선택 해제되면 리스트에서 ID 제거
+                            const index = selectedIds.indexOf(checkbox.value);
+                            if (index > -1) {
+                                selectedIds.splice(index, 1);
+                            }
+                        }
+                     });
+                });
+
+                // 쪽지 체크시
+                $('.form-check-input').change(function() {
+                    const id = this.value; // value 속성에서 ID 가져오기
+
+                    if (selectedIds.length >= 10) {
+                        alert('최대 선택할 수 있는 개수는 10개입니다.');
+                        // 체크박스 선택 해제
+                        this.checked = false;
+                        return;
+                    }
+
+                    if (this.checked) {
+                        // 체크박스가 선택되면 리스트에 ID 추가
+                        if (!selectedIds.includes(id)) {
+                            selectedIds.push(id);
+                        }
+                    } else {
+                        // 체크박스가 선택 해제되면 리스트에서 ID 제거
+                        const index = selectedIds.indexOf(id);
+                        if (index > -1) {
+                            selectedIds.splice(index, 1);
+                        }
+                    }
+                });
+               // 쪽지 삭제
+               $("#deleteNote").click(function() {
+
+                     if (selectedIds.length > 10) {
+                        alert('최대 선택할 수 있는 개수는 10개입니다.');
+                        return;
+                     }
+                     if (selectedIds.length < 1) {
+                        alert('쪽지를 선택해주세요.');
+                        return;
+                     }
+
+                   $.ajax({
+                        url: '/api/notes',
+                        type: 'DELETE',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ selectdIds: selectedIds }),
+                        success: function(data) {
+                           alert(data.message);
+                           window.location.href = '/notes';
+                        },
+                        beforeSend : function(xhr) {
+                            xhr.setRequestHeader(header, token);
+                        },
+                        error: function(e) {
+                            alert(e.responseJSON.message);
+                        }
+                    });
+
+                })
+
                 // 쪽지 차단 버튼 클릭시 차단 더보기 메뉴창
                 $("#note_block_button").click(function() {
                          $("#Note_blockpage").show();
@@ -114,7 +203,7 @@
                                             　　, data: JSON.stringify({
                                                     block_type : 'temporary'
                                                 })
-                                            　　, url: '/api/noteblocks'
+                                            　　, url: '/api/users/me/noteblock'
                                             　　, success: function(data) {
                                                      alert(data.message);
                                                      window.location.href = '/notes';
@@ -138,7 +227,7 @@
                                             　　, data: JSON.stringify({
                                                     block_type : 'permanent'
                                                 })
-                                            　　, url: '/api/noteblocks'
+                                            　　, url: '/api/users/me/noteblock'
                                             　　, success: function(data) {
                                                     alert(data.message);
                                                     window.location.href = '/notes';
@@ -162,7 +251,7 @@
                                             　　, data: JSON.stringify({
                                                     block_type : 'remove_permanent'
                                                 })
-                                            　　, url: '/api/noteblocks'
+                                            　　, url: '/api/users/me/noteblock'
                                             　　, success: function(data) {
                                                       alert(data.message);
                                                       window.location.href = '/notes';
@@ -187,7 +276,7 @@
             // 받은 쪽지 클릭시
             function receivenote(id) {
                  // 쪽지 상세 조회 페이지로 이동
-                 window.open('/notes/' + id, '쪽지', 'width=400,height=420');
+                 window.open('/notes/' + id, '쪽지', 'width=400,height=420,resizable=no');
             }
 
 
