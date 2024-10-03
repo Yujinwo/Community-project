@@ -60,6 +60,11 @@ public class Comment extends BaseTime{
         return MyCommentResponseDto.builder().article_id(article.getId()).article_title(article.getTitle()).content(content).createdDate(createdFormatDate).build();
     }
 
+    // 댓글 수정
+    public void changeCommentConent(String content) {
+        this.content = content;
+    }
+
 
 
 

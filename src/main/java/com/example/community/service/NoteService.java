@@ -135,7 +135,7 @@ public class NoteService {
         }
         return Optional.ofNullable(null);
     }
-
+    @Transactional
     public Optional<Object> deleteNotes(NoteDeleteDto noteDeleteDto) {
         Member user = authenticationUtil.getCurrentMember();
         if(user == null)

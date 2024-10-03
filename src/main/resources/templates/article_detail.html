@@ -80,7 +80,7 @@
     <!-- 로그인/로그아웃 -->
     <div th:if="${endPage != 0}" th:id="'comment_'+${comment.id}" th:each="comment : ${comment}" class="article_comments" th:style="${comment.redepth != 0 ? ' padding-left: ' + comment.redepth * 40 + 'px' : ''} ">
         <!-- 댓글이 삭제 상태가 아닌 경우 댓글 표시 -->
-        <div th:if="${comment.deleted == false }">
+        <div class="comment"  th:if="${comment.deleted == false }">
             <span th:if="${comment.parent != null}" class="bold"> ↪ </span>
             <!-- 댓글 작성자 -->
             <span class="bold" th:text="${comment.member.usernick}"></span>
@@ -88,20 +88,28 @@
             <!-- 댓글 작성 시간 -->
             <span th:text="${@timeUtil.calculateTimeAgo(comment.createdDate)}"></span>
             <span> · </span>
+            <!-- 댓글 수정 버튼-->
+            <button sec:authorize="isAuthenticated()" class="edit-button comment_update" th:if="${comment.member.id == @authenticationUtil.getCurrentMember()?.id}" th:id="${comment.id}">수정</button>
             <!-- 댓글 삭제 버튼-->
             <span  sec:authorize="isAuthenticated()" class="comment_delete">
                 <button onclick="deleteComment(this.getAttribute('data-comment-id'))" th:attr="data-comment-id=${comment.id}" th:if="${comment.member.id == @authenticationUtil.getCurrentMember()?.id}">삭제</button>
-            </span><br><br>
+            </span>
+            <div class="edit-input" style="display: none;">
+                <input style="height:100px;" type="text" class="edit-text form-control" />
+                <button class="save-button comment_update" style="color: #565e64;" th:id="${comment.id}">저장</button>
+                <button class="cancel-button comment_update" style="color: #565e64;" th:id="${comment.id}">취소</button>
+            </div>
+
             <!-- 깊이 표시 -->
-            <div th:style="${comment.redepth != 0 ? 'padding-left: ' + comment.redepth * 10 + 'px;' + 'display:flex;' : ''} ">
+            <div th:style="${comment.redepth != 0 ? 'padding-left: ' + comment.redepth * 10 + 'px; margin-top: 10px;' + 'display:flex;' : 'margin-top: 10px;'}">
                 <!-- 상위 댓글 작성자 -->
-                <span th:if="${comment.parent != null}" style="color:#6c757d; margin:0 10px;" th:text="${comment.parent.member.usernick}"> </span>
+                <span class="parent-comment-text" th:if="${comment.parent != null}" style="color:#6c757d; margin:0 10px;" th:text="${comment.parent.member.usernick}"> </span>
                 <!-- 대댓글 내용 -->
-                <div th:text="${comment.content}"></div>
+                <div class="comment-text" th:text="${comment.content}"></div>
             </div>
             <!-- 답글 달기 버튼 -->
             <div th:style="${comment.redepth != 0 ? ' padding-left: ' + comment.redepth * 20 + 'px' : ''} ">
-                <button class="reply_button" th:id="'reply_button_' + ${comment.id}" onclick="replyButton(this.getAttribute('data-comment-id'))" th:attr="data-comment-id=${comment.id}">답글 달기</button>
+                <button style="color: #565e64;" class="reply_button" th:id="'reply_button_' + ${comment.id}" onclick="replyButton(this.getAttribute('data-comment-id'))" th:attr="data-comment-id=${comment.id}">답글 달기</button>
             </div>
         </div>
         <!-- 댓글이 삭제 상태인 경우 삭제된 댓글로 표시 -->
@@ -176,7 +184,66 @@
                  const header = $("meta[name='_csrf_header']").attr("content");
 
                  $(document).ready(function() {
-                    $("#bookmark").click(function() {
+
+                 // 수정 버튼 클릭 이벤트
+                    $('.edit-button').on('click', function() {
+                        const commentDiv = $(this).closest('.article_comments');
+                        const commentText = commentDiv.find('.comment-text');
+                        const parentcommentText = commentDiv.find('.parent-comment-text');
+                        const replyButton = commentDiv.find('.reply_button');
+                        const editInput = commentDiv.find('.edit-input');
+                        const editText = commentDiv.find('.edit-text');
+
+                        // 수정 입력창에 현재 댓글 내용 설정
+                        editText.val(commentText.text());
+
+                        commentText.hide(); // 댓글 텍스트 숨기기
+                        parentcommentText.hide(); //상위 댓글 텍스트 숨기기
+                        replyButton.hide(); // 답글 버튼 숨기기
+                        editInput.show();   // 수정 입력창 표시
+                    });
+
+                       // 저장 버튼 클릭 이벤트
+                       $('.save-button').on('click', function() {
+                        const commentDiv = $(this).closest('.article_comments');
+                        const commentText = commentDiv.find('.comment-text');
+                        const parentcommentText = commentDiv.find('.parent-comment-text');
+                        const replyButton = commentDiv.find('.reply_button');
+                        const editText = commentDiv.find('.edit-text');
+                        const editInput = commentDiv.find('.edit-input');
+
+                        // 입력창 닫기
+                        editInput.hide();
+
+                        // 기존 댓글 텍스트와 답글 버튼 다시 표시
+                        commentText.show();
+                        parentcommentText.show();
+                        replyButton.show();
+                        updateComment(this.id,editText.val());
+
+
+                    });
+
+                    // 취소 버튼 클릭 이벤트
+                    $('.cancel-button').on('click', function() {
+                        const commentDiv = $(this).closest('.article_comments');
+                        const editInput = commentDiv.find('.edit-input');
+                        const commentText = commentDiv.find('.comment-text');
+                        const parentcommentText = commentDiv.find('.parent-comment-text');
+                        const replyButton = commentDiv.find('.reply_button');
+
+                        // 입력창 닫기
+                        editInput.hide();
+
+                        // 기존 댓글 텍스트와 답글 버튼 다시 표시
+                        commentText.show();
+                        parentcommentText.show();
+                        replyButton.show();
+
+                    });
+
+
+                     $("#bookmark").click(function() {
                         var $bookmark = $("#bookmark").toggleClass("active");
                         if($bookmark.hasClass("active")) {
                                  // 즐겨찾기 추가
@@ -213,7 +280,7 @@
 
 
                         }
-                    });
+                     });
 
                      // 글 작성자 클릭시 더보기 메뉴창
                      $('#article_addtext_writer').click(function() {
@@ -282,6 +349,27 @@
                                 　　}
                          });
                 }
+                // 댓글/대댓글 수정
+                function updateComment(commentId,content) {
+                         var obj = {};
+                         obj.content = content;
+                         obj.id = commentId;
+                   $.ajax({
+                        　　type:'patch'
+                        　　, contentType:'application/json'
+                           , data: JSON.stringify(obj)
+                        　　, url: '/api/comments'
+                        　　, success: function(data) {
+                                 window.location.href = '/articles/' + articleId;
+                        　　}
+                           , beforeSend : function(xhr) {
+                                 xhr.setRequestHeader(header, token);
+                           }
+                           , error:function(e) {
+                                 alert(e.responseJSON.message);
+                        　　}
+                        });
+                };
                 // 댓글/대댓글 삭제
                 function deleteComment(commentId) {
                    $.ajax({

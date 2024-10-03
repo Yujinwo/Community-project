@@ -222,6 +222,12 @@ display: flex;
     border-radius: 10px;
     color: #FF0000;
 }
+/* 상세페이지 댓글 수정 버튼 */
+.comment_update{
+    border: 1px solid;
+    border-radius: 10px;
+    color: #0054FF;
+}
 /* 상세페이지 답글 달기 버튼 */
 .reply_button{
     border: 1px solid;

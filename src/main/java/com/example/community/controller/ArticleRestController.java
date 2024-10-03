@@ -2,6 +2,7 @@ package com.example.community.controller;
 
 import com.example.community.dto.ArticleRequestDto;
 import com.example.community.dto.CommentRequestDto;
+import com.example.community.dto.CommentUpdateDto;
 import com.example.community.entity.Article;
 import com.example.community.entity.Notification;
 import com.example.community.service.ArticleService;
@@ -166,6 +167,22 @@ public class ArticleRestController {
         }
 
         responseJson.put("message" , "댓글 삭제 완료했습니다");
+        return ResponseEntity.status(HttpStatus.OK).body(responseJson);
+    }
+    // 댓글 수정
+    @PatchMapping("/api/comments")
+    public ResponseEntity<Map<String,String>> commentupdate(@Valid @RequestBody CommentUpdateDto commentUpdateDto) {
+
+        // json 메세지 생성
+        Map<String,String> responseJson = new HashMap<>();
+        Optional<Object> updatedcomment = articleService.commentupdate(commentUpdateDto);
+        if(updatedcomment.isEmpty())
+        {
+            responseJson.put("message" , "허용되지 않은 접근 입니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
+        }
+
+        responseJson.put("message" , "댓글 수정 완료했습니다");
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
 

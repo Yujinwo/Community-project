@@ -2,6 +2,7 @@ package com.example.community.dto;
 
 import com.example.community.domain.member.Role;
 import com.example.community.entity.Member;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,10 +19,13 @@ public class MemberDto {
     private Long id;
     // 권한 Enum
     private Role role;
+    @NotEmpty(message = "데이터가 존재하지 않습니다.")
     @Size(min=8,max=320,message = "이메일은 8~320자 이내로 작성해주세요")
     private String email;
+    @NotEmpty(message = "데이터가 존재하지 않습니다.")
     @Size(min=10,max=15,message = "비밀번호는 10~15자 이내로 작성해주세요")
     private String userpw;
+    @NotEmpty(message = "데이터가 존재하지 않습니다.")
     @Size(min=3,max=20,message = "닉네임은 3~20자 이내로 작성해주세요")
     private String usernick;
     public Member toEntity(){

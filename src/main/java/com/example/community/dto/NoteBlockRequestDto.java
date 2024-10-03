@@ -1,6 +1,7 @@
 package com.example.community.dto;
 
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -8,6 +9,6 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 public class NoteBlockRequestDto {
-    @NotNull(message = "비정상적인 데이터 입니다.")
+    @NotEmpty(message = "데이터가 존재하지 않습니다.")
     private String block_type;
 }

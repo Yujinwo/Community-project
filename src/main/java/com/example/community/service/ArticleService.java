@@ -345,6 +345,41 @@ public class ArticleService {
         Optional<Article> article = articleRepository.findById(id);
         return article;
     }
+    // 댓글 수정
+    @Transactional
+    public Optional<Object> commentupdate(CommentUpdateDto commentUpdateDto) {
+
+        // 인증된 Member Entity 가져오기
+        Member member = authenticationUtil.getCurrentMember();
+        if(member == null)
+        {
+            return Optional.ofNullable(null);
+        }
+        Optional<Comment> comment = commentRepository.findById(commentUpdateDto.getId());
+        // 댓글 조회 실패 시
+        if(comment.isEmpty())
+        {
+            return Optional.ofNullable(null);
+        }
+        // 인증된 유저와 댓글 작성한 유저 비교 ||
+        if(member.getId() != comment.get().getMember().getId())
+        {
+            return Optional.ofNullable(null);
+        }
+        // 삭제된 댓글일 시
+        if(comment.get().isDeleted())
+        {
+            return Optional.ofNullable(null);
+        }
+        // 작성한 내용과 원본 댓글 내용이 같을 시
+        if(comment.get().getContent().equals(commentUpdateDto.getContent())){
+            return Optional.ofNullable(null);
+        }
+        // 댓글 내용 수정
+        comment.get().changeCommentConent(commentUpdateDto.getContent());
+        return Optional.ofNullable(comment);
+
+    }
     // 댓글 삭제
     @Transactional
     public Optional<Object> commentdelete(Long id) {
@@ -509,4 +544,6 @@ public class ArticleService {
     public Boolean checkBookmark(Long articleId) {
         return bookmarkRepository.findByMemberAndArticle(authenticationUtil.getCurrentMember().getId(),articleId).isPresent();
     }
+
+
 }
