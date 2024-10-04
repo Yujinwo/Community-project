@@ -31,6 +31,7 @@ public class ArticleService {
     private final CommentRepository commentRepository;
     private final BoardImageRepository boardImageRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final NotificationRepository notificationRepository;
     private final S3Uploader s3Uploader;
     private final NotificationService notificationService;
     private final EntityManager em;
@@ -262,6 +263,7 @@ public class ArticleService {
         {
             return Optional.ofNullable(null);
         }
+
         articleRepository.delete(article.get());
         return Optional.of(article);
     }
@@ -299,7 +301,7 @@ public class ArticleService {
         // 내 자신에게 알림 발송 차단
         if(article.get().getMember().getId() == member.getId())
         {
-            Optional.ofNullable(comment);
+            return Optional.ofNullable(null);
         }
 
         // 글 작성자에게 댓글 알림 전송

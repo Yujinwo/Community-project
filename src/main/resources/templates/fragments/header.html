@@ -90,10 +90,8 @@
     <script>
         let pageNumber = 0;
         let pageLast = true;
-        const header_token = $("meta[name='_csrf']").attr("content")
-        const header_csrf = $("meta[name='_csrf_header']").attr("content");
-
-
+        const token = $("meta[name='_csrf']").attr("content")
+        const header = $("meta[name='_csrf_header']").attr("content");
         // 유저 닉네임 클릭시 더보기 메뉴창
         $(document).ready(function() {
             if($('#usernick').length) {
@@ -101,6 +99,8 @@
                     $('#my_page').show();
                 });
             }
+
+
         });
 
         // 알림 메세지 조회
@@ -116,6 +116,7 @@
 
                                // 데이터 없을시 noFeedList 창 표시
                                if(data.count == 0) {
+                               $notificationList.empty();
                                    $noFeedList.show();
                                    pageNumber = 0;
                                }
@@ -127,8 +128,11 @@
                                    pageLast = data.last;
                                    $noFeedList.hide();
                                    data.content.forEach(notification => {
-                                       const $li = $('<li>',{ class:'notification-item' });
-                                       const $a = $('<a>', { href: '/articles/' + notification.articleId });
+                                        const $li = $('<li>',{ class:'notification-item'});
+                                        const $a = $('<a>', { href: '/articles/' + notification.articleId });
+                                        const $div = $('<div>',{ class:'notification-item', id: notification.id });
+                                        const $buttoncontainer = $('<div>',{ class:'button-container', id:'buttonContainer' });
+                                        const $button = $('<button>',{ class:'btn btn-danger', text:'비우기',style:'height: 100px;'});
 
                                        // 보낸자 닉네임
                                        const $nickNameText = $('<p>',{ class: 'notification-nametext',text: notification.writerNickname});
@@ -141,13 +145,80 @@
                                        $a.append($nickNameText,$articleTitleText,$time);
 
                                        $li.append($a);
+                                       $buttoncontainer.append($button);
                                        // 리스트에 추가
-                                       $notificationList.append($li);
+                                       $div.append($li);
+                                       $div.append($buttoncontainer);
+                                       $notificationList.append($div);
                                    });
+                                    $('#notificationList > .notification-item').each(function() {
+
+                                    const $slider = $(this) // 현재 알림 메시지 선택
+                                    const $buttonContainer = $slider.find('.button-container'); // 각 알림 메시지의 버튼 컨테이너
+                                    let startX;
+
+                                    // 알림 삭제
+                                    $buttonContainer.on('click',function() {
+
+                                        $.ajax({
+                                        　　type:'delete'
+                                        　　, contentType:'application/json'
+                                        　　, url: '/api/notifications/' + $slider.attr('id')
+                                        　　, success: function(data) {
+                                               addNotificaionList(0);
+
+                                        　　}
+                                            , beforeSend : function(xhr) {
+                                              xhr.setRequestHeader(header, token);
+                                           }
+                                           , error:function(e) {
+                                                alert(e.responseJSON.message);
+                                        　　}
+                                        });
+
+                                    });
+
+                                    $slider.on('mousedown', function(e) {
+                                         $(document).on('mouseup', function() {
+                                                $(document).off('mousemove', mouseMoveHandler);
+
+                                                // 버튼이 보이는 상태에서 원위치로 되돌리기
+                                                if ($buttonContainer.hasClass('show')) {
+                                                    $slider.css('transform', 'translateX(0)');
+                                                    $buttonContainer.removeClass('show');
+                                                }
+                                            });
+                                        $(document).on('mousemove', mouseMoveHandler);
+                                            startX = e.clientX;
+
+                                            function mouseMoveHandler(e) {
+
+                                                const deltaX = startX - e.clientX;
+
+                                                // 슬라이더를 왼쪽으로 이동
+                                                if (!$buttonContainer.hasClass('show')) {
+                                                    $slider.css('transform', `translateX(${-deltaX}px)`);
+                                                    if (deltaX >= 30) {
+                                                        $slider.css('transform', 'translateX(-30px)');
+                                                        $buttonContainer.addClass('show');
+                                                        $(document).off('mousemove', mouseMoveHandler);
+                                                    }
+                                                } else {
+                                                    $slider.css('transform', `translateX(${-deltaX}px)`);
+                                                    if (deltaX <= 10) {
+                                                        $slider.css('transform', 'translateX(0)'); // 원위치로 되돌리기
+                                                        $buttonContainer.removeClass('show');
+                                                        $(document).off('mousemove', mouseMoveHandler);
+                                                    }
+                                                }
+                                          }
+
+                                    });
+                                 });
                                }
                             },
                             beforeSend : function(xhr) {
-                                xhr.setRequestHeader(header_csrf, header_token);
+                                xhr.setRequestHeader(header, token);
                             },
                             error: function(e) {
                                 console.log(e);

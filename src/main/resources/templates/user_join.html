@@ -33,8 +33,6 @@
 
     <script th:inline="javascript">
         var idcheckdstate = "false";
-        const token = $("meta[name='_csrf']").attr("content");
-        const header = $("meta[name='_csrf_header']").attr("content");
         // ID 중복체크
         function idcheck() {
                 var checkdata = {

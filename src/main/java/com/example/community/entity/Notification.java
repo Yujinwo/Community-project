@@ -25,9 +25,8 @@ public class Notification extends BaseTime {
     @JoinColumn(name = "writer_id")
     private Member writer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "article_id")
-    private Article article;
+    private Long articleId;
+    private String articleTitle;
 
     private String message;
 
@@ -35,8 +34,9 @@ public class Notification extends BaseTime {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String createdFormatDate = createdDate.format(formatter);
         return NotificationResponseDto.builder()
-                .articleTitle(article.getTitle())
-                .articleId(article.getId())
+                .id(id)
+                .articleTitle(articleTitle)
+                .articleId(articleId)
                 .writerNickname(writer.getUsernick())
                 .commentCreatetime(createdFormatDate)
                 .commentContent(message)

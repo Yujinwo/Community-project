@@ -141,14 +141,8 @@ public class ArticleRestController {
             responseJson.put("message" , "허용되지 않은 접근 입니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
-
         // SSE 댓글 메세지 전송
-        Optional<Object> optionalobject = notificationService.sendRealTimeNotification((Notification) notification.get());
-        if(optionalobject.isEmpty())
-        {
-            responseJson.put("message" , "전송 실패 했습니다.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
-        }
+        notificationService.sendRealTimeNotification((Notification) notification.get());
         responseJson.put("message" , "댓글 작성 완료했습니다");
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }

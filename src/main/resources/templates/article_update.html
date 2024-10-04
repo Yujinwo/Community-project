@@ -41,8 +41,6 @@
 
     <script th:inline="javascript">
         var tags = [[${article.tagConents}]];
-        const token = $("meta[name='_csrf']").attr("content")
-        const header = $("meta[name='_csrf_header']").attr("content");
         tags.forEach(tag => setTag(tag));
         function setTag(tag) {
               // 태그 입력창

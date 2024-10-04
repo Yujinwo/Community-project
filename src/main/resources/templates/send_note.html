@@ -46,9 +46,10 @@
 </div>
 
 <script th:inline="javascript">
+
+    // 쪽지 전송
     const token = $("meta[name='_csrf']").attr("content")
     const header = $("meta[name='_csrf_header']").attr("content");
-    // 쪽지 전송
     $('#message-form').submit(function(event) {
                               event.preventDefault();
                               const recipient = $('#recipient').val();

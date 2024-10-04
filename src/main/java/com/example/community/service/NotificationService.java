@@ -81,7 +81,8 @@ public class NotificationService {
                                         builder()
                                         .receiver(receiver)
                                         .writer(writer)
-                                        .article(article)
+                                        .articleId(article.getId())
+                                        .articleTitle(article.getTitle())
                                         .message(message)
                                         .build();
         Notification savedNotification = notificationRepository.save(notification);
@@ -89,21 +90,20 @@ public class NotificationService {
 
     }
     // SSE 실시간 알림 메세지 전송
-    public Optional<Object> sendRealTimeNotification(Notification notification) {
+    public void sendRealTimeNotification(Notification notification) {
             SseEmitter emitter = userEmitters.get(notification.getReceiver().getId());
             if (emitter != null) {
                     try {
                         emitter.send(SseEmitter.event()
                                 .name("notification")
-                                .data(notification.getWriter().getUsernick() + " 님이 회원님이 작성한 " + notification.getArticle().getTitle() + "에 "  + notification.getMessage() + " 댓글을 작성했습니다."));
-                        return Optional.ofNullable(notification);
+                                .data(notification.getWriter().getUsernick() + " 님이 회원님이 작성한 " + notification.getArticleTitle() + "에 "  + notification.getMessage() + " 댓글을 작성했습니다."));
+
                     } catch (Exception e) {
                         log.info(e.getMessage());
                         userEmitters.remove(notification.getReceiver().getId());
                         // 예외 처리
                     }
             }
-            return Optional.ofNullable(null);
     }
     // 알림 조회
     @Transactional(readOnly = true)
@@ -118,5 +118,30 @@ public class NotificationService {
         return new NotificationResultDto();
 
 
+    }
+
+    public Optional<Object> deletenotications(Long id) {
+
+        // 인증된 Member Entity 가져오기
+        Member member = authenticationUtil.getCurrentMember();
+        if(member == null)
+        {
+            return Optional.ofNullable(null);
+        }
+
+        Optional<Notification> notification = notificationRepository.findById(id);
+        // 알림 조회 실패 시
+        if(notification.isEmpty())
+        {
+            return Optional.ofNullable(null);
+        }
+
+        if(!notification.get().getReceiver().getId().equals(member.getId()))
+        {
+            return Optional.ofNullable(null);
+        }
+
+        notificationRepository.delete(notification.get());
+        return Optional.ofNullable(notification);
     }
 }

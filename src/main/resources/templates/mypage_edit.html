@@ -67,8 +67,6 @@
 
     <script inline="javascript">
         var updatedata;
-        const token = $("meta[name='_csrf']").attr("content")
-        const header = $("meta[name='_csrf_header']").attr("content");
         // 소셜 로그인 여부
         const social = '[[${@authenticationUtil.getCurrentMember()?.social}]]';
         $(document).ready(function() {

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotificationResponseDto {
+    private Long id;
     // 댓글 작성자 닉네임
     private String writerNickname;
     // 댓글 내용

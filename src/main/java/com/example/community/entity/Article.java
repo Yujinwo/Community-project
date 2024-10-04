@@ -46,9 +46,6 @@ public class Article extends BaseTime{
     @OneToMany(mappedBy = "article",orphanRemoval = true,cascade = CascadeType.REMOVE)
     private List<Bookmark> bookmarks;
 
-    @OneToMany(mappedBy = "article",orphanRemoval = true,cascade = CascadeType.REMOVE)
-    private List<Notification> notifications;
-
     @BatchSize(size = 10)
     @OneToMany(mappedBy = "article",orphanRemoval = true,cascade = CascadeType.ALL)
     private List<Tag> tags;
