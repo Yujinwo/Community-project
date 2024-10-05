@@ -32,7 +32,7 @@ public class MypageController {
         Member user = authenticationUtil.getCurrentMember();
         // 유저 데이터가 없으면
         if (user == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다");
             return "redirect:/"; // 홈으로 리다이렉트
         }
         // 내가 작성한 글 리스트

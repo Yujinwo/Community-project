@@ -36,28 +36,28 @@ public class NoteRestController {
         Optional<Member> byemail = memberRepository.findByEmail(noteRequestDto.getReceiver_email());
         if(byemail.isEmpty())
         {
-            errorresultdata.put("message","이메일이 존재하지 않습니다.");
+            errorresultdata.put("message","이메일이 존재하지 않습니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
         }
         // 받는 사람이 수신 거부일 시
         if(byemail.get().getNoteblock() == true || byemail.get().getTemporaryblockdate().isAfter(LocalDateTime.now()))
         {
-            errorresultdata.put("message","수신 거부 상태이므로 쪽지를 발송할 수 없습니다.");
+            errorresultdata.put("message","수신 거부 상태이므로 쪽지를 발송할 수 없습니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
         }
         // 받는 사람이 내 자신일 시
         if(byemail.get().getId().equals(authenticationUtil.getCurrentMember().getId()))
         {
-            errorresultdata.put("message","자신에게 쪽지를 발송할 수 없습니다.");
+            errorresultdata.put("message","자신에게 쪽지를 발송할 수 없습니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
         }
         Optional<Object> SavedNote = noteService.saveNote(byemail.get(), noteRequestDto.getMessage());
         if(SavedNote.isPresent())
         {
-            errorresultdata.put("message","전송이 완료 되었습니다.");
+            errorresultdata.put("message","전송이 완료 되었습니다");
             return ResponseEntity.status(HttpStatus.OK).body(errorresultdata);
         }
-        errorresultdata.put("message","로그인 정보가 일치하지 않습니다.");
+        errorresultdata.put("message","로그인 정보가 일치하지 않습니다");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
 
     }
@@ -70,11 +70,11 @@ public class NoteRestController {
             // 임시 거부 설정
             Optional<Object> optionalnote = noteService.setTemporaryBlockDate();
             if(optionalnote.isPresent()){
-                errorresultdata.put("message","임시 거부 설정 완료 되었습니다.");
+                errorresultdata.put("message","임시 거부 설정 완료 되었습니다");
                 return ResponseEntity.status(HttpStatus.OK).body(errorresultdata);
             }
             else {
-                errorresultdata.put("message","로그인 정보가 일치하지 않습니다.");
+                errorresultdata.put("message","로그인 정보가 일치하지 않습니다");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
             }
         }
@@ -82,11 +82,11 @@ public class NoteRestController {
             // 영구 거부 설정
             Optional<Object> optionalnote = noteService.setPermanentBlockd();
             if(optionalnote.isPresent()){
-                errorresultdata.put("message","영구 거부 설정 완료 되었습니다.");
+                errorresultdata.put("message","영구 거부 설정 완료 되었습니다");
                 return ResponseEntity.status(HttpStatus.OK).body(errorresultdata);
             }
             else {
-                errorresultdata.put("message","로그인 정보가 일치하지 않습니다.");
+                errorresultdata.put("message","로그인 정보가 일치하지 않습니다");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
             }
         }
@@ -94,15 +94,15 @@ public class NoteRestController {
             // 영구 거부 해제
             Optional<Object> optionalnote = noteService.removePermanentBlockd();
             if(optionalnote.isPresent()){
-                errorresultdata.put("message","영구 거부 해제 완료 되었습니다.");
+                errorresultdata.put("message","영구 거부 해제 완료 되었습니다");
                 return ResponseEntity.status(HttpStatus.OK).body(errorresultdata);
             }
             else {
-                errorresultdata.put("message","로그인 정보가 일치하지 않습니다.");
+                errorresultdata.put("message","로그인 정보가 일치하지 않습니다");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
             }
         }
-        errorresultdata.put("message","비정상적인 데이터 입니다.");
+        errorresultdata.put("message","비정상적인 데이터 입니다");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
     }
     // 쪽지 삭제
@@ -112,16 +112,16 @@ public class NoteRestController {
         Map<String, String> errorresultdata = new HashMap<>();
         if(noteDeleteDto.getSelectdIds() == null)
         {
-            errorresultdata.put("message","데이터가 존재하지 않습니다.");
+            errorresultdata.put("message","데이터가 존재하지 않습니다");
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
         }
 
         Optional<Object> optionalnote = noteService.deleteNotes(noteDeleteDto);
         if(optionalnote.isEmpty()){
-            errorresultdata.put("message","일치하지 않는 데이터입니다.");
+            errorresultdata.put("message","일치하지 않는 데이터입니다");
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
         }
-        errorresultdata.put("message","쪽지 삭제 완료 했습니다.");
+        errorresultdata.put("message","쪽지 삭제 완료 했습니다");
         return ResponseEntity.status(HttpStatus.OK).body(errorresultdata);
     }
 }

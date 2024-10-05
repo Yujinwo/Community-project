@@ -52,10 +52,10 @@ public class NotificationRestController {
         Optional<Object> optionalnotications = notificationService.deletenotications(id);
         if(optionalnotications.isEmpty())
         {
-            responseJson.put("message" , "허용되지 않은 접근 입니다.");
+            responseJson.put("message" , "허용되지 않은 접근 입니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
-        responseJson.put("message","알림 삭제 완료했습니다.");
+        responseJson.put("message","알림 삭제 완료했습니다");
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
 }

@@ -34,7 +34,7 @@ public class ProfileController {
         Member user = authenticationUtil.getCurrentMember();;
         // 유저 데이터가 없으면
         if (user == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다");
             return "redirect:/"; // 홈으로 리다이렉트
         }
         // userid가 기본값일 시 MY페이지로 이동
@@ -43,7 +43,7 @@ public class ProfileController {
             user = authenticationUtil.getCurrentMember();
             // 유저 데이터가 없으면
             if (user == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다.");
+                redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다");
                 return "redirect:/"; // 홈으로 리다이렉트
             }
             // 내 쪽지 전체 페이징처리 조회
@@ -69,7 +69,7 @@ public class ProfileController {
                 model.addAttribute("user",user);
             }
             else {
-                redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다.");
+                redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다");
                 return "redirect:/"; // 홈으로 리다이렉트
             }
 

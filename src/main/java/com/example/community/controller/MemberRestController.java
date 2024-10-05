@@ -33,18 +33,18 @@ public class MemberRestController {
         // 아이디 중복 체크
         if(memberService.idcheck(requestDto.getEmail()))
         {
-            resultdata.put("message","ID 중복체크를 해주세요.");
+            resultdata.put("message","ID 중복체크를 해주세요");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultdata);
         }
         // 회원 생성
         Optional<Object> member = memberService.addUser(requestDto);
         if(member.isEmpty())
         {
-            resultdata.put("message","허용되지 않은 접근 입니다.");
+            resultdata.put("message","허용되지 않은 접근 입니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultdata);
         }
 
-        resultdata.put("message","회원가입 완료 했습니다.");
+        resultdata.put("message","회원가입 완료 했습니다");
         return ResponseEntity.status(HttpStatus.OK).body(resultdata);
     }
 
@@ -62,15 +62,15 @@ public class MemberRestController {
         }
         else {
             if (!requestDto.getUserpw().equals(requestDto.getConfirmuserpw())) {
-                errorresultdata.put("message", "변경 비밀번호와 재확인 비밀번호를 일치 시켜주세요.");
+                errorresultdata.put("message", "변경 비밀번호와 재확인 비밀번호를 일치 시켜주세요");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
             }
             else if(!passwordEncoder.matches(requestDto.getOriginaluserpw(),authenticationUtil.getCurrentMember().getUserpw()) ){
-                errorresultdata.put("message","현재 사용하고 있는 비밀번호와 일치하지 않습니다.");
+                errorresultdata.put("message","현재 사용하고 있는 비밀번호와 일치하지 않습니다");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
             }
             else if(passwordEncoder.matches(requestDto.getUserpw(),authenticationUtil.getCurrentMember().getUserpw()) ){
-                errorresultdata.put("message","현재 사용하고 있는 비밀번호입니다.");
+                errorresultdata.put("message","현재 사용하고 있는 비밀번호입니다");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
             }
         }
@@ -78,10 +78,10 @@ public class MemberRestController {
         Optional<Object> optionalmember = memberService.updateUser(requestDto);
         if(optionalmember.isEmpty())
         {
-            errorresultdata.put("message","허용되지 않은 접근 입니다.");
+            errorresultdata.put("message","허용되지 않은 접근 입니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
         }
-        errorresultdata.put("message","회원 정보 수정이 완료되었습니다.");
+        errorresultdata.put("message","회원 정보 수정이 완료되었습니다");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
     }
     // 세션 조회
@@ -104,10 +104,10 @@ public class MemberRestController {
          // 아이디 중복 체크
          Boolean idchecked = memberService.idcheck(idCheckDto.getEmail());
          if(idchecked){
-            resultdata.put("message","이미 존재하는 ID 입니다.");
+            resultdata.put("message","이미 존재하는 ID 입니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultdata);
          }
-         resultdata.put("message","가입 할 수 있는 ID 입니다.");
+         resultdata.put("message","가입 할 수 있는 ID 입니다");
          return ResponseEntity.status(HttpStatus.OK).body(resultdata);
 
     }

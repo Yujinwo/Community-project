@@ -91,7 +91,7 @@ public class ArticleController {
         Optional<Article> article = articleService.viewcount(id,request, response);
         // 글 조회 실패시
         if (article.isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "조회할 게시글이 존재하지 않습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", "조회할 게시글이 존재하지 않습니다");
             return "redirect:/"; // 홈으로 리다이렉트
         }
         // 댓글 전체 페이징처리 조회
@@ -126,14 +126,14 @@ public class ArticleController {
         Member user = authenticationUtil.getCurrentMember();
         // 유저 데이터가 없으면
         if (user == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다");
             return "redirect:/"; // 홈으로 리다이렉트
         }
         // 글 불러오기
         Optional<Article> article = articleService.findById(id);
         // 글 조회 실패시
         if (article.isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "조회할 게시글이 존재하지 않습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", "조회할 게시글이 존재하지 않습니다");
             return "redirect:/"; // 홈으로 리다이렉트
         }
         ArticleResponseDto articleResponseDto = ArticleResponseDto.builder().article(article.get()).build();

@@ -37,7 +37,7 @@ public class NoteController {
         Member user = authenticationUtil.getCurrentMember();
         // 유저 데이터가 없으면
         if (user == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다");
             return "redirect:/"; // 홈으로 리다이렉트
         }
         model.addAttribute("email",email);
@@ -49,13 +49,13 @@ public class NoteController {
         Member user = authenticationUtil.getCurrentMember();
         // 유저 데이터가 없으면
         if (user == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다");
             return "redirect:/"; // 홈으로 리다이렉트
         }
         Optional<Note> savednote = noteRespository.findById(id);
         // 쪽지가 없으면
         if (savednote.isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "쪽지 데이터가 존재하지 않습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", "쪽지 데이터가 존재하지 않습니다");
             return "redirect:/"; // 홈으로 리다이렉트
         }
         model.addAttribute("note",savednote.get());
@@ -68,7 +68,7 @@ public class NoteController {
         Member user = authenticationUtil.getCurrentMember();
         // 유저 데이터가 없으면
         if (user == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", "유저 데이터가 존재하지 않습니다");
             return "redirect:/"; // 홈으로 리다이렉트
         }
         // 내 쪽지 전체 페이징처리 조회

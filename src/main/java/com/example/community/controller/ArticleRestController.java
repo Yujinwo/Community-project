@@ -45,7 +45,7 @@ public class ArticleRestController {
             for (MultipartFile file : files) {
                 String fileName = file.getOriginalFilename().toLowerCase();
                 if (fileName != null && !(fileName.endsWith(".png") || fileName.endsWith(".jpg"))) {
-                    responseJson.put("message" , "허용되지 않은 확장자입니다.");
+                    responseJson.put("message" , "허용되지 않은 확장자입니다");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
                 }
             }
@@ -56,11 +56,11 @@ public class ArticleRestController {
 
             for (String tag : articleRequestDto.getTags()) {
                 if( !(tag.length() > 3 || tag.length() < 8) ) {
-                    responseJson.put("message" , "태그 길이는 3자 이상 8자 이하이어야 합니다.");
+                    responseJson.put("message" , "태그 길이는 3자 이상 8자 이하이어야 합니다");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
                 }
                 if (tagSet.contains(tag)) {
-                    responseJson.put("message" , "중복 태그는 허용되지 않습니다.");
+                    responseJson.put("message" , "중복 태그는 허용되지 않습니다");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
                 }
                 tagSet.add(tag); // 태그를 Set에 추가
@@ -70,7 +70,7 @@ public class ArticleRestController {
                 Pattern disallowedKoreanSounds = Pattern.compile("[ㄱ-ㅎㅏ-ㅣ]");
                 // 검사
                 if (!sanitizedValue.equals(tag) || disallowedKoreanSounds.matcher(tag).find()) {
-                    responseJson.put("message" , "특수문자와 자음/모음은 허용되지 않습니다.");
+                    responseJson.put("message" , "특수문자와 자음/모음은 허용되지 않습니다");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
                 }
             }
@@ -79,14 +79,14 @@ public class ArticleRestController {
 
         // 이미지 + 파일이 2개 이상일 시
         if(articleRequestDto.getImageUrls().size() + filesize > 2){
-            responseJson.put("message" , "허용되지 않은 사이즈 입니다.");
+            responseJson.put("message" , "허용되지 않은 사이즈 입니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
         // 유저 인증 및 글 조회 실패 시
         Optional<Object> optionalarticle = articleService.write(articleRequestDto, files);
         if(optionalarticle.isEmpty())
         {
-            responseJson.put("message" , "허용되지 않은 접근 입니다.");
+            responseJson.put("message" , "허용되지 않은 접근 입니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
         responseJson.put("message" , "글 작성 완료했습니다");
@@ -108,7 +108,7 @@ public class ArticleRestController {
             for (MultipartFile file : files) {
                 String fileName = file.getOriginalFilename().toLowerCase();
                 if (fileName != null && !(fileName.endsWith(".png") || fileName.endsWith(".jpg"))) {
-                    responseJson.put("message" , "허용되지 않은 확장자입니다.");
+                    responseJson.put("message" , "허용되지 않은 확장자입니다");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
                 }
             }
@@ -118,11 +118,11 @@ public class ArticleRestController {
             Set<String> tagSet = new HashSet<>();
             for (String tag : articleRequestDto.getTags()) {
                  if( !(tag.length() > 3 || tag.length() < 8) ) {
-                     responseJson.put("message" , "태그 길이는 3자 이상 8자 이하이어야 합니다.");
+                     responseJson.put("message" , "태그 길이는 3자 이상 8자 이하이어야 합니다");
                      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
                  }
                 if (tagSet.contains(tag)) {
-                    responseJson.put("message" , "중복 태그는 허용되지 않습니다.");
+                    responseJson.put("message" , "중복 태그는 허용되지 않습니다");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
                 }
                 tagSet.add(tag); // 태그를 Set에 추가
@@ -131,13 +131,13 @@ public class ArticleRestController {
 
         // 이미지 + 파일이 2개 이상일 시
         if(articleRequestDto.getImageUrls().size() + filesize > 2){
-            responseJson.put("message" , "허용되지 않은 사이즈 입니다.");
+            responseJson.put("message" , "허용되지 않은 사이즈 입니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
         Optional<Object> optionalarticle = articleService.update(articleRequestDto,files);
 
         if (optionalarticle.isEmpty()) {
-            responseJson.put("message" , "허용되지 않은 접근 입니다.");
+            responseJson.put("message" , "허용되지 않은 접근 입니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
         responseJson.put("message" , "글 수정 완료했습니다");
@@ -154,7 +154,7 @@ public class ArticleRestController {
         Optional<Object> optionalarticle = articleService.delete(id);
         if(optionalarticle.isEmpty())
         {
-            responseJson.put("message" , "허용되지 않은 접근 입니다.");
+            responseJson.put("message" , "허용되지 않은 접근 입니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
         responseJson.put("message" , "글 삭제 완료했습니다");
@@ -170,10 +170,10 @@ public class ArticleRestController {
            Optional<Object> optionalbookmark = articleService.setBookmark(id);
            if(optionalbookmark.isEmpty())
            {
-               responseMap.put("message" , "허용되지 않은 접근 입니다.");
+               responseMap.put("message" , "허용되지 않은 접근 입니다");
                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
            }
-           responseMap.put("message" , "즐겨 찾기 등록 완료했습니다.");
+           responseMap.put("message" , "즐겨 찾기 등록 완료했습니다");
            return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 
     }
@@ -186,10 +186,10 @@ public class ArticleRestController {
         Optional<Object> optionalbookmark = articleService.deleteBookmark(id);
         if(optionalbookmark.isEmpty())
         {
-            responseMap.put("message" , "허용되지 않은 접근 입니다.");
+            responseMap.put("message" , "허용되지 않은 접근 입니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
         }
-        responseMap.put("message" , "즐겨 찾기 삭제 완료했습니다.");
+        responseMap.put("message" , "즐겨 찾기 삭제 완료했습니다");
         return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 
     }
@@ -204,7 +204,7 @@ public class ArticleRestController {
 
         if(notification.isEmpty())
         {
-            responseJson.put("message" , "허용되지 않은 접근 입니다.");
+            responseJson.put("message" , "허용되지 않은 접근 입니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
         // SSE 댓글 메세지 전송
@@ -222,7 +222,7 @@ public class ArticleRestController {
         Optional<Object> deletedcomment = articleService.commentdelete(id);
         if(deletedcomment.isEmpty())
         {
-            responseJson.put("message" , "허용되지 않은 접근 입니다.");
+            responseJson.put("message" , "허용되지 않은 접근 입니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
 
@@ -238,7 +238,7 @@ public class ArticleRestController {
         Optional<Object> updatedcomment = articleService.commentupdate(commentUpdateDto);
         if(updatedcomment.isEmpty())
         {
-            responseJson.put("message" , "허용되지 않은 접근 입니다.");
+            responseJson.put("message" , "허용되지 않은 접근 입니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
 
@@ -254,7 +254,7 @@ public class ArticleRestController {
         Optional<Object> reply =  articleService.replywrite(ReplyRequestDto);
         if(reply.isEmpty())
         {
-            responseJson.put("message" , "허용되지 않은 접근 입니다.");
+            responseJson.put("message" , "허용되지 않은 접근 입니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
         responseJson.put("message" , "대댓글 작성 완료했습니다");
