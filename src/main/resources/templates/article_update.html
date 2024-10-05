@@ -117,11 +117,17 @@
                function addTag(tag) {
                      if (tag.trim() === '') return;
                      // 특수문자 금지
-                     const sanitizedValue = tag.replace(/[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]/g, '');
-                     if(sanitizedValue != tag) {
-                         alert('특수문자는 허용 되지 않습니다.');
-                         return;
-                     }
+                        const sanitizedValue = tag.replace(/[^a-zA-Z0-9가-힣]/g, ''); // 특수문자 제거
+                        const disallowedKoreanSounds = /[ㄱ-ㅎㅏ-ㅣ]/; // 자음 및 모음 패턴
+
+                        if (sanitizedValue !== tag || disallowedKoreanSounds.test(tag)) {
+                            alert('특수문자와 자음/모음은 허용되지 않습니다.');
+                            return;
+                        }
+                        if (sanitizedValue.length < 3 || sanitizedValue.length > 8) {
+                            alert('길이는 3자 이상 8자 이하이어야 합니다.');
+                            return;
+                        }
 
                      const $tagItem = $('<li>',{ class : 'tag-item'});
                      const $tagText = $('<span>',{ class: 'tag-text', text: `#${sanitizedValue.trim()}`});
@@ -187,6 +193,16 @@
          if(obj.imageUrls == undefined)
          {
                   obj.imageUrls = imageUrls;
+         }
+         for (var i = 0; i < files.length; i++) {
+              var allowedExtensions = ['.png', '.jpg'];
+              var fileName = files[i].name.toLowerCase();
+              var isValid = allowedExtensions.some(ext => fileName.endsWith(ext));
+
+              if (!isValid) {
+                alert("파일은 png,jpg 형식만 가능합니다.");
+                return;
+              }
          }
          const originaltitle = [[${article.title}]];
          const originalcontent = [[${article.content}]];

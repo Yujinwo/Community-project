@@ -17,9 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -226,20 +224,35 @@ public class ArticleService {
             }
         }
         Iterable<Long> iterable = new ArrayList<>();
-        // 태그를 하나씩 꺼내서 id를 리스트에 추가
+
+        Set<String> tagset = new HashSet<>();
+        Set<String> requesttagset = new HashSet<>();
+        // 수정 url을 Set 변환
+        if (!articleRequestDto.getTags().isEmpty()) {
+            for (String tagContent : articleRequestDto.getTags()) {
+                tagset.add(tagContent);
+            }
+        }
+        // 수정 url Set에 존재하지 않는 원본 url 요소는 삭제
         for (Tag tag : article.get().getTags()) {
-                ((ArrayList<Long>) iterable).add(tag.getId());
+               requesttagset.add(tag.getContent());
+               if(!tagset.contains(tag.getContent()))
+               {
+                   ((ArrayList<Long>) iterable).add(tag.getId());
+               }
         }
         // Batch를 이용해 한번에 삭제
         tagRepository.deleteAllByIdInBatch(iterable);
         em.flush();
-        // 태그 추가
-        if (!articleRequestDto.getTags().isEmpty()) {
-                    for (String tagContent : articleRequestDto.getTags()) {
-                        Tag tag = Tag.builder().content(tagContent).article(article.get()).build();
-                        article.get().getTags().add(tag);
-                    }
+        // 원본 url Set에 존재하지 않는 수정 url 요소는 추가
+        for (String tagContent : articleRequestDto.getTags()) {
+                        if(!requesttagset.contains(tagContent))
+                        {
+                            Tag tag = Tag.builder().content(tagContent).article(article.get()).build();
+                            article.get().getTags().add(tag);
+                        }
         }
+
         return Optional.of(article);
     }
     // 글 삭제
