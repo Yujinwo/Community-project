@@ -1,7 +1,5 @@
 <div><h2>커뮤니티 웹 서비스(2024.3.27 ~ 10.05) </h2></div>
 
-![이미지 설명](https://drive.google.com/uc?id=1zrtwNmQv9iGAtOWiNr_u5lHkuGxmtoaF)
-
 <div><h3>* Architecture </h3></div>
 
 <div><h3>* ERD </h3></div>
