@@ -19,7 +19,8 @@ import java.time.format.DateTimeFormatter;
 @Setter
 public class Note extends BaseTime {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "note_id")
     private Long id;
 
