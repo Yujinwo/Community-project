@@ -207,13 +207,8 @@ public class ArticleRestController {
             responseJson.put("message" , "허용되지 않은 접근 입니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
         }
-        // SSE 댓글 메시지 전송
-        Object notificationObject = notification.get(); // 객체 가져오기
-        if (notificationObject instanceof Notification) {
-            Notification notificationInstance = (Notification) notificationObject; // 안전한 캐스트
-            notificationService.sendRealTimeNotification(notificationInstance); // 메서드 호출
-        }
-
+        // SSE 댓글 메세지 전송
+        notificationService.sendRealTimeNotification((Notification) notification.get());
         responseJson.put("message" , "댓글 작성 완료했습니다");
         return ResponseEntity.status(HttpStatus.OK).body(responseJson);
     }
