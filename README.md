@@ -1,5 +1,7 @@
 <div><h2>커뮤니티 웹 서비스(2024.3.27 ~ 10.05) </h2></div>
 
+![이미지 설명](https://drive.google.com/uc?id=1zrtwNmQv9iGAtOWiNr_u5lHkuGxmtoaF)
+
 <div><h3>* Architecture </h3></div>
 
 <div><h3>* ERD </h3></div>
@@ -51,12 +53,36 @@
 
 <div><h3>* 이미지 </h3></div>
 
-- 로그인
-- 전체 게시물
-- 상세 게시물(댓글, 태그, 이미지)
-- 쪽지
-- 알림
+<details>
+  <summary>로그인 </summary>
+  <img src="https://drive.google.com/uc?id=1Crd4AOWJCCX0MTb79NcvS_lCMNZw1LYp" alt="로그인" />
+</details>
 
+<details>
+  <summary>전체 게시물 </summary>
+  <img src="https://drive.google.com/uc?id=1ZpSJW-nELKI4z5DAX63e-dtgqRVeduFX" alt="메인" />
+</details>
+
+<details>
+  <summary>상세 게시물 이미지</summary>
+  <img src="https://drive.google.com/uc?id=1L6C_RrMrXGMQb2Y7LSV8oI22-C9EOWTF" alt="게시물이미지" />
+</details>
+
+<details>
+  <summary>상세 게시물 댓글 </summary>
+  <img src="https://drive.google.com/uc?id=16kBj5CmF79UJLAH9yLfnoPwRuNWVQORA" alt="댓글" />
+</details>
+
+<details>
+  <summary>쪽지 </summary>
+  <img src="https://drive.google.com/uc?id=1YDPbtUKTjQBjY9yTr-oTXW790ohqDohX" alt="쪽지" />
+</details>
+
+<details>
+  <summary>알림 </summary>
+  <img src="https://drive.google.com/uc?id=1U3NzzCNsVyd5TdIFydptZ67rhSdyXZYo" alt="알림" />
+</details>
+  
 <div><h3>* 핵심 코드 </h3></div>
 
 - __패치 조인__ * __Batch__(쿼리 단축)
