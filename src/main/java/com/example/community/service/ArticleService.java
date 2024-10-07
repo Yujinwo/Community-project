@@ -312,13 +312,14 @@ public class ArticleService {
         }
 
         // 내 자신에게 알림 발송 차단
-        if(article.get().getMember().getId() != member.getId())
+        if(article.get().getMember().getId() == member.getId())
         {
-            // 글 작성자에게 댓글 알림 전송
-            Notification notification = notificationService.sendNotification(article.get().getMember(),member,article.get(),commentRequestDto.getContent());
-            return Optional.ofNullable(notification);
+            return Optional.ofNullable(null);
         }
-        return Optional.ofNullable(comment.get());
+
+        // 글 작성자에게 댓글 알림 전송
+        Notification notification = notificationService.sendNotification(article.get().getMember(),member,article.get(),commentRequestDto.getContent());
+        return Optional.ofNullable(notification);
     }
 
 
