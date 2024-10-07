@@ -43,9 +43,10 @@
 | 게시물 | O | O | O | O | O |
 | 댓글 | O | O | O | O | O |
 | 이미지 | X | O | O | O | O |
-| 태그 | O | O | O | O | O |
+| 태그 | X | O | O | O | O |
 | 쪽지 | O | O | O | O | O |
 | 알림 | O | O | O | X | O |
+| 즐겨찾기 | O | O | O | O | O |
 
 
 <div><h3>* 이미지 </h3></div>
