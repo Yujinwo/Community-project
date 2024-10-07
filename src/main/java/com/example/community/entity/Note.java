@@ -21,7 +21,6 @@ public class Note extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "note_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

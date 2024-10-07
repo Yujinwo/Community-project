@@ -459,14 +459,14 @@ public class ArticleService {
 
 
         // 부모댓글이 최상위이면
-        if(parentcomment.get().getCommentorder() == 0)
+        if(parentcomment.get().getCOrder()== 0)
         {
             // commentorder 값을 현재 댓글수로 설정
-            commentSaveDto.changeReplySaveOrderData(parentcomment.get().getCommentnumber(), (long) article.get().getCommentcount(),parentcomment.get().getRedepth() + 1);
+            commentSaveDto.changeReplySaveOrderData(parentcomment.get().getCNumber(), (long) article.get().getCommentCount(),parentcomment.get().getRedepth() + 1);
         }
         else {
             // commentorder 값을 부모 댓글 값으로 설정
-            commentSaveDto.changeReplySaveOrderData(parentcomment.get().getCommentnumber(),parentcomment.get().getCommentorder(),parentcomment.get().getRedepth() + 1);
+            commentSaveDto.changeReplySaveOrderData(parentcomment.get().getCNumber(),parentcomment.get().getCOrder(),parentcomment.get().getRedepth() + 1);
         }
 
         Optional<Comment> comment = Optional.of(commentRepository.save(commentSaveDto.createCommentEntity()));

@@ -21,7 +21,7 @@ public class CommentSaveDto {
         this.content = content;
         this.article = article;
         this.member = member;
-        this.commentnumber = (long) article.getCommentcount();
+        this.commentnumber = (long) article.getCommentCount();
         this.commentorder = 0L;
     }
     public void changeReplySaveData(String content,Article article, Member member,Comment parent) {
@@ -41,8 +41,8 @@ public class CommentSaveDto {
                 member(member).
                 article(article).
                 parent(parent).
-                commentnumber(commentnumber).
-                commentorder(commentorder).
+                cNumber(commentnumber).
+                cOrder(commentorder).
                 redepth(redepth).
                 deleted(false)
                 .build();

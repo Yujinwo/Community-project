@@ -226,13 +226,13 @@ class ArticleServiceTest {
                 member(member).
                 article(article).
                 parent(null).
-                commentnumber(0L).
-                commentorder(0L).
+                cNumber(0L).
+                cOrder(0L).
                 redepth(0).
                 deleted(false)
                 .build();
         //when
-        savedArticle.chagneCommentCount(savedArticle.getCommentcount() + 1);
+        savedArticle.chagneCommentCount(savedArticle.getCommentCount() + 1);
         Comment savedComment =  commentRepository.save(comment);
         em.flush();
         em.clear();
@@ -272,12 +272,12 @@ class ArticleServiceTest {
                 member(member).
                 article(savedArticle).
                 parent(null).
-                commentnumber(0L).
-                commentorder(0L).
+                cNumber(0L).
+                cOrder(0L).
                 redepth(0).
                 deleted(false)
                 .build();
-        savedArticle.chagneCommentCount(savedArticle.getCommentcount() + 1);
+        savedArticle.chagneCommentCount(savedArticle.getCommentCount() + 1);
         Comment savedComment =  commentRepository.save(comment);
         em.flush();
         em.clear();
@@ -317,7 +317,7 @@ class ArticleServiceTest {
         em.clear();
 
         //then
-        assertEquals(findarticle.get().getViewcount(),1);
+        assertEquals(findarticle.get().getViewCount(),1);
     }
 
     @Test
@@ -349,12 +349,12 @@ class ArticleServiceTest {
                 member(member).
                 article(article).
                 parent(null).
-                commentnumber(0L).
-                commentorder(0L).
+                cNumber(0L).
+                cOrder(0L).
                 redepth(0).
                 deleted(false)
                 .build();
-        savedArticle.chagneCommentCount(savedArticle.getCommentcount() + 1);
+        savedArticle.chagneCommentCount(savedArticle.getCommentCount() + 1);
         Comment savedComment =  commentRepository.save(comment);
         em.flush();
         em.clear();
@@ -426,12 +426,12 @@ class ArticleServiceTest {
                 member(member).
                 article(article).
                 parent(null).
-                commentnumber(0L).
-                commentorder(0L).
+                cNumber(0L).
+                cOrder(0L).
                 redepth(0).
                 deleted(false)
                 .build();
-        savedArticle.chagneCommentCount(savedArticle.getCommentcount() + 1);
+        savedArticle.chagneCommentCount(savedArticle.getCommentCount() + 1);
         Comment savedComment =  commentRepository.save(comment);
         em.flush();
         em.clear();

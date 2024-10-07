@@ -40,7 +40,7 @@ public class MemberDto {
                 // 쪽지 거부 설정
                 .noteblock(false)
                 .social("normal")
-                .temporaryblockdate(LocalDateTime.now())
+                .temporaryBlockDate(LocalDateTime.now())
                 .build();
     }
 }

@@ -20,7 +20,6 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
     private Long id;
     @Column
     private String email;
@@ -40,13 +39,13 @@ public class Member {
     private String social;
 
     @Column
-    private LocalDateTime temporaryblockdate;
+    private LocalDateTime temporaryBlockDate;
 
     public void changeNoteBlock(Boolean noteblock) {
         this.noteblock = noteblock;
     }
     public void changeTemporaryblockdate(LocalDateTime temporaryblockdate) {
-        this.temporaryblockdate = temporaryblockdate;
+        this.temporaryBlockDate = temporaryblockdate;
     }
     public void changeUserNick(String usernick) {
         this.usernick = usernick;

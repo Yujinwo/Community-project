@@ -25,7 +25,7 @@ public class Notification extends BaseTime {
     @JoinColumn(name = "writer_id")
     private Member writer;
 
-    private Long articleId;
+    private Long articleFindId;
     private String articleTitle;
 
     private String message;
@@ -36,7 +36,7 @@ public class Notification extends BaseTime {
         return NotificationResponseDto.builder()
                 .id(id)
                 .articleTitle(articleTitle)
-                .articleId(articleId)
+                .articleId(articleFindId)
                 .writerNickname(writer.getUsernick())
                 .commentCreatetime(createdFormatDate)
                 .commentContent(message)

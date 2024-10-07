@@ -30,7 +30,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         // 조회 쿼리
         JPAQuery<Comment> comments = jpaQueryFactory.selectFrom(comment)
                 .where(comment.article.id.eq(boardId))
-                .orderBy(comment.commentnumber.asc(),comment.commentorder.asc(),comment.redepth.asc())
+                .orderBy(comment.cNumber.asc(),comment.cOrder.asc(),comment.redepth.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
         // Count 쿼리
@@ -255,7 +255,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         }
         // 조회수 순
         else if(sort.equals("mostrecent")){
-            return article.viewcount.desc();
+            return article.viewCount.desc();
         }
         else {
             return article.createdDate.asc();

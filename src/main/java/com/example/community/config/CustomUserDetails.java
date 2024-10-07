@@ -55,7 +55,7 @@ public class CustomUserDetails implements UserDetails {
         this.member.setNoteblock(noteblock);
     }
     public void changeTemporaryblockdate(LocalDateTime temporaryblockdate) {
-        this.member.setTemporaryblockdate(temporaryblockdate);
+        this.member.setTemporaryBlockDate(temporaryblockdate);
     }
 
     // 계정 만료 여부 확인

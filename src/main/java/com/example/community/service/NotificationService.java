@@ -81,7 +81,7 @@ public class NotificationService {
                                         builder()
                                         .receiver(receiver)
                                         .writer(writer)
-                                        .articleId(article.getId())
+                                        .articleFindId(article.getId())
                                         .articleTitle(article.getTitle())
                                         .message(message)
                                         .build();

@@ -34,13 +34,13 @@ public class Article extends BaseTime{
     private Member member;
     // 조회수
     @Column
-    private int viewcount;
+    private int viewCount;
+
     @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE)
-    @OrderBy("id asc")
     @BatchSize(size = 10)
     private List<BoardImage> boardImages;
+
     @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE)
-    @OrderBy("id asc")
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "article",orphanRemoval = true,cascade = CascadeType.REMOVE)
@@ -51,7 +51,7 @@ public class Article extends BaseTime{
     private List<Tag> tags;
     // 댓글 수
     @Column
-    private int commentcount;
+    private int commentCount;
   
     //연관관계 메서드
     public void addBoardImages (BoardImage boardImage){
@@ -66,7 +66,7 @@ public class Article extends BaseTime{
     }
     // 조회 수 1 올리기
     public void updatecount() {
-        this.viewcount = viewcount + 1;
+        this.viewCount = viewCount + 1;
     }
 
 
@@ -76,6 +76,6 @@ public class Article extends BaseTime{
     }
     // 댓글 수 변경
     public void chagneCommentCount(int i) {
-        this.commentcount = commentcount + i;
+        this.commentCount = commentCount + i;
     }
 }

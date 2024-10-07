@@ -82,11 +82,11 @@ class NoteServiceTest {
         //when
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime blockEndTime = now.plusHours(24); // 현재 시간에 24시간을 더함
-        savedmember.setTemporaryblockdate(blockEndTime);
+        savedmember.setTemporaryBlockDate(blockEndTime);
         em.flush();
 
         // then
-        assertEquals(savedmember.getTemporaryblockdate(),blockEndTime);
+        assertEquals(savedmember.getTemporaryBlockDate(),blockEndTime);
     }
 
     @Test

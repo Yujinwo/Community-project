@@ -40,7 +40,7 @@ public class ArticleindexResponseDto {
         this.member = article.getMember();
         //멤버 프록시 강제 초기화
         member.getUserpw();
-        this.viewcount = article.getViewcount();
+        this.viewcount = article.getViewCount();
         List<Tag> tags = article.getTags();
         // 태그 컬렉션을 String형식 List로 변환
         if(!tags.isEmpty()) {

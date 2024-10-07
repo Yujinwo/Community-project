@@ -35,10 +35,10 @@ public class Comment extends BaseTime{
     private Comment parent;
     // 최상위 부모 댓글 번호
     @Column
-    private Long commentnumber;
+    private Long cNumber;
     // 부모 댓글 번호
     @Column
-    private Long commentorder;
+    private Long cOrder;
     // 댓글 깊이
     @Column
     private int redepth;
@@ -51,7 +51,7 @@ public class Comment extends BaseTime{
 
     // Entity -> CommentResponseDto 생성
     public CommentResponseDto toDto() {
-        return CommentResponseDto.builder().id(id).content(content).member(member).article(article).createdDate(getCreatedDate()).modifiedDate(getModifiedDate()).child(child).parent(parent).commentnumber(commentnumber).redepth(redepth).deleted(deleted).build();
+        return CommentResponseDto.builder().id(id).content(content).member(member).article(article).createdDate(getCreatedDate()).modifiedDate(getModifiedDate()).child(child).parent(parent).commentnumber(cNumber).redepth(redepth).deleted(deleted).build();
     }
     // 댓글 작성시간 형식 변환
     public MyCommentResponseDto changeMyCommentResponseDto() {

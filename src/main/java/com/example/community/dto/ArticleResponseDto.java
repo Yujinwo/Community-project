@@ -40,7 +40,7 @@ public class ArticleResponseDto {
         this.member = article.getMember();
         //멤버 프록시 강제 초기화
         member.getUserpw();
-        this.viewcount = article.getViewcount();
+        this.viewcount = article.getViewCount();
         // 이미지 컬렉션을 String형식 List로 변환
         List<BoardImage> boardImages = article.getBoardImages();
         if (boardImages.size() != 0) {

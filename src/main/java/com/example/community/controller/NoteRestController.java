@@ -40,7 +40,7 @@ public class NoteRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
         }
         // 받는 사람이 수신 거부일 시
-        if(byemail.get().getNoteblock() == true || byemail.get().getTemporaryblockdate().isAfter(LocalDateTime.now()))
+        if(byemail.get().getNoteblock() == true || byemail.get().getTemporaryBlockDate().isAfter(LocalDateTime.now()))
         {
             errorresultdata.put("message","수신 거부 상태이므로 쪽지를 발송할 수 없습니다");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorresultdata);
