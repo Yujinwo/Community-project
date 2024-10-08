@@ -3,6 +3,9 @@
 <div><h3>REST API 문서 <a href="https://valley-eyeliner-5c7.notion.site/API-113f0af743d380d89d81f787351876f6" target="_blank">링크</a> </h3></div>
 
 <div><h3>* Architecture </h3></div>
+  <details>
+    <img src="https://drive.google.com/uc?id=1-HpeSZouEnNfFTH4-9jFJpqmZO0QhLb3" alt="Architecture" />
+  </details>
 
 <div><h3>* ERD </h3></div>
   <details>
