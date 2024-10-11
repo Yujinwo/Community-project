@@ -8,10 +8,13 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 // 글 작성 요청 DTO
 @Getter
+@Setter
 @NoArgsConstructor
 public class ArticleRequestDto {
     private Long id;
@@ -25,5 +28,5 @@ public class ArticleRequestDto {
     private List<String> ImageUrls = new ArrayList<>();
 
     @Size(max = 10,message = "태그는 10개 이내로 작성해주세요")
-    private List<String> tags = new ArrayList<>();
+    private Set<String> tags = new HashSet<>();
 }

@@ -59,10 +59,6 @@ public class ArticleRestController {
                     responseJson.put("message" , "태그 길이는 3자 이상 8자 이하이어야 합니다");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
                 }
-                if (tagSet.contains(tag)) {
-                    responseJson.put("message" , "중복 태그는 허용되지 않습니다");
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
-                }
                 tagSet.add(tag); // 태그를 Set에 추가
                 // 특수문자 제거 정규 표현식
                 String sanitizedValue = tag.replaceAll("[^a-zA-Z0-9가-힣]", "");
@@ -74,6 +70,7 @@ public class ArticleRestController {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
                 }
             }
+            articleRequestDto.setTags(tagSet);
         }
 
 
@@ -113,6 +110,7 @@ public class ArticleRestController {
                 }
             }
         }
+
         // 태그 길이 확인 // 태그 중복 확인
         if(!articleRequestDto.getTags().isEmpty()) {
             Set<String> tagSet = new HashSet<>();
@@ -121,12 +119,9 @@ public class ArticleRestController {
                      responseJson.put("message" , "태그 길이는 3자 이상 8자 이하이어야 합니다");
                      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
                  }
-                if (tagSet.contains(tag)) {
-                    responseJson.put("message" , "중복 태그는 허용되지 않습니다");
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseJson);
-                }
                 tagSet.add(tag); // 태그를 Set에 추가
             }
+            articleRequestDto.setTags(tagSet);
         }
 
         // 이미지 + 파일이 2개 이상일 시

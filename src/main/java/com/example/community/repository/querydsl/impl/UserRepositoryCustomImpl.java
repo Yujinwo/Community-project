@@ -162,6 +162,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         // 조회 쿼리
         JPAQuery<Article> query = jpaQueryFactory.selectFrom(article)
                 .orderBy(orderData(sort))
+                .join(article.member,QMember.member)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
