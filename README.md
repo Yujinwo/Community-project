@@ -1,9 +1,16 @@
 <div><h2>커뮤니티 웹 서비스(2024.3.27 ~ 10.05) </h2></div>
 
+<div><h3>REST API 문서 <a href="https://valley-eyeliner-5c7.notion.site/API-113f0af743d380d89d81f787351876f6" target="_blank">링크</a> </h3></div>
+
 <div><h3>* Architecture </h3></div>
+  <details>
+    <img src="https://drive.google.com/uc?id=1-HpeSZouEnNfFTH4-9jFJpqmZO0QhLb3" alt="Architecture" />
+  </details>
 
 <div><h3>* ERD </h3></div>
-
+  <details>
+    <img src="https://drive.google.com/uc?id=1JIT5hkyFdopwu0tInW2AWIS3J6xV4tAN" alt="ERD" />
+  </details>
 <div><h3>* Front </h3></div>
   
 ![javascript](https://img.shields.io/badge/java%20script-F7DF1E.svg?style=for-the-badge&logo=javascript&logoColor=white)
@@ -79,6 +86,11 @@
 <details>
   <summary>알림 </summary>
   <img src="https://drive.google.com/uc?id=1U3NzzCNsVyd5TdIFydptZ67rhSdyXZYo" alt="알림" />
+</details>
+
+<details>
+  <summary>My페이지 </summary>
+  <img src="https://drive.google.com/uc?id=1DF4x_BcFU2qbbkgQnIzzqbFu91aJE3Gw" alt="Mypage" />
 </details>
   
 <div><h3>* 핵심 코드 </h3></div>
