@@ -93,11 +93,5 @@
   <img src="https://drive.google.com/uc?id=1DF4x_BcFU2qbbkgQnIzzqbFu91aJE3Gw" alt="Mypage" />
 </details>
   
-<div><h3>* 핵심 코드 </h3></div>
 
-- __패치 조인__ * __Batch__(쿼리 단축)
-- 이미지 수정 시퀀스 다이어그램
-- __Spring Security__ Context 인증 유저 정보를 이용해 DB 조회 쿼리 __25%__ 단축
-- 태그 수정 __Batch__ & __Set__ 자료구조(중복검사)
-- @Valid를 이용해 유효성 검사 로직 __30%__ 단축
   
