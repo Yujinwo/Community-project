@@ -78,8 +78,8 @@ public class MemberService {
             return Optional.ofNullable(null);
         }
 
-        Optional<Member> byEmail = memberRepository.findByEmail(user.getEmail());
-        if(byEmail.isEmpty())
+        Optional<Member> byId = memberRepository.findById(user.getId());
+        if(byId.isEmpty())
         {
             return Optional.ofNullable(null);
         }
@@ -87,34 +87,34 @@ public class MemberService {
         //소셜 로그인 이면
         if(!user.getSocial().equals("normal")) {
                 // 닉네임만 변경
-                byEmail.get().changeUserNick(requestDto.getUsernick());
+            byId.get().changeUserNick(requestDto.getUsernick());
                 em.flush();
                 em.clear();
                 // 인증 유저 정보를 갱신
                 CustomOAuth2User userDetails = (CustomOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                userDetails.changeMyProfile(byEmail.get().getUsernick());
+                userDetails.changeMyProfile(byId.get().getUsernick());
         }
         //닉네임이 같으면
-        else if( byEmail.get().getUsernick().equals(requestDto.getUsernick()) ) {
+        else if( byId.get().getUsernick().equals(requestDto.getUsernick()) ) {
                 //비밀번호 변경
-                byEmail.get().changeUserPw(passwordEncoder.encode(requestDto.getUserpw()));
+            byId.get().changeUserPw(passwordEncoder.encode(requestDto.getUserpw()));
                 em.flush();
                 em.clear();
                 // 인증 유저 정보를 갱신
                 CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                userDetails.changeMyProfile(byEmail.get().getUsernick(),byEmail.get().getUserpw());
+                userDetails.changeMyProfile(byId.get().getUsernick(),byId.get().getUserpw());
         }
         // 닉네임이 다르면
         else {
                     // 닉네임과 비밀번호 변경
-                    byEmail.get().changeUserNick(requestDto.getUsernick());
-                    byEmail.get().changeUserPw(passwordEncoder.encode(requestDto.getUserpw()));
+            byId.get().changeUserNick(requestDto.getUsernick());
+            byId.get().changeUserPw(passwordEncoder.encode(requestDto.getUserpw()));
                     em.flush();
                     em.clear();
                     // 인증 유저 정보를 갱신
                     CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                    userDetails.changeMyProfile(byEmail.get().getUsernick(),byEmail.get().getUserpw());
+                    userDetails.changeMyProfile(byId.get().getUsernick(),byId.get().getUserpw());
         }
-        return Optional.ofNullable(byEmail);
+        return Optional.ofNullable(byId);
     }
 }
